@@ -1,1 +1,1 @@
-# COMP491
+# CoachConnect project of COMP491
