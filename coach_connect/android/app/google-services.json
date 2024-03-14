@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "659266824271",
+    "project_id": "coachconnect-43454",
+    "storage_bucket": "coachconnect-43454.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:659266824271:android:7b66f967a1b921e4ece23a",
+        "android_client_info": {
+          "package_name": "com.example.coach_connect"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAhV3n63PCqcWRESm1uUQyk-Sp-sGKSVL8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

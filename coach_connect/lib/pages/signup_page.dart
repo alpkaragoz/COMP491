@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:coach_connect/service/auth.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
 
   @override
-  _SignupPageState createState() => _SignupPageState();
+  State<SignupPage> createState() => _SignupPageState();
 }
 
 class _SignupPageState extends State<SignupPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  //final AuthenticationService _authService = AuthenticationService();
+  final AuthenticationService _authService = AuthenticationService();
 
   void _signup() async {
 /*     String? result = await _authService.signUp(
