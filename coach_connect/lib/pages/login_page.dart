@@ -1,6 +1,7 @@
 import 'package:coach_connect/init/languages/locale_keys.g.dart';
 import 'package:coach_connect/init/languages/locales.dart';
 import 'package:coach_connect/init/languages/product_localization.dart';
+import 'package:coach_connect/pages/client_home_page.dart';
 import 'package:coach_connect/service/auth.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -18,25 +19,19 @@ class LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final AuthenticationService _authService = AuthenticationService();
 
-  void _login() async {
+  Future<void> _login() async {
     try {
       final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: _usernameController.text, password: _passwordController.text);
+      Navigator.of(context).push(MaterialPageRoute(builder: (context) => ClientHomePage(user: credential)));
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        print('No user found for that email.');
-      } else if (e.code == 'wrong-password') {
-        print('Wrong password provided for that user.');
-      } else {
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            content: Text("Login successful"),
-          ),
-        );
-      }
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          content: Text("Login Failed"),
+        ),
+      );
     }
   }
 
@@ -54,7 +49,8 @@ class LoginPageState extends State<LoginPage> {
             children: <Widget>[
               TextFormField(
                 controller: _usernameController,
-                decoration: InputDecoration(labelText: LocaleKeys.username.tr()),
+                decoration:
+                    InputDecoration(labelText: LocaleKeys.username.tr()),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your username';
@@ -64,7 +60,8 @@ class LoginPageState extends State<LoginPage> {
               ),
               TextFormField(
                 controller: _passwordController,
-                decoration: InputDecoration(labelText: LocaleKeys.password.tr()),
+                decoration:
+                    InputDecoration(labelText: LocaleKeys.password.tr()),
                 obscureText: true,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -87,7 +84,10 @@ class LoginPageState extends State<LoginPage> {
                     MaterialPageRoute(builder: (context) => const SignupPage()),
                   );
                 },
-                child: Text(LocaleKeys.signupPrompt.tr(), textAlign: TextAlign.center,),
+                child: Text(
+                  LocaleKeys.signupPrompt.tr(),
+                  textAlign: TextAlign.center,
+                ),
               ),
               Expanded(
                 child: Align(
