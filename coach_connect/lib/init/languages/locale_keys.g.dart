@@ -2,5 +2,10 @@
 
 abstract class  LocaleKeys {
   static const Login = 'Login';
+  static const signup = 'signup';
+  static const signupPrompt = 'signupPrompt';
+  static const username = 'username';
+  static const password = 'password';
+  static const email = 'email';
 
 }

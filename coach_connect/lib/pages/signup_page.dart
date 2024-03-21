@@ -1,5 +1,7 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:coach_connect/service/auth.dart';
+import 'package:coach_connect/init/languages/locale_keys.g.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -34,7 +36,7 @@ class SignupPageState extends State<SignupPage> {
     // Build your signup page UI here
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Sign-Up'),
+        title: Text(LocaleKeys.signup.tr()),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.of(context).pop(), // This takes the user back to the previous screen
@@ -46,16 +48,16 @@ class SignupPageState extends State<SignupPage> {
           children: [
             TextField(
               controller: _emailController,
-              decoration: const InputDecoration(labelText: 'Email'),
+              decoration: InputDecoration(labelText: LocaleKeys.email.tr()),
             ),
             TextField(
               controller: _passwordController,
-              decoration: const InputDecoration(labelText: 'Password'),
+              decoration: InputDecoration(labelText: LocaleKeys.password.tr()),
               obscureText: true,
             ),
             ElevatedButton(
               onPressed: _signup,
-              child: const Text('Sign Up'),
+              child: Text(LocaleKeys.signup.tr()),
             ),
           ],
         ),
