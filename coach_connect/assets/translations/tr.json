@@ -1,1 +1,2 @@
-{"Login": "Giriş"}
+{"Login": "Giriş", "signup": "Kayıt Ol", "signupPrompt": "Hesabın yok mu?\nKayıt ol.", "username": "Kullanıcı Adı", "password": "Şifre",
+"email": "E-posta"}

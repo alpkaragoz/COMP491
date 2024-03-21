@@ -54,7 +54,7 @@ class LoginPageState extends State<LoginPage> {
             children: <Widget>[
               TextFormField(
                 controller: _usernameController,
-                decoration: const InputDecoration(labelText: 'Username'),
+                decoration: InputDecoration(labelText: LocaleKeys.username.tr()),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your username';
@@ -64,7 +64,7 @@ class LoginPageState extends State<LoginPage> {
               ),
               TextFormField(
                 controller: _passwordController,
-                decoration: const InputDecoration(labelText: 'Password'),
+                decoration: InputDecoration(labelText: LocaleKeys.password.tr()),
                 obscureText: true,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -77,7 +77,7 @@ class LoginPageState extends State<LoginPage> {
                 padding: const EdgeInsets.only(top: 20.0),
                 child: ElevatedButton(
                   onPressed: _login,
-                  child: const Text('Login'),
+                  child: Text(LocaleKeys.Login.tr()),
                 ),
               ),
               TextButton(
@@ -87,21 +87,29 @@ class LoginPageState extends State<LoginPage> {
                     MaterialPageRoute(builder: (context) => const SignupPage()),
                   );
                 },
-                child: const Text('Have no account? Signup.'),
+                child: Text(LocaleKeys.signupPrompt.tr(), textAlign: TextAlign.center,),
               ),
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    if (context.locale == Locales.tr.locale) {
-                      ProductLocalizations.updateLanguage(
-                          context: context, value: Locales.en);
-                    } else {
-                      ProductLocalizations.updateLanguage(
-                          context: context, value: Locales.tr);
-                    }
-                  });
-                },
-                child: const Text('Change Language'),
+              Expanded(
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          if (context.locale == Locales.tr.locale) {
+                            ProductLocalizations.updateLanguage(
+                                context: context, value: Locales.en);
+                          } else {
+                            ProductLocalizations.updateLanguage(
+                                context: context, value: Locales.tr);
+                          }
+                        });
+                      },
+                      child: const Text('TR/EN'),
+                    ),
+                  ),
+                ),
               ),
             ],
           ),

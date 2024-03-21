@@ -1,1 +1,2 @@
-{"Login": "Login"}
+{"Login": "Login", "signup": "Sign-up","signupPrompt": "Don't have an account?\nSign-up.", "username": "Username", "password": "Password",
+"email": "E-mail"}
