@@ -1,16 +1,17 @@
 import 'package:coach_connect/init/languages/product_localization.dart';
-import 'package:coach_connect/pages/login_page.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:coach_connect/pages/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final app = await Firebase.initializeApp();
-  FirebaseAuth.instanceFor(app: app);
+  await Firebase.initializeApp(
+  options: DefaultFirebaseOptions.currentPlatform,
+  );
+  
   await EasyLocalization.ensureInitialized();
   runApp(ProductLocalizations(child: const MyApp()));
 }

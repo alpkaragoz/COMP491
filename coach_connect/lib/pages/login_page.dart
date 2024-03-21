@@ -11,7 +11,7 @@ class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<LoginPage> createState() => LoginPageState();
 }
 
 class LoginPageState extends State<LoginPage> {
@@ -101,7 +101,7 @@ class LoginPageState extends State<LoginPage> {
                     }
                   });
                 },
-                child: const Text('Language'),
+                child: const Text('Change Language'),
               ),
             ],
           ),
