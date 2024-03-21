@@ -5,7 +5,7 @@ class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
 
   @override
-  State<SignupPage> createState() => _SignupPageState();
+  State<SignupPage> createState() => SignupPageState();
 }
 
 class SignupPageState extends State<SignupPage> {
@@ -14,7 +14,7 @@ class SignupPageState extends State<SignupPage> {
   final AuthenticationService _authService = AuthenticationService();
 
   void _signup() async {
-/*     String? result = await _authService.signUp(
+    String? result = await _authService.signUp(
       email: _emailController.text,
       password: _passwordController.text,
     );
@@ -26,7 +26,7 @@ class SignupPageState extends State<SignupPage> {
     } else {
       // Handle the error or show an error message
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Signup failed')));
-    } */
+    }
   }
 
   @override
