@@ -1,3 +1,9 @@
+import 'package:coach_connect/init/languages/locale_keys.g.dart';
+import 'package:coach_connect/init/languages/locales.dart';
+import 'package:coach_connect/init/languages/product_localization.dart';
+import 'package:coach_connect/service/auth.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:coach_connect/pages/signup_page.dart';
 
@@ -8,33 +14,37 @@ class LoginPage extends StatefulWidget {
   State<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  //final AuthenticationService _authService = AuthenticationService();
+  final AuthenticationService _authService = AuthenticationService();
 
   void _login() async {
-    // Use the AuthenticationService for login
-/*     final String? message = await _authService.signIn(
-      email: _usernameController.text, 
-      password: _passwordController.text,
-    );
-    
-    // Show a simple dialog or Snackbar with the login result
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        content: Text(message ?? "Login successful"),
-      ),
-    ); */
+    try {
+      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: _usernameController.text, password: _passwordController.text);
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        print('No user found for that email.');
+      } else if (e.code == 'wrong-password') {
+        print('Wrong password provided for that user.');
+      } else {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            content: Text("Login successful"),
+          ),
+        );
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Login Page'),
+        title: Text(LocaleKeys.Login.tr()),
       ),
       body: Form(
         key: _formKey,
@@ -70,15 +80,29 @@ class _LoginPageState extends State<LoginPage> {
                   child: const Text('Login'),
                 ),
               ),
-                          TextButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const SignupPage()),
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const SignupPage()),
                   );
-              },
-              child: const Text('Have no account? Signup.'),
-            ),
+                },
+                child: const Text('Have no account? Signup.'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    if (context.locale == Locales.tr.locale) {
+                      ProductLocalizations.updateLanguage(
+                          context: context, value: Locales.en);
+                    } else {
+                      ProductLocalizations.updateLanguage(
+                          context: context, value: Locales.tr);
+                    }
+                  });
+                },
+                child: const Text('Language'),
+              ),
             ],
           ),
         ),
