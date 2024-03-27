@@ -21,25 +21,29 @@ class SignupPageState extends State<SignupPage> {
       password: _passwordController.text,
     );
 
+    // Check if the widget is still mounted before navigating
+    if (!mounted) return;
+
     if (result != null) {
       // Handle the signup result
-      // For example, show a success message or redirect to the login page
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(result)));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(result)));
     } else {
       // Handle the error or show an error message
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Signup failed')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('Signup failed')));
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // Build your signup page UI here
     return Scaffold(
       appBar: AppBar(
         title: Text(LocaleKeys.signup.tr()),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pop(), // This takes the user back to the previous screen
+          onPressed: () => Navigator.of(context)
+              .pop(), // This takes the user back to the previous screen
         ),
       ),
       body: Padding(
