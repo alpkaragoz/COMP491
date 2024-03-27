@@ -2,7 +2,6 @@ import 'package:coach_connect/init/languages/locale_keys.g.dart';
 import 'package:coach_connect/init/languages/locales.dart';
 import 'package:coach_connect/init/languages/product_localization.dart';
 import 'package:coach_connect/pages/client_home_page.dart';
-import 'package:coach_connect/service/auth.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -24,12 +23,17 @@ class LoginPageState extends State<LoginPage> {
     try {
       final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: _usernameController.text, password: _passwordController.text);
-      Navigator.of(context).push(MaterialPageRoute(builder: (context) => ClientHomePage(user: credential)));
+
+      // Check if the widget is still mounted before navigating
+      if (!mounted) return;
+
+      Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => ClientHomePage(user: credential)));
     } on FirebaseAuthException catch (e) {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          content: Text("Login Failed"),
+          content: Text("Login Failed: $e"),
         ),
       );
     }
@@ -39,7 +43,7 @@ class LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(LocaleKeys.Login.tr()),
+        title: Text(LocaleKeys.login.tr()),
       ),
       body: Form(
         key: _formKey,
@@ -74,7 +78,7 @@ class LoginPageState extends State<LoginPage> {
                 padding: const EdgeInsets.only(top: 20.0),
                 child: ElevatedButton(
                   onPressed: _login,
-                  child: Text(LocaleKeys.Login.tr()),
+                  child: Text(LocaleKeys.login.tr()),
                 ),
               ),
               TextButton(
