@@ -4,5 +4,10 @@
     "signupPrompt": "Don't have an account?\nSign-up.",
     "username": "Username",
     "password": "Password",
-    "email": "E-mail"
+    "email": "E-mail",
+    "age": "Age",
+    "name": "Name",
+    "client": "Client",
+    "coach": "Coach",
+    "signupAccountTypePrompt": "Which type of account do you want to create?"
 }

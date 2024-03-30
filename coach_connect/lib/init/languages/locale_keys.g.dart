@@ -7,5 +7,10 @@ abstract class  LocaleKeys {
   static const username = 'username';
   static const password = 'password';
   static const email = 'email';
+  static const age = 'age';
+  static const name = 'name';
+  static const client = 'client';
+  static const coach = 'coach';
+  static const signupAccountTypePrompt = 'signupAccountTypePrompt';
 
 }
