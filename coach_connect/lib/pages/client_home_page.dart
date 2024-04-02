@@ -16,10 +16,6 @@ class _ClientHomePageState extends State<ClientHomePage> {
     super.initState();
     // Get the current user
     user = FirebaseAuth.instance.currentUser;
-    // Optionally, if you need to force a refresh or make sure you have the latest user info, you can reload the user
-    user?.reload();
-    // After reload, ensure you access the current user again as it might be updated
-    user = FirebaseAuth.instance.currentUser;
   }
 
   @override

@@ -1,7 +1,7 @@
 import 'package:coach_connect/init/languages/product_localization.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:coach_connect/pages/login_page.dart';
-import 'package:coach_connect/pages/client_home_page.dart'; // Make sure to import your ClientHomePage
+import 'package:coach_connect/pages/client_home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'service/firebase_options.dart';
@@ -20,7 +20,7 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+  // This widget is the root of the application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -37,7 +37,7 @@ class MyApp extends StatelessWidget {
             if (user == null) {
               return const LoginPage();
             }
-            return const ClientHomePage(); // Assuming ClientHomePage does not require the user object in its constructor anymore
+            return const ClientHomePage();
           }
           // Return a loading indicator while waiting for the auth state to initialize
           return const Scaffold(

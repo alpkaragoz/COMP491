@@ -57,17 +57,7 @@ class _LoginPageState extends State<LoginPage> implements EventObserver {
               Padding(
                 padding: const EdgeInsets.only(top: 20.0),
                 child: ElevatedButton(
-                  onPressed: () async {
-                    setState(() {
-                      _isLoading = true; // Start loading
-                    });
-                    await _viewModel.login();
-                    setState(() {
-                      _isLoading =
-                          false; // Stop loading after the request is complete
-                    });
-                    _showSnackBar(_viewModel.returnMessage);
-                  },
+                  onPressed: _login,
                   child: _isLoading
                       ? const CircularProgressIndicator(color: Colors.white)
                       : Text(LocaleKeys.login.tr()),
@@ -112,6 +102,17 @@ class _LoginPageState extends State<LoginPage> implements EventObserver {
         ),
       ),
     );
+  }
+
+  void _login() async {
+    setState(() {
+      _isLoading = true; // Start loading
+    });
+    await _viewModel.login();
+    setState(() {
+      _isLoading = false; // Stop loading after the request is complete
+    });
+    _showSnackBar(_viewModel.returnMessage);
   }
 
   void _showSnackBar(String message) {
