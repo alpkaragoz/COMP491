@@ -1,44 +1,48 @@
-import 'package:coach_connect/pages/login_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ClientHomePage extends StatefulWidget {
-  const ClientHomePage({super.key, required this.user});
-
-  final UserCredential user;
+  const ClientHomePage({super.key});
 
   @override
-  State<ClientHomePage> createState() => ClientHomePageState();
+  State<ClientHomePage> createState() => _ClientHomePageState();
 }
 
-class ClientHomePageState extends State<ClientHomePage> {
-  Future<void> _signOutAndNavigate() async {
-    await FirebaseAuth.instance.signOut();
+class _ClientHomePageState extends State<ClientHomePage> {
+  User? user;
 
-    // Use "mounted" to check if the widget is still in the widget tree
-    if (mounted) {
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => const LoginPage()),
-        (Route<dynamic> route) => false,
-      );
-    }
+  @override
+  void initState() {
+    super.initState();
+    // Get the current user
+    user = FirebaseAuth.instance.currentUser;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Client Home Page'),
+      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text("Welcome ${widget.user.user!.email}"),
+          children: <Widget>[
+            if (user != null) ...[
+              Text('Welcome, ${user!.email}'),
+              // Add more user information or options here
+            ],
             ElevatedButton(
-              onPressed: _signOutAndNavigate,
+              onPressed: _signOut,
               child: const Text("Logout"),
             )
           ],
         ),
       ),
     );
+  }
+
+  Future<void> _signOut() async {
+    await FirebaseAuth.instance.signOut();
   }
 }
