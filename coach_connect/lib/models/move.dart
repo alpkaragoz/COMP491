@@ -25,4 +25,17 @@ class Move {
       'video': video?.toMap(),
     };
   }
+
+  static Move fromJson(Map<String, dynamic> json) {
+    return Move(
+      json['id'],
+      json['name'],
+      json['setNumber'],
+      json['repNumber'],
+      json['coachNote'],
+      json['clientNote'],
+      json['isDone'],
+      json['video'] != null ? Video.fromJson(json['video']) : null,
+    );
+  }
 }
