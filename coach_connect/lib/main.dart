@@ -4,7 +4,7 @@ import 'package:coach_connect/pages/login_page.dart';
 import 'package:coach_connect/pages/client_home_page.dart'; // Make sure to import your ClientHomePage
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
+import 'service/firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 Future<void> main() async {

@@ -26,7 +26,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Client Home Page'),
+        title: const Text('Client Home Page'),
       ),
       body: Center(
         child: Column(
