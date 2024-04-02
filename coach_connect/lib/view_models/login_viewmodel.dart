@@ -1,7 +1,6 @@
 import 'package:coach_connect/mvvm/viewmodel.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginViewModel extends EventViewModel {
   final TextEditingController usernameController = TextEditingController();
@@ -10,10 +9,10 @@ class LoginViewModel extends EventViewModel {
 
     Future<void> login() async {
     try {
-      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: usernameController.text, password: passwordController.text);
       returnMessage = 'Login succesful.';
-
+      
     } on FirebaseAuthException catch (e) {
       String? error = e.message; 
       returnMessage = 'Login failed. $error';

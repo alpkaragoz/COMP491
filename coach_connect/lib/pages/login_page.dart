@@ -2,7 +2,6 @@ import 'package:coach_connect/init/languages/locale_keys.g.dart';
 import 'package:coach_connect/init/languages/locales.dart';
 import 'package:coach_connect/init/languages/product_localization.dart';
 import 'package:coach_connect/mvvm/observer.dart';
-import 'package:coach_connect/pages/client_home_page.dart';
 import 'package:coach_connect/view_models/login_viewmodel.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
