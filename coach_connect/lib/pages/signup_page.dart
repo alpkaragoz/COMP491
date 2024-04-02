@@ -80,17 +80,7 @@ class _SignupPageState extends State<SignupPage> implements EventObserver {
               ),
             ),
             ElevatedButton(
-              onPressed: () async {
-                setState(() {
-                  _isLoading = true; // Start loading
-                });
-                await _viewModel.signup();
-                setState(() {
-                  _isLoading =
-                      false; // Stop loading after the request is complete
-                });
-                _showSnackBar(_viewModel.returnMessage);
-              },
+              onPressed: _signup,
               child: _isLoading
                   ? const CircularProgressIndicator(color: Colors.white)
                   : Text(LocaleKeys.signup.tr()),
@@ -101,12 +91,27 @@ class _SignupPageState extends State<SignupPage> implements EventObserver {
     );
   }
 
-  void _showSnackBar(String message) {
-    if (!mounted) {
-      return;
+  void _signup() async {
+    setState(() {
+      _isLoading = true; // Start loading
+    });
+    bool signupResult = await _viewModel.signup();
+    if (signupResult) {
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
     }
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(message)));
+    setState(() {
+      _isLoading = false; // Stop loading after the request is complete
+    });
+    _showSnackBar(_viewModel.returnMessage);
+  }
+
+  void _showSnackBar(String message) {
+    if (mounted) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(message)));
+    }
   }
 
   @override

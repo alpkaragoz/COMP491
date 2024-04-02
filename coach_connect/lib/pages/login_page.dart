@@ -115,11 +115,10 @@ class _LoginPageState extends State<LoginPage> implements EventObserver {
   }
 
   void _showSnackBar(String message) {
-    if (!mounted) {
-      return;
+    if (mounted) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(message)));
     }
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override

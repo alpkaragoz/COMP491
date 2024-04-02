@@ -14,9 +14,9 @@ class SignupViewModel extends EventViewModel {
 
   String returnMessage = "";
 
-  Future<void> signup() async {
+  Future<bool> signup() async {
     if (!validate()) {
-      return; // Stop the signup if validation fails
+      return false; // Stop the signup if validation fails
     }
     try {
       final credential =
@@ -36,7 +36,8 @@ class SignupViewModel extends EventViewModel {
         );
         await _db.collection('users').doc(credential.user?.uid).set(newUser.toMap());
         clearFields();
-        returnMessage = 'Account Created';
+        returnMessage = 'Account created, logging you in.';
+        return true;
         // Navigate to next screen or show a success message here.
       }
     } on FirebaseAuthException catch (e) {
@@ -48,6 +49,7 @@ class SignupViewModel extends EventViewModel {
     } catch (e) {
       returnMessage = 'Unknown error.';
     }
+    return false;
   }
 
   bool validate() {
