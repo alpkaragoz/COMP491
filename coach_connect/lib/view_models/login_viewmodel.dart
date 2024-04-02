@@ -5,16 +5,15 @@ import 'package:flutter/material.dart';
 class LoginViewModel extends EventViewModel {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-    String returnMessage = "";
+  String returnMessage = "";
 
-    Future<void> login() async {
+  Future<void> login() async {
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: usernameController.text, password: passwordController.text);
       returnMessage = 'Login succesful.';
-      
     } on FirebaseAuthException catch (e) {
-      String? error = e.message; 
+      String? error = e.message;
       returnMessage = 'Login failed. $error';
     }
   }
