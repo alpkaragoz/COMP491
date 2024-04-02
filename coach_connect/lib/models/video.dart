@@ -12,4 +12,12 @@ class Video {
       'setNumber': setNumber,
     };
   }
+
+  static Video fromJson(Map<String, dynamic> json) {
+    return Video(
+      json['id'],
+      json['url'],
+      json['setNumber'],
+    );
+  }
 }

@@ -22,4 +22,17 @@ class UserAccount {
       'workouts': workouts,
     };
   }
+  
+    // Convert a Map into a User instance
+  static UserAccount fromJson(Map<String, dynamic> json) {
+    return UserAccount(
+      json['id'],
+      json['name'],
+      json['email'],
+      json['age'],
+      json['accountType'],
+      List<String>.from(json['coaches']),
+      List<String>.from(json['workouts']),
+    );
+  }
 }
