@@ -22,7 +22,7 @@ class _CoachHomePageState extends State<CoachHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Client Home Page'),
+        title: const Text('Coach Home Page'),
       ),
       body: Center(
         child: Column(

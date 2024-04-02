@@ -1,7 +1,7 @@
 import 'package:coach_connect/init/languages/product_localization.dart';
+import 'package:coach_connect/pages/home_navigator_page.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:coach_connect/pages/login_page.dart';
-import 'package:coach_connect/pages/client_home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'service/firebase_options.dart';
@@ -37,7 +37,7 @@ class MyApp extends StatelessWidget {
             if (user == null) {
               return const LoginPage();
             }
-            return const ClientHomePage();
+            return const HomePageNavigator();
           }
           // Return a loading indicator while waiting for the auth state to initialize
           return const Scaffold(
