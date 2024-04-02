@@ -3,8 +3,6 @@ import 'package:coach_connect/view_models/signup_viewmodel.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:coach_connect/init/languages/locale_keys.g.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -54,7 +52,7 @@ class _SignupPageState extends State<SignupPage> implements EventObserver {
               padding: const EdgeInsets.symmetric(vertical: 16.0),
               child: Text(
                 LocaleKeys.signupAccountTypePrompt.tr(),
-                style: Theme.of(context).textTheme.subtitle1,
+                style: Theme.of(context).textTheme.titleMedium,
               ),
             ),
             ListTile(

@@ -2,6 +2,7 @@ import '../mvvm/viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:coach_connect/models/user_account.dart';
 
 class SignupViewModel extends EventViewModel {
   final TextEditingController emailController = TextEditingController();
@@ -24,15 +25,16 @@ class SignupViewModel extends EventViewModel {
         password: passwordController.text,
       );
       if (credential.user?.uid != null) {
-        await _db.collection('users').doc(credential.user?.uid).set({
-          'id': credential.user?.uid,
-          'name': nameController.text,
-          'email': emailController.text,
-          'age': int.tryParse(ageController.text) ?? 0,
-          'accountType': accountType,
-          'coaches': [],
-          'workouts': [],
-        });
+        final newUser = UserAccount(
+          credential.user!.uid,
+          nameController.text,
+          emailController.text,
+          int.tryParse(ageController.text) ?? 0,
+          accountType,
+          [], // Empty list for coaches' IDs
+          [], // Empty list for workouts' IDs
+        );
+        await _db.collection('users').doc(credential.user?.uid).set(newUser.toMap());
         clearFields();
         returnMessage = 'Account Created';
         // Navigate to next screen or show a success message here.

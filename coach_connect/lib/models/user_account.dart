@@ -1,4 +1,4 @@
-class User {
+class UserAccount {
   String id;
   String name;
   String email;
@@ -7,7 +7,7 @@ class User {
   List<String> coaches; //Store UID's of coaches
   List<String> workouts;  //Store UID's of workouts
 
-  User(this.id, this.name, this.email, this.age, this.accountType, this.coaches,
+  UserAccount(this.id, this.name, this.email, this.age, this.accountType, this.coaches,
       this.workouts);
 
   // Convert a User instance into a Map
