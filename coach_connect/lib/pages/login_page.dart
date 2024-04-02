@@ -1,9 +1,10 @@
 import 'package:coach_connect/init/languages/locale_keys.g.dart';
 import 'package:coach_connect/init/languages/locales.dart';
 import 'package:coach_connect/init/languages/product_localization.dart';
+import 'package:coach_connect/mvvm/observer.dart';
 import 'package:coach_connect/pages/client_home_page.dart';
+import 'package:coach_connect/view_models/login_viewmodel.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:coach_connect/pages/signup_page.dart';
 
@@ -11,33 +12,13 @@ class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
   @override
-  State<LoginPage> createState() => LoginPageState();
+  State<LoginPage> createState() => _LoginPageState();
 }
 
-class LoginPageState extends State<LoginPage> {
+class _LoginPageState extends State<LoginPage> implements EventObserver {
+  final _viewModel = LoginViewModel();
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-
-  Future<void> _login() async {
-    try {
-      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: _usernameController.text, password: _passwordController.text);
-
-      // Check if the widget is still mounted before navigating
-      if (!mounted) return;
-
-      Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => ClientHomePage(user: credential)));
-    } on FirebaseAuthException catch (e) {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          content: Text("Login Failed: $e"),
-        ),
-      );
-    }
-  }
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +33,7 @@ class LoginPageState extends State<LoginPage> {
           child: Column(
             children: <Widget>[
               TextFormField(
-                controller: _usernameController,
+                controller: _viewModel.usernameController,
                 decoration:
                     InputDecoration(labelText: LocaleKeys.username.tr()),
                 validator: (value) {
@@ -63,7 +44,7 @@ class LoginPageState extends State<LoginPage> {
                 },
               ),
               TextFormField(
-                controller: _passwordController,
+                controller: _viewModel.passwordController,
                 decoration:
                     InputDecoration(labelText: LocaleKeys.password.tr()),
                 obscureText: true,
@@ -77,8 +58,20 @@ class LoginPageState extends State<LoginPage> {
               Padding(
                 padding: const EdgeInsets.only(top: 20.0),
                 child: ElevatedButton(
-                  onPressed: _login,
-                  child: Text(LocaleKeys.login.tr()),
+                  onPressed: () async {
+                    setState(() {
+                      _isLoading = true; // Start loading
+                    });
+                    await _viewModel.login();
+                    setState(() {
+                      _isLoading =
+                          false; // Stop loading after the request is complete
+                    });
+                    _showSnackBar(_viewModel.returnMessage);
+                  },
+                  child: _isLoading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : Text(LocaleKeys.login.tr()),
                 ),
               ),
               TextButton(
@@ -122,10 +115,26 @@ class LoginPageState extends State<LoginPage> {
     );
   }
 
+  void _showSnackBar(String message) {
+    if (!mounted) {
+      return;
+    }
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _viewModel.subscribe(this);
+  }
+
   @override
   void dispose() {
-    _usernameController.dispose();
-    _passwordController.dispose();
     super.dispose();
+    _viewModel.unsubscribe(this);
   }
+
+  @override
+  void notify(ViewEvent event) {}
 }
