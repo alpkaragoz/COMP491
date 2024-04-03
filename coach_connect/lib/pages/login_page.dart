@@ -1,7 +1,6 @@
 import 'package:coach_connect/init/languages/locale_keys.g.dart';
 import 'package:coach_connect/init/languages/locales.dart';
 import 'package:coach_connect/init/languages/product_localization.dart';
-import 'package:coach_connect/mvvm/observer.dart';
 import 'package:coach_connect/view_models/login_viewmodel.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -14,10 +13,9 @@ class LoginPage extends StatefulWidget {
   State<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> implements EventObserver {
+class _LoginPageState extends State<LoginPage> {
   final _viewModel = LoginViewModel();
   final _formKey = GlobalKey<FormState>();
-  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -57,8 +55,8 @@ class _LoginPageState extends State<LoginPage> implements EventObserver {
               Padding(
                 padding: const EdgeInsets.only(top: 20.0),
                 child: ElevatedButton(
-                  onPressed: _login,
-                  child: _isLoading
+                  onPressed: _viewModel.isLoading ? null : _login,
+                  child: _viewModel.isLoading
                       ? const CircularProgressIndicator(color: Colors.white)
                       : Text(LocaleKeys.login.tr()),
                 ),
@@ -81,17 +79,7 @@ class _LoginPageState extends State<LoginPage> implements EventObserver {
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          if (context.locale == Locales.tr.locale) {
-                            ProductLocalizations.updateLanguage(
-                                context: context, value: Locales.en);
-                          } else {
-                            ProductLocalizations.updateLanguage(
-                                context: context, value: Locales.tr);
-                          }
-                        });
-                      },
+                      onPressed: _toggleLanguage,
                       child: const Text('TR/EN'),
                     ),
                   ),
@@ -104,14 +92,20 @@ class _LoginPageState extends State<LoginPage> implements EventObserver {
     );
   }
 
+  void _toggleLanguage() {
+    setState(() {
+      if (context.locale == Locales.tr.locale) {
+        ProductLocalizations.updateLanguage(
+            context: context, value: Locales.en);
+      } else {
+        ProductLocalizations.updateLanguage(
+            context: context, value: Locales.tr);
+      }
+    });
+  }
+
   void _login() async {
-    setState(() {
-      _isLoading = true; // Start loading
-    });
     await _viewModel.login();
-    setState(() {
-      _isLoading = false; // Stop loading after the request is complete
-    });
     _showSnackBar(_viewModel.returnMessage);
   }
 
@@ -125,15 +119,18 @@ class _LoginPageState extends State<LoginPage> implements EventObserver {
   @override
   void initState() {
     super.initState();
-    _viewModel.subscribe(this);
+    _viewModel.addListener(_onViewModelUpdated);
   }
 
   @override
   void dispose() {
+    _viewModel.removeListener(_onViewModelUpdated);
     super.dispose();
-    _viewModel.unsubscribe(this);
   }
 
-  @override
-  void notify(ViewEvent event) {}
+  void _onViewModelUpdated() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
 }

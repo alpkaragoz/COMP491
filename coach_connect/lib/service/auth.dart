@@ -1,11 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AuthenticationService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   AuthenticationService();
 
-  Future<String?> signIn(
+  Future<String?> signInWithEmail(
       {required String email, required String password}) async {
     try {
       await _firebaseAuth.signInWithEmailAndPassword(
@@ -16,7 +17,7 @@ class AuthenticationService {
     }
   }
 
-  Future<String?> signUp(
+  Future<String?> signUpWithEmail(
       {required String email, required String password}) async {
     try {
       await _firebaseAuth.createUserWithEmailAndPassword(

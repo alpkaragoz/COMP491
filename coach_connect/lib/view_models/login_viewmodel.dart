@@ -1,20 +1,30 @@
-import 'package:coach_connect/mvvm/viewmodel.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:coach_connect/service/auth.dart';
 
-class LoginViewModel extends EventViewModel {
+class LoginViewModel extends ChangeNotifier {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  String returnMessage = "";
+  final AuthenticationService _auth = AuthenticationService();
+  bool _isLoading = false;
+  String _returnMessage = "";
 
   Future<void> login() async {
-    try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: usernameController.text, password: passwordController.text);
-      returnMessage = 'Login succesful.';
-    } on FirebaseAuthException catch (e) {
-      String? error = e.message;
-      returnMessage = 'Login failed. $error';
-    }
+    _isLoading = true;
+    notifyListeners();
+    _returnMessage = await _auth.signInWithEmail(
+        email: usernameController.text,
+        password: passwordController.text) as String;
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  bool get isLoading => _isLoading;
+  String get returnMessage => _returnMessage;
+
+  @override
+  void dispose() {
+    usernameController.dispose();
+    passwordController.dispose();
+    super.dispose();
   }
 }
