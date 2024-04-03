@@ -13,7 +13,7 @@ class LoginViewModel extends ChangeNotifier {
     notifyListeners();
     _returnMessage = await _auth.signInWithEmail(
         email: usernameController.text,
-        password: passwordController.text) as String;
+        password: passwordController.text);
     _isLoading = false;
     notifyListeners();
   }

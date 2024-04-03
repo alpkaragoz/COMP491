@@ -1,4 +1,3 @@
-import 'package:coach_connect/mvvm/observer.dart';
 import 'package:coach_connect/view_models/signup_viewmodel.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -11,9 +10,8 @@ class SignupPage extends StatefulWidget {
   State<SignupPage> createState() => _SignupPageState();
 }
 
-class _SignupPageState extends State<SignupPage> implements EventObserver {
+class _SignupPageState extends State<SignupPage> {
   final SignupViewModel _viewModel = SignupViewModel();
-  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -80,8 +78,8 @@ class _SignupPageState extends State<SignupPage> implements EventObserver {
               ),
             ),
             ElevatedButton(
-              onPressed: _signup,
-              child: _isLoading
+              onPressed: _viewModel.isLoading ? null : _signup,
+              child: _viewModel.isLoading
                   ? const CircularProgressIndicator(color: Colors.white)
                   : Text(LocaleKeys.signup.tr()),
             ),
@@ -92,19 +90,13 @@ class _SignupPageState extends State<SignupPage> implements EventObserver {
   }
 
   void _signup() async {
-    setState(() {
-      _isLoading = true; // Start loading
-    });
     bool signupResult = await _viewModel.signup();
     if (signupResult) {
       if (mounted) {
         Navigator.of(context).pop();
       }
     }
-    setState(() {
-      _isLoading = false; // Stop loading after the request is complete
-    });
-    _showSnackBar(_viewModel.returnMessage);
+    _showSnackBar(_viewModel.result.$2);
   }
 
   void _showSnackBar(String message) {
@@ -117,15 +109,18 @@ class _SignupPageState extends State<SignupPage> implements EventObserver {
   @override
   void initState() {
     super.initState();
-    _viewModel.subscribe(this);
+    _viewModel.addListener(_onViewModelUpdated);
   }
 
   @override
   void dispose() {
+    _viewModel.removeListener(_onViewModelUpdated);
     super.dispose();
-    _viewModel.unsubscribe(this);
   }
 
-  @override
-  void notify(ViewEvent event) {}
+  void _onViewModelUpdated() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
 }
