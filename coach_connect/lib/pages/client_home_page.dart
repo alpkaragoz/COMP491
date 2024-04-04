@@ -101,9 +101,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
                   Expanded(
                     child: ElevatedButton(
                       style: redElevatedButtonStyle,
-                      onPressed: () {
-                        // TODO: Implement Logout functionality
-                      },
+                      onPressed:onPressed: _signOut,
                       child: const Text('Logout'),
                     ),
                   ),
@@ -115,4 +113,6 @@ class _ClientHomePageState extends State<ClientHomePage> {
       ),
     );
   }
-}
+  Future<void> _signOut() async {
+    await FirebaseAuth.instance.signOut(); }
+ }
