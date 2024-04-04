@@ -49,6 +49,7 @@ class SignupViewModel extends EventViewModel {
           emailController.text,
           int.tryParse(ageController.text) ?? 0,
           accountType,
+         // [],
           [], // Empty list for workouts' IDs
         );
         await _db.collection('coaches').doc(credential.user?.uid).set(newCoach.toMap());

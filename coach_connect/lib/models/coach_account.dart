@@ -4,9 +4,10 @@ class CoachAccountModel {
   String email;
   int age;
   String accountType;
+  //List<String> clients;
   List<String> workouts;  //Store UID's of workouts
 
-  CoachAccountModel(this.id, this.name, this.email, this.age, this.accountType, this.workouts);
+  CoachAccountModel(this.id, this.name, this.email, this.age, this.accountType,/* this.clients, */ this.workouts);
 
   // Convert a User instance into a Map
   Map<String, dynamic> toMap() {
@@ -16,6 +17,7 @@ class CoachAccountModel {
       'email': email,
       'age': age,
       'accountType': accountType,
+      //'clients': clients,
       'workouts': workouts,
     };
   }
@@ -28,6 +30,7 @@ class CoachAccountModel {
       json['email'],
       json['age'],
       json['accountType'],
+      //List<String>.from(json['clients']),
       List<String>.from(json['workouts']),
     );
   }

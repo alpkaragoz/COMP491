@@ -5,9 +5,11 @@ import 'package:coach_connect/view_models/login_viewmodel.dart';
 import 'package:flutter/material.dart';
 
 class CoachSelection extends StatelessWidget {
-  const CoachSelection({super.key, required this.coachList, required this.clientId});
+  const CoachSelection({super.key, required this.coachList, required this.coachId});
   final List<CoachAccountModel> coachList;
-  final String clientId;
+  final String coachId;
+  //final List<CoachAccountModel> coachList;
+  //final String coachId;
 
 
 
@@ -30,7 +32,8 @@ class CoachSelection extends StatelessWidget {
           padding: const EdgeInsets.all(8.0),
           child: GestureDetector(
             onTap:() async{
-              await setCoach(clientId, coachList[index].name);
+              await setCoach(coachId, coachList[index].name);
+              //await setClient(clientId, clientList.add());
               Navigator.push(context, MaterialPageRoute(builder: (context) => const ClientHomePage()));
             },
             child: Container(

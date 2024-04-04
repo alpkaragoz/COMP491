@@ -1,3 +1,4 @@
+import 'package:coach_connect/pages/client_workout_page.dart';
 import 'package:coach_connect/pages/login_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -42,7 +43,15 @@ class _ClientHomePageState extends State<ClientHomePage> {
                 crossAxisSpacing: 10,
                 mainAxisSpacing: 10,
                 children: <Widget>[
-                  _buildCard('My Workouts', context),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => ClientWorkoutPage()),
+                      );
+                    },
+                    child: _buildCard('Workouts', context),
+                  ),
                   _buildCard('Connect', context),
                   _buildCard('My Coach', context),
                   _buildCard('Settings', context),

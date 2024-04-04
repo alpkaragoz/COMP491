@@ -1,3 +1,4 @@
+import 'package:coach_connect/pages/login_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -25,6 +26,7 @@ class _CoachHomePageState extends State<CoachHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Coach Home Page'),
+        automaticallyImplyLeading: false,
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -82,6 +84,7 @@ class _CoachHomePageState extends State<CoachHomePage> {
 
   Future<void> _signOut() async {
     await FirebaseAuth.instance.signOut();
+    Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginPage()));
     // After sign out, navigate to the login page or just close the app.
   }
 }

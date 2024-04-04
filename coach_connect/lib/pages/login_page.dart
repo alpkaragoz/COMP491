@@ -3,6 +3,7 @@ import 'package:coach_connect/init/languages/locales.dart';
 import 'package:coach_connect/init/languages/product_localization.dart';
 import 'package:coach_connect/mvvm/observer.dart';
 import 'package:coach_connect/pages/client_home_page.dart';
+import 'package:coach_connect/pages/coach_home_page.dart';
 import 'package:coach_connect/pages/coach_selection_page.dart';
 import 'package:coach_connect/service/auth.dart';
 import 'package:coach_connect/view_models/login_viewmodel.dart';
@@ -27,6 +28,7 @@ class _LoginPageState extends State<LoginPage> implements EventObserver {
     return Scaffold(
       appBar: AppBar(
         title: Text(LocaleKeys.login.tr()),
+        automaticallyImplyLeading: false,
       ),
       body: Form(
         key: _formKey,
@@ -115,9 +117,14 @@ class _LoginPageState extends State<LoginPage> implements EventObserver {
     final id = await _viewModel.login();
     if (id != null) {
       final clientModel = await getClient(id: id.toString());
-      if (clientModel?.coach == null) {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => CoachSelection(coachList: coachList!, clientId: id.toString(),)));
-      } else {
+      final coachModel = await getCoach(id: id.toString());
+      if (coachModel != null && coachModel.accountType == "coach") {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => CoachHomePage()));
+      } 
+      else if (clientModel?.coach == null) {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => CoachSelection(coachList: coachList!, coachId: id.toString(),)));
+      }
+      else {
         Navigator.push(context, MaterialPageRoute(builder: (context) => ClientHomePage()));
       }
     }

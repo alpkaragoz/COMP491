@@ -7,8 +7,7 @@ class ClientAccountModel {
   String? coach; //Store UID's of coaches
   List<String> workouts;  //Store UID's of workouts
 
-  ClientAccountModel(this.id, this.name, this.email, this.age, this.accountType, this.coach,
-      this.workouts);
+  ClientAccountModel(this.id, this.name, this.email, this.age, this.accountType, this.coach,this.workouts);
 
   // Convert a User instance into a Map
   Map<String, dynamic> toMap() {
