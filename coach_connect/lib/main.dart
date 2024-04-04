@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
       locale: context.locale,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(fontFamily: 'Poppins'),
-      home: StreamBuilder<User?>(
+      home: LoginPage()/* StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.active) {
@@ -44,7 +44,7 @@ class MyApp extends StatelessWidget {
             body: Center(child: CircularProgressIndicator()),
           );
         },
-      ),
+      ), */
     );
   }
 }

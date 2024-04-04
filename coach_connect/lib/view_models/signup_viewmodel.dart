@@ -1,8 +1,10 @@
+import 'package:coach_connect/models/coach_account.dart';
+
 import '../mvvm/viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:coach_connect/models/user_account.dart';
+import 'package:coach_connect/models/client_account.dart';
 
 class SignupViewModel extends EventViewModel {
   final TextEditingController emailController = TextEditingController();
@@ -25,19 +27,36 @@ class SignupViewModel extends EventViewModel {
         password: passwordController.text,
       );
       if (credential.user?.uid != null) {
-        final newUser = UserAccount(
+        if (accountType == 'client') {
+          final newClient = ClientAccountModel(
           credential.user!.uid,
           nameController.text,
           emailController.text,
           int.tryParse(ageController.text) ?? 0,
           accountType,
-          [], // Empty list for coaches' IDs
+          null,
           [], // Empty list for workouts' IDs
         );
-        await _db.collection('users').doc(credential.user?.uid).set(newUser.toMap());
+        await _db.collection('clients').doc(credential.user?.uid).set(newClient.toMap());
         clearFields();
         returnMessage = 'Account created, logging you in.';
         return true;
+        }
+        else {
+        final newCoach = CoachAccountModel(
+          credential.user!.uid,
+          nameController.text,
+          emailController.text,
+          int.tryParse(ageController.text) ?? 0,
+          accountType,
+          [], // Empty list for workouts' IDs
+        );
+        await _db.collection('coaches').doc(credential.user?.uid).set(newCoach.toMap());
+        clearFields();
+        returnMessage = 'Account created, logging you in.';
+        return true;
+
+        }
         // Navigate to next screen or show a success message here.
       }
     } on FirebaseAuthException catch (e) {

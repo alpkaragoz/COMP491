@@ -2,6 +2,9 @@ import 'package:coach_connect/init/languages/locale_keys.g.dart';
 import 'package:coach_connect/init/languages/locales.dart';
 import 'package:coach_connect/init/languages/product_localization.dart';
 import 'package:coach_connect/mvvm/observer.dart';
+import 'package:coach_connect/pages/client_home_page.dart';
+import 'package:coach_connect/pages/coach_selection_page.dart';
+import 'package:coach_connect/service/auth.dart';
 import 'package:coach_connect/view_models/login_viewmodel.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -106,9 +109,18 @@ class _LoginPageState extends State<LoginPage> implements EventObserver {
 
   void _login() async {
     setState(() {
-      _isLoading = true; // Start loading
+    _isLoading = true; // Start loading
     });
-    await _viewModel.login();
+    final coachList = await getCoaches();
+    final id = await _viewModel.login();
+    if (id != null) {
+      final clientModel = await getClient(id: id.toString());
+      if (clientModel?.coach == null) {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => CoachSelection(coachList: coachList!, clientId: id.toString(),)));
+      } else {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => ClientHomePage()));
+      }
+    }
     setState(() {
       _isLoading = false; // Stop loading after the request is complete
     });

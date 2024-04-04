@@ -1,4 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:coach_connect/models/client_account.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 
 class AuthenticationService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
@@ -8,9 +11,12 @@ class AuthenticationService {
   Future<String?> signIn(
       {required String email, required String password}) async {
     try {
-      await _firebaseAuth.signInWithEmailAndPassword(
+      final credential = await _firebaseAuth.signInWithEmailAndPassword(
           email: email, password: password);
-      return "Signed in";
+          final id = credential.user!.uid;
+      debugPrint("Signed in");
+      return id;
+      //return "Signed in";
     } on FirebaseAuthException catch (e) {
       return e.message;
     }
@@ -33,3 +39,4 @@ class AuthenticationService {
 
   Stream<User?> get authStateChanges => _firebaseAuth.authStateChanges();
 }
+
