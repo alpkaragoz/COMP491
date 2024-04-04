@@ -1,48 +1,65 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:coach_connect/view_models/client_home_viewmodel.dart'; 
 
-class CoachHomePage extends StatefulWidget {
+class CoachHomePage extends StatelessWidget {
   const CoachHomePage({super.key});
 
   @override
-  State<CoachHomePage> createState() => _CoachHomePageState();
-}
-
-class _CoachHomePageState extends State<CoachHomePage> {
-  User? user;
-
-  @override
-  void initState() {
-    super.initState();
-    // Get the current user
-    user = FirebaseAuth.instance.currentUser;
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final viewModel = ClientHomeViewModel();
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Coach Home Page'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            color: Colors.red,
+            onPressed: viewModel.signOut,
+          ),
+        ],
       ),
-      body: Center(
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            if (user != null) ...[
-              Text('Welcome, ${user!.email}'),
-              // Add more user information or options here
-            ],
-            ElevatedButton(
-              onPressed: _signOut,
-              child: const Text("Logout"),
-            )
+            Text(
+              'Welcome, ${viewModel.user?.displayName ?? 'Coach Name'}',
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 20),
+            Expanded(
+              child: GridView.count(
+                crossAxisCount: 2,
+                childAspectRatio: 1.0,
+                crossAxisSpacing: 20,
+                mainAxisSpacing: 20,
+                children: <String>[
+                  'My Workouts',
+                  'Connect',
+                  'My Coach',
+                  'Settings',
+                ].map((title) => _buildCard(title, context)).toList(),
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Future<void> _signOut() async {
-    await FirebaseAuth.instance.signOut();
+  Widget _buildCard(String title, BuildContext context) {
+    return Card(
+      elevation: 4.0, 
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(
+            title,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+        ),
+      ),
+    );
   }
 }
