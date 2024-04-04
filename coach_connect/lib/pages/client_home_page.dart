@@ -1,78 +1,118 @@
 
-import 'package:firebase_auth/firebase_auth.dart';
+// client_homepage.dart
+
 import 'package:flutter/material.dart';
 
 class ClientHomePage extends StatefulWidget {
-  const ClientHomePage({super.key});
+  const ClientHomePage({Key? key}) : super(key: key);
 
   @override
   State<ClientHomePage> createState() => _ClientHomePageState();
 }
 
 class _ClientHomePageState extends State<ClientHomePage> {
-  User? user;
+  final elevatedButtonStyle = ElevatedButton.styleFrom(
+    textStyle: const TextStyle(color: Colors.black),
+    backgroundColor: Colors.blue,
+  );
 
-  @override
-  void initState() {
-    super.initState();
-    // Get the current user
-    user = FirebaseAuth.instance.currentUser;
-  }
+  final redElevatedButtonStyle = ElevatedButton.styleFrom(
+    textStyle: const TextStyle(color: Colors.black),
+    backgroundColor: Colors.red,
+  );
+
+  String clientName = 'Janice Johan'; // Replace with actual client name from firebase later on after getting clients
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Client Home Page'),
+    return MaterialApp(
+      title: 'Coach Connect',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: <Widget>[
-            Text(
-              'Welcome, ${user?.displayName ?? 'Client Name'}',
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 20),
-            Expanded(
-              child: GridView.count(
-                crossAxisCount: 2,
-                childAspectRatio: 2.0,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text('Coach Connect'),
+        ),
+        body: Container(
+          color: Colors.white,
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text(
+                'Welcome, $clientName',
+                style: const TextStyle(fontSize: 24, color: Colors.black),
+              ),
+              const SizedBox(height: 32),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
-                  _buildCard('My Workouts', context),
-                  _buildCard('Connect', context),
-                  _buildCard('My Coach', context),
-                  _buildCard('Settings', context),
+                  Expanded(
+                    child: ElevatedButton(
+                      style: elevatedButtonStyle,
+                      onPressed: () {
+                        // TODO: Implement My Workouts functionality
+                      },
+                      child: const Text('My Workouts'),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: ElevatedButton(
+                      style: elevatedButtonStyle,
+                      onPressed: () {
+                        // TODO: Implement Connect functionality
+                      },
+                      child: const Text('Connect'),
+                    ),
+                  ),
                 ],
               ),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _signOut,
-              child: const Text('Log-out'),
-            ),
-            const SizedBox(height: 20),
-          ],
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Expanded(
+                    child: ElevatedButton(
+                      style: elevatedButtonStyle,
+                      onPressed: () {
+                        // TODO: Implement Clients functionality
+                      },
+                      child: const Text('My Coach'),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: ElevatedButton(
+                      style: elevatedButtonStyle,
+                      onPressed: () {
+                        // TODO: Implement Settings functionality
+                      },
+                      child: const Text('Settings'),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 32),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Expanded(
+                    child: ElevatedButton(
+                      style: redElevatedButtonStyle,
+                      onPressed: () {
+                        // TODO: Implement Logout functionality
+                      },
+                      child: const Text('Logout'),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
-  }
-
-  Widget _buildCard(String title, BuildContext context) {
-    return Card(
-      child: Center(
-        child: Text(
-          title,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-      ),
-    );
-  }
-
-  Future<void> _signOut() async {
-    await FirebaseAuth.instance.signOut();
-    // After sign out, navigate to the login page or just close the app.
   }
 }
