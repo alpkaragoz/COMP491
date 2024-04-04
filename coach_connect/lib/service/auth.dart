@@ -29,8 +29,7 @@ class AuthenticationService {
       required String accountType}) async {
     String message = "";
     try {
-      final credential =
-          await _firebaseAuth.createUserWithEmailAndPassword(
+      final credential = await _firebaseAuth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -58,6 +57,22 @@ class AuthenticationService {
       return (false, message);
     } catch (e) {
       return (false, 'Unknown error.');
+    }
+  }
+
+  Future<UserAccount?> getUserObject() async {
+    try {
+      DocumentSnapshot userDoc = await _db
+          .collection('users')
+          .doc(_firebaseAuth.currentUser?.uid)
+          .get();
+      if (userDoc.exists) {
+        return UserAccount.fromJson(userDoc.data() as Map<String, dynamic>);
+      } else {
+        return null;
+      }
+    } catch (e) {
+      return null;
     }
   }
 

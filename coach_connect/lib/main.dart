@@ -37,7 +37,7 @@ class MyApp extends StatelessWidget {
             if (user == null) {
               return const LoginPage();
             }
-            return const HomePageNavigator();
+            return const HomeNavigatorPage();
           }
           // Return a loading indicator while waiting for the auth state to initialize
           return const Scaffold(
