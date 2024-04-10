@@ -1,3 +1,4 @@
+import 'package:coach_connect/utils/constants.dart';
 import 'package:coach_connect/view_models/signup_viewmodel.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +13,10 @@ class SignupPage extends StatefulWidget {
 
 class _SignupPageState extends State<SignupPage> {
   final SignupViewModel _viewModel = SignupViewModel();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _ageController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -29,20 +34,20 @@ class _SignupPageState extends State<SignupPage> {
         child: ListView(
           children: [
             TextField(
-              controller: _viewModel.emailController,
+              controller: _emailController,
               decoration: InputDecoration(labelText: LocaleKeys.email.tr()),
             ),
             TextField(
-              controller: _viewModel.passwordController,
+              controller: _passwordController,
               decoration: InputDecoration(labelText: LocaleKeys.password.tr()),
               obscureText: true,
             ),
             TextField(
-              controller: _viewModel.nameController,
+              controller: _nameController,
               decoration: InputDecoration(labelText: LocaleKeys.name.tr()),
             ),
             TextField(
-              controller: _viewModel.ageController,
+              controller: _ageController,
               decoration: InputDecoration(labelText: LocaleKeys.age.tr()),
               keyboardType: TextInputType.number,
             ),
@@ -55,10 +60,10 @@ class _SignupPageState extends State<SignupPage> {
             ),
             ListTile(
               title: Text(LocaleKeys.client.tr()),
-              leading: Radio<String>(
-                value: 'client',
+              leading: Radio<AccountType>(
+                value: AccountType.client,
                 groupValue: _viewModel.accountType,
-                onChanged: (String? value) {
+                onChanged: (AccountType? value) {
                   setState(() {
                     _viewModel.accountType = value!;
                   });
@@ -67,10 +72,10 @@ class _SignupPageState extends State<SignupPage> {
             ),
             ListTile(
               title: Text(LocaleKeys.coach.tr()),
-              leading: Radio<String>(
-                value: 'coach',
+              leading: Radio<AccountType>(
+                value: AccountType.coach,
                 groupValue: _viewModel.accountType,
-                onChanged: (String? value) {
+                onChanged: (AccountType? value) {
                   setState(() {
                     _viewModel.accountType = value!;
                   });
@@ -90,7 +95,11 @@ class _SignupPageState extends State<SignupPage> {
   }
 
   void _signup() async {
-    bool signupResult = await _viewModel.signup();
+    bool signupResult = await _viewModel.signup(
+        _emailController.text,
+        _passwordController.text,
+        _nameController.text,
+        int.tryParse(_ageController.text) ?? 0);
     if (signupResult) {
       if (mounted) {
         Navigator.of(context).pop();
@@ -115,6 +124,10 @@ class _SignupPageState extends State<SignupPage> {
   @override
   void dispose() {
     _viewModel.removeListener(_onViewModelUpdated);
+    _emailController.dispose();
+    _passwordController.dispose();
+    _nameController.dispose();
+    _ageController.dispose();
     super.dispose();
   }
 

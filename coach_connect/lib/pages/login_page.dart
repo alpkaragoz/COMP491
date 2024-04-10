@@ -14,6 +14,8 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   final _viewModel = LoginViewModel();
   final _formKey = GlobalKey<FormState>();
 
@@ -30,7 +32,7 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             children: <Widget>[
               TextFormField(
-                controller: _viewModel.usernameController,
+                controller: _emailController,
                 decoration:
                     InputDecoration(labelText: LocaleKeys.username.tr()),
                 validator: (value) {
@@ -41,7 +43,7 @@ class _LoginPageState extends State<LoginPage> {
                 },
               ),
               TextFormField(
-                controller: _viewModel.passwordController,
+                controller: _passwordController,
                 decoration:
                     InputDecoration(labelText: LocaleKeys.password.tr()),
                 obscureText: true,
@@ -105,8 +107,9 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _login() async {
-    await _viewModel.login();
-    _showSnackBar(_viewModel.returnMessage);
+    final result =
+        await _viewModel.login(_emailController.text, _passwordController.text);
+    _showSnackBar(result.$2);
   }
 
   void _showSnackBar(String message) {
@@ -125,6 +128,8 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void dispose() {
     _viewModel.removeListener(_onViewModelUpdated);
+    _emailController.dispose();
+    _passwordController.dispose();
     super.dispose();
   }
 

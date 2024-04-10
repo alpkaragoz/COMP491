@@ -1,20 +1,23 @@
+import 'package:coach_connect/pages/login_page.dart';
 import 'package:flutter/material.dart';
-import 'package:coach_connect/view_models/client_home_viewmodel.dart'; 
+import 'package:coach_connect/view_models/client/client_home_viewmodel.dart';
 
-class CoachHomePage extends StatelessWidget {
-  const CoachHomePage({super.key});
+class ClientHomePage extends StatelessWidget {
+  const ClientHomePage({
+    super.key,
+    required this.viewModel,
+  });
+  final ClientHomeViewModel viewModel;
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = ClientHomeViewModel();
-
     return Scaffold(
       appBar: AppBar(
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
             color: Colors.red,
-            onPressed: viewModel.signOut,
+            onPressed: () => _showSignOutConfirmation(context),
           ),
         ],
       ),
@@ -23,7 +26,7 @@ class CoachHomePage extends StatelessWidget {
         child: Column(
           children: <Widget>[
             Text(
-              'Welcome, ${viewModel.user?.displayName ?? 'Coach Name'}',
+              'Welcome, ${viewModel.user?.name}',
               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
@@ -35,7 +38,7 @@ class CoachHomePage extends StatelessWidget {
                 mainAxisSpacing: 20,
                 children: <String>[
                   'My Workouts',
-                  'Connect',
+                  'Chat',
                   'My Coach',
                   'Settings',
                 ].map((title) => _buildCard(title, context)).toList(),
@@ -49,7 +52,7 @@ class CoachHomePage extends StatelessWidget {
 
   Widget _buildCard(String title, BuildContext context) {
     return Card(
-      elevation: 4.0, 
+      elevation: 4.0,
       child: Center(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -60,6 +63,35 @@ class CoachHomePage extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  void _showSignOutConfirmation(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Sign Out'),
+          content: const Text('Are you sure you want to sign out?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () async {
+                Navigator.of(context).pop(); // Dismiss the dialog
+                await viewModel.signOut(); // Proceed with sign out
+                MaterialPageRoute(builder: (context) => const LoginPage());
+              },
+              child: const Text('Yes', style: TextStyle(color: Colors.red)),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context)
+                    .pop(); // Dismiss the dialog but stay in the app
+              },
+              child: const Text('No'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

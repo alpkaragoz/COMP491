@@ -1,20 +1,23 @@
+import 'package:coach_connect/pages/login_page.dart';
 import 'package:flutter/material.dart';
-import 'package:coach_connect/view_models/client_home_viewmodel.dart';
+import 'package:coach_connect/view_models/coach/coach_home_viewmodel.dart';
 
-class ClientHomePage extends StatelessWidget {
-  const ClientHomePage({super.key});
+class CoachHomePage extends StatelessWidget {
+  const CoachHomePage({
+    super.key,
+    required this.viewModel,
+  });
+  final CoachHomeViewModel viewModel;
 
   @override
   Widget build(BuildContext context) {
-    final ClientHomeViewModel viewModel = ClientHomeViewModel();
-
     return Scaffold(
       appBar: AppBar(
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
             color: Colors.red,
-            onPressed: () => _showSignOutConfirmation(context, viewModel),
+            onPressed: () => _showSignOutConfirmation(context),
           ),
         ],
       ),
@@ -23,7 +26,7 @@ class ClientHomePage extends StatelessWidget {
         child: Column(
           children: <Widget>[
             Text(
-              'Welcome, ${viewModel.user?.displayName ?? 'Client Name'}',
+              'Welcome, ${viewModel.user?.name}',
               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
@@ -34,9 +37,9 @@ class ClientHomePage extends StatelessWidget {
                 crossAxisSpacing: 20,
                 mainAxisSpacing: 20,
                 children: <String>[
-                  'My Workouts',
-                  'Connect',
-                  'My Coach',
+                  'Create/View Workouts',
+                  'Chat',
+                  'My Clients',
                   'Settings',
                 ].map((title) => _buildCard(title, context)).toList(),
               ),
@@ -63,8 +66,7 @@ class ClientHomePage extends StatelessWidget {
     );
   }
 
-  void _showSignOutConfirmation(
-      BuildContext context, ClientHomeViewModel viewModel) {
+  void _showSignOutConfirmation(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -76,6 +78,7 @@ class ClientHomePage extends StatelessWidget {
               onPressed: () async {
                 Navigator.of(context).pop(); // Dismiss the dialog
                 await viewModel.signOut(); // Proceed with sign out
+                MaterialPageRoute(builder: (context) => const LoginPage());
               },
               child: const Text('Yes', style: TextStyle(color: Colors.red)),
             ),

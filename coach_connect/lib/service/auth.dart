@@ -1,3 +1,4 @@
+import 'package:coach_connect/utils/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:coach_connect/models/user_account.dart';
@@ -7,17 +8,16 @@ class AuthenticationService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
   AuthenticationService();
+  Stream<User?> get authStateChanges => _firebaseAuth.authStateChanges();
 
-  Future<String> signInWithEmail(
+  Future<(bool, String)> signInWithEmail(
       {required String email, required String password}) async {
     try {
       await _firebaseAuth.signInWithEmailAndPassword(
           email: email, password: password);
-      return "Signed in";
+      return (true, "Signing in.");
     } on FirebaseAuthException catch (e) {
-      return e.message ?? "Unknown error.";
-    } catch (e) {
-      return "Unknown error.";
+      return (false, e.message ?? "Error");
     }
   }
 
@@ -26,7 +26,7 @@ class AuthenticationService {
       required String password,
       required String name,
       required int age,
-      required String accountType}) async {
+      required AccountType accountType}) async {
     String message = "";
     try {
       final credential = await _firebaseAuth.createUserWithEmailAndPassword(
@@ -39,14 +39,16 @@ class AuthenticationService {
         email,
         age,
         accountType,
-        [], // Empty list for coaches' IDs
-        [], // Empty list for workouts' IDs
+        "", // Empty string for coach ID
+        [], // Empty list for client IDs
+        [], // Empty list for workout IDs
       );
       await _db
           .collection('users')
           .doc(credential.user?.uid)
           .set(newUser.toMap());
-      message = 'Account created, logging you in.';
+
+      message = 'Account created.';
       return (true, message);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
@@ -55,17 +57,13 @@ class AuthenticationService {
         message = 'The account already exists for that email.';
       }
       return (false, message);
-    } catch (e) {
-      return (false, 'Unknown error.');
     }
   }
 
-  Future<UserAccount?> getUserObject() async {
+// Returns any user object given ID.
+  Future<UserAccount?> getUserAccountObject(String uid) async {
     try {
-      DocumentSnapshot userDoc = await _db
-          .collection('users')
-          .doc(_firebaseAuth.currentUser?.uid)
-          .get();
+      DocumentSnapshot userDoc = await _db.collection('users').doc(uid).get();
       if (userDoc.exists) {
         return UserAccount.fromJson(userDoc.data() as Map<String, dynamic>);
       } else {
@@ -76,9 +74,22 @@ class AuthenticationService {
     }
   }
 
-  Future<void> signOut() async {
-    await _firebaseAuth.signOut();
-  }
+  // Gets current UserAccount, throws exception if it cannot.
+  Future<UserAccount> getCurrentUserAccountObject() async {
+    User? currentUser = _firebaseAuth.currentUser;
+    if (currentUser == null) {
+      throw FirebaseAuthException(
+          code: 'no-current-user', message: 'No current user is signed in.');
+    }
 
-  Stream<User?> get authStateChanges => _firebaseAuth.authStateChanges();
+    DocumentSnapshot userDoc =
+        await _db.collection('users').doc(currentUser.uid).get();
+    if (userDoc.exists && userDoc.data() != null) {
+      return UserAccount.fromJson(userDoc.data() as Map<String, dynamic>);
+    } else {
+      throw FirebaseAuthException(
+          code: 'user-not-found-in-db',
+          message: 'The user details were not found in the database.');
+    }
+  }
 }
