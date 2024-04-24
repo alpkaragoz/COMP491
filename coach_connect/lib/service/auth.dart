@@ -1,3 +1,4 @@
+import 'package:coach_connect/models/request.dart';
 import 'package:coach_connect/utils/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -28,8 +29,6 @@ class AuthenticationService {
       required int age,
       required AccountType accountType,
       required String username}) async {
-    FirebaseFirestore _db = FirebaseFirestore.instance;
-
     // First, check if the username is already taken
     DocumentSnapshot usernameSnapshot =
         await _db.collection('usernames').doc(username).get();
@@ -116,6 +115,97 @@ class AuthenticationService {
       throw FirebaseAuthException(
           code: 'user-not-found-in-db',
           message: 'The user details were not found in the database.');
+    }
+  }
+
+  Future<(bool, String)> signOut() async {
+    try {
+      await _firebaseAuth.signOut();
+      return (true, "Signed out successfully.");
+    } catch (e) {
+      return (false, "Failed to sign out: ${e.toString()}");
+    }
+  }
+
+  Future<UserAccount> getRecieverUserAccountOfRequests() async {
+    User? currentUser = _firebaseAuth.currentUser;
+    if (currentUser == null) {
+      throw Exception('No user logged in');
+    }
+
+    try {
+      final query = _db
+          .collection("requests")
+          .where("senderId", isEqualTo: currentUser.uid);
+      final querySnapshot = await query.get();
+
+      var request = Request.fromJson(querySnapshot.docs.first.data());
+      return await getUserAccountObject(request.receiverId) as UserAccount;
+    } catch (e) {
+      throw Exception('Error occurred while fetching receiver user account');
+    }
+  }
+
+  Future<String> cancelRequestFromClientToCoach() async {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+
+    if (userId == null) {
+      return "No user logged in.";
+    }
+
+    try {
+      // Query the 'requests' collection to find the document with the current userId as 'senderId'
+      final querySnapshot = await _db
+          .collection('requests')
+          .where('senderId', isEqualTo: userId)
+          .limit(1)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        // Document exists, delete it
+        await _db
+            .collection('requests')
+            .doc(querySnapshot.docs.first.id)
+            .delete();
+        return ("Request cancelled successfully.");
+      } else {
+        return ("No pending request found for the user.");
+      }
+    } catch (e) {
+      return ("Error cancelling request: $e");
+    }
+  }
+
+  Future<String> sendRequestToCoach(String coachUsername) async {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+
+    if (userId == null) {
+      return ("User is not logged in.");
+    }
+
+    try {
+      // Find receiverId by querying for a user with the provided coachUsername
+      var users = await _db
+          .collection('users')
+          .where('username', isEqualTo: coachUsername)
+          .limit(1)
+          .get();
+
+      if (users.docs.isEmpty) {
+        return ("No user found with the username: $coachUsername");
+      }
+
+      // Assuming the first document found is the correct user
+      var receiverId = users.docs.first.id;
+
+      // Create a request in the 'requests' collection
+      await _db.collection('requests').add({
+        'senderId': userId,
+        'receiverId': receiverId,
+      });
+      return ("Request to add coach sent successfully.");
+    } catch (e) {
+      return ("Error sending request to Firestore: $e");
     }
   }
 }

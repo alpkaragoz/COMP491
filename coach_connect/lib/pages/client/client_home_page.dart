@@ -1,3 +1,4 @@
+import 'package:coach_connect/pages/client/mycoach_page.dart';
 import 'package:coach_connect/pages/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:coach_connect/view_models/client/client_home_viewmodel.dart';
@@ -26,7 +27,7 @@ class ClientHomePage extends StatelessWidget {
         child: Column(
           children: <Widget>[
             Text(
-              'Welcome, ${viewModel.user?.name}',
+              'Welcome, ${viewModel.user.name}',
               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
@@ -51,17 +52,35 @@ class ClientHomePage extends StatelessWidget {
   }
 
   Widget _buildCard(String title, BuildContext context) {
-    return Card(
-      elevation: 4.0,
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(
-            title,
-            textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+    return InkWell(
+      onTap: () {
+        if (title == "My Coach") {
+          navigateToCoachDetails(context);
+        }
+      },
+      child: Card(
+        elevation: 4.0,
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              title,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
           ),
         ),
+      ),
+    );
+  }
+
+  void navigateToCoachDetails(BuildContext context) async {
+    await viewModel.refreshUserData(); // Refresh user data
+    await viewModel.getUserAccountOfRequest();
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MyCoachPage(viewModel: viewModel),
       ),
     );
   }
