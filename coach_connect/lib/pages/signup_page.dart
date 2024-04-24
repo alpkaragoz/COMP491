@@ -17,6 +17,7 @@ class _SignupPageState extends State<SignupPage> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _ageController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -50,6 +51,10 @@ class _SignupPageState extends State<SignupPage> {
               controller: _ageController,
               decoration: InputDecoration(labelText: LocaleKeys.age.tr()),
               keyboardType: TextInputType.number,
+            ),
+            TextField(
+              controller: _usernameController,
+              decoration: const InputDecoration(labelText: 'Username'),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -99,7 +104,8 @@ class _SignupPageState extends State<SignupPage> {
         _emailController.text,
         _passwordController.text,
         _nameController.text,
-        int.tryParse(_ageController.text) ?? 0);
+        int.tryParse(_ageController.text) ?? 0,
+        _usernameController.text);
     if (signupResult) {
       if (mounted) {
         Navigator.of(context).pop();

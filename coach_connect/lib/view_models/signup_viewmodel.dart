@@ -19,9 +19,9 @@ class SignupViewModel extends ChangeNotifier {
     }
   }
 
-  Future<bool> signup(
-      String email, String password, String name, int age) async {
-    if (!_validate(email, password, name, age)) {
+  Future<bool> signup(String email, String password, String name, int age,
+      String username) async {
+    if (!_validate(email, password, name, age, username)) {
       return false; // Stop the signup if validation fails
     }
     _isLoading = true;
@@ -31,13 +31,15 @@ class SignupViewModel extends ChangeNotifier {
         password: password,
         name: name,
         age: age,
-        accountType: _accountType));
+        accountType: _accountType,
+        username: username));
     _isLoading = false;
     notifyListeners();
     return _result.$1;
   }
 
-  bool _validate(String email, String password, String name, int age) {
+  bool _validate(
+      String email, String password, String name, int age, String username) {
     _result = (false, 'Please check all fields.');
 
     if (email.isEmpty) {
@@ -54,6 +56,10 @@ class SignupViewModel extends ChangeNotifier {
     }
     if (age.isNaN) {
       _result = (false, 'Age cannot be empty.');
+      return false;
+    }
+    if (username.isEmpty) {
+      _result = (false, 'Username cannot be empty.');
       return false;
     }
     return true;

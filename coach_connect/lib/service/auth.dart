@@ -26,37 +26,63 @@ class AuthenticationService {
       required String password,
       required String name,
       required int age,
-      required AccountType accountType}) async {
-    String message = "";
+      required AccountType accountType,
+      required String username}) async {
+    FirebaseFirestore _db = FirebaseFirestore.instance;
+
+    // First, check if the username is already taken
+    DocumentSnapshot usernameSnapshot =
+        await _db.collection('usernames').doc(username).get();
+    if (usernameSnapshot.exists) {
+      return (false, "Username is already taken.");
+    }
+
+    UserCredential? credential; // Initialize to null
+
     try {
-      final credential = await _firebaseAuth.createUserWithEmailAndPassword(
+      // Create user with FirebaseAuth
+      credential = await _firebaseAuth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
-      final newUser = UserAccount(
+
+      UserAccount newUser = UserAccount(
         credential.user!.uid,
         name,
         email,
         age,
         accountType,
+        username,
         "", // Empty string for coach ID
         [], // Empty list for client IDs
         [], // Empty list for workout IDs
       );
-      await _db
-          .collection('users')
-          .doc(credential.user?.uid)
-          .set(newUser.toMap());
 
-      message = 'Account created.';
-      return (true, message);
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'weak-password') {
-        message = 'The password provided is too weak.';
-      } else if (e.code == 'email-already-in-use') {
-        message = 'The account already exists for that email.';
+      // Perform a batch write to ensure atomicity
+      WriteBatch batch = _db.batch();
+      batch.set(
+          _db.collection('users').doc(credential.user!.uid), newUser.toMap());
+      batch.set(_db.collection('usernames').doc(username),
+          {'userId': credential.user!.uid});
+      await batch.commit();
+
+      return (true, "Account created.");
+    } catch (e) {
+      // If an error occurs and a user was created, attempt to delete the user
+      if (credential?.user != null) {
+        await credential!.user!.delete();
       }
-      return (false, message);
+
+      // Handle specific FirebaseAuthException errors
+      if (e is FirebaseAuthException) {
+        if (e.code == 'weak-password') {
+          return (false, "The password provided is too weak.");
+        } else if (e.code == 'email-already-in-use') {
+          return (false, "The account already exists for that email.");
+        }
+      }
+      // Return a generic error message if the exception is not a FirebaseAuthException
+      return (false, e.toString());
     }
   }
 
