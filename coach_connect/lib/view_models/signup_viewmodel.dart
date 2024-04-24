@@ -42,6 +42,15 @@ class SignupViewModel extends ChangeNotifier {
       String email, String password, String name, int age, String username) {
     _result = (false, 'Please check all fields.');
 
+    // Email validation regex pattern
+    final emailRegex =
+        RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+
+    // First, check if the email is valid
+    if (!emailRegex.hasMatch(email)) {
+      _result = (false, "Please enter a valid email address.");
+      return false;
+    }
     if (email.isEmpty) {
       _result = (false, 'Email cannot be empty.');
       return false;
