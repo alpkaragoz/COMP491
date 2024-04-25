@@ -229,4 +229,44 @@ class AuthenticationService {
       return []; // Return an empty list on error
     }
   }
+
+  Future<String> acceptRequest(Request request) async {
+    try {
+      await _db.runTransaction((transaction) async {
+        // Get the request document from the 'requests' collection
+        DocumentReference requestRef =
+            _db.collection('requests').doc(request.id);
+        DocumentSnapshot requestSnapshot = await transaction.get(requestRef);
+
+        if (!requestSnapshot.exists) {
+          throw Exception("Request does not exist!");
+        }
+
+        // Extract the senderId from the request
+        String senderId = request.senderId;
+        UserAccount currentUser = await getCurrentUserAccountObject();
+
+        // Get the coach's document from the 'users' collection
+        DocumentReference coachRef =
+            _db.collection('users').doc(currentUser.id);
+
+        // Atomically add the senderId to the coach's 'clientIds' list
+        transaction.update(coachRef, {
+          'clientIds': FieldValue.arrayUnion([senderId])
+        });
+
+        // Update the sender's 'coachId' field in the 'users' collection
+        DocumentReference senderRef = _db.collection('users').doc(senderId);
+        transaction.update(senderRef, {'coachId': currentUser.id});
+
+        // Delete the request document
+        transaction.delete(requestRef);
+      });
+      // If the transaction completes successfully, return a success message
+      return "Request accepted successfully.";
+    } catch (e) {
+      // If an exception is caught, return an error message
+      return "Error occurred while accepting the request: ${e.toString()}";
+    }
+  }
 }

@@ -38,11 +38,15 @@ class CoachHomeViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  String acceptRequest(String requestId) {
-    return "";
+  Future<String> acceptRequest(Request request) async{
+    var message = await _auth.acceptRequest(request);
+    await getClientObjectsForCoach();
+    await getPendingRequestsForCoach();
+    notifyListeners();
+    return message;
   }
 
-  String denyRequest(String requestId) {
+  String denyRequest(Request request) {
     return "";
   }
 }

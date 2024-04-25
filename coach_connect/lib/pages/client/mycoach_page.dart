@@ -67,7 +67,7 @@ class _MyCoachPageState extends State<MyCoachPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Text(
-                    "Coach Name: ${widget.viewModel.user.coachId}",
+                    "Coach Name: ${widget.viewModel.currentCoachName}",
                     style: const TextStyle(
                         fontSize: 24, fontWeight: FontWeight.bold),
                   ),

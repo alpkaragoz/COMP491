@@ -8,6 +8,7 @@ class ClientHomeViewModel extends ChangeNotifier {
   UserAccount user;
   ClientHomeViewModel(this.user);
   Request? pendingRequest;
+  String currentCoachName = "";
 
   Future<void> signOut() async {
     await _auth.signOut();
@@ -18,11 +19,23 @@ class ClientHomeViewModel extends ChangeNotifier {
     try {
       UserAccount updatedUser = await _auth.getCurrentUserAccountObject();
       user = updatedUser;
+      await refreshCoach(user.coachId);
       notifyListeners();
       return "Successfully fetched user.";
     } catch (e) {
       return "Failed to get user.";
     }
+  }
+
+  Future<void> refreshCoach(String coachId) async {
+    if (coachId.isEmpty) {
+      return;
+    }
+    UserAccount? currentCoach = await _auth.getUserAccountObject(coachId);
+    if (currentCoach == null) {
+      return;
+    }
+    currentCoachName = currentCoach.username;
   }
 
   Future<void> getUserAccountOfRequest() async {

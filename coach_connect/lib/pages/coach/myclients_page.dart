@@ -1,3 +1,4 @@
+import 'package:coach_connect/models/request.dart';
 import 'package:flutter/material.dart';
 import 'package:coach_connect/view_models/coach/coach_home_viewmodel.dart';
 
@@ -57,11 +58,11 @@ class _MyClientsPageState extends State<MyClientsPage> {
                     children: [
                       IconButton(
                         icon: const Icon(Icons.check, color: Colors.green),
-                        onPressed: () => _acceptRequest(widget.viewModel.requests[index]?.id ?? ""),
+                        onPressed: () => _acceptRequest(widget.viewModel.requests[index]!),
                       ),
                       IconButton(
                         icon: const Icon(Icons.close, color: Colors.red),
-                        onPressed: () => _denyRequest(widget.viewModel.requests[index]?.id ?? ""),
+                        onPressed: () => _denyRequest(widget.viewModel.requests[index]!),
                       ),
                     ],
                   ),
@@ -80,16 +81,16 @@ class _MyClientsPageState extends State<MyClientsPage> {
     });
   }
 
-  void _acceptRequest(String requestId) {
+  void _acceptRequest(Request request) async {
     _setLoading(true);
-    var message = widget.viewModel.acceptRequest(requestId);
+    var message = await widget.viewModel.acceptRequest(request);
     _showSnackBar(message);
     _setLoading(false);
   }
 
-  void _denyRequest(String requestId) {
+  void _denyRequest(Request request) {
     _setLoading(true);
-    var message = widget.viewModel.denyRequest(requestId);
+    var message = widget.viewModel.denyRequest(request);
     _showSnackBar(message);
     _setLoading(false);
   }
