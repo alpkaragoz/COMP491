@@ -1,83 +1,76 @@
-import '../mvvm/viewmodel.dart';
+import 'package:coach_connect/service/auth.dart';
+import 'package:coach_connect/utils/constants.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:coach_connect/models/user_account.dart';
 
-class SignupViewModel extends EventViewModel {
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController ageController = TextEditingController();
-  String accountType = 'client'; // default to 'client'
-  final FirebaseFirestore _db = FirebaseFirestore.instance;
+class SignupViewModel extends ChangeNotifier {
+  final AuthenticationService _auth = AuthenticationService();
+  AccountType _accountType = AccountType.client; // default to 'client'
+  (bool, String) _result = (false, "");
+  bool _isLoading = false;
 
-  String returnMessage = "";
+  bool get isLoading => _isLoading;
+  AccountType get accountType => _accountType;
+  (bool, String) get result => _result;
 
-  Future<bool> signup() async {
-    if (!validate()) {
-      return false; // Stop the signup if validation fails
+  set accountType(AccountType newValue) {
+    if (_accountType != newValue) {
+      _accountType = newValue;
+      notifyListeners();
     }
-    try {
-      final credential =
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: emailController.text,
-        password: passwordController.text,
-      );
-      if (credential.user?.uid != null) {
-        final newUser = UserAccount(
-          credential.user!.uid,
-          nameController.text,
-          emailController.text,
-          int.tryParse(ageController.text) ?? 0,
-          accountType,
-          [], // Empty list for coaches' IDs
-          [], // Empty list for workouts' IDs
-        );
-        await _db.collection('users').doc(credential.user?.uid).set(newUser.toMap());
-        clearFields();
-        returnMessage = 'Account created, logging you in.';
-        return true;
-        // Navigate to next screen or show a success message here.
-      }
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'weak-password') {
-        returnMessage = 'The password provided is too weak.';
-      } else if (e.code == 'email-already-in-use') {
-        returnMessage = 'The account already exists for that email.';
-      }
-    } catch (e) {
-      returnMessage = 'Unknown error.';
-    }
-    return false;
   }
 
-  bool validate() {
-    returnMessage = 'Please check all fields.';
+  Future<bool> signup(String email, String password, String name, int age,
+      String username) async {
+    if (!_validate(email, password, name, age, username)) {
+      return false; // Stop the signup if validation fails
+    }
+    _isLoading = true;
+    notifyListeners();
+    _result = (await _auth.signUpWithEmail(
+        email: email,
+        password: password,
+        name: name,
+        age: age,
+        accountType: _accountType,
+        username: username));
+    _isLoading = false;
+    notifyListeners();
+    return _result.$1;
+  }
 
-    if (emailController.text.isEmpty) {
-      returnMessage = 'Email cannot be empty.';
+  bool _validate(
+      String email, String password, String name, int age, String username) {
+    _result = (false, 'Please check all fields.');
+
+    // Email validation regex pattern
+    final emailRegex =
+        RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+
+    // First, check if the email is valid
+    if (!emailRegex.hasMatch(email)) {
+      _result = (false, "Please enter a valid email address.");
       return false;
     }
-    if (passwordController.text.isEmpty) {
-      returnMessage = 'Password cannot be empty.';
+    if (email.isEmpty) {
+      _result = (false, 'Email cannot be empty.');
       return false;
     }
-    if (nameController.text.isEmpty) {
-      returnMessage = 'Name cannot be empty.';
+    if (password.isEmpty) {
+      _result = (false, 'Password cannot be empty.');
       return false;
     }
-    if (ageController.text.isEmpty) {
-      returnMessage = 'Age cannot be empty.';
+    if (name.isEmpty) {
+      _result = (false, 'Name cannot be empty.');
+      return false;
+    }
+    if (age.isNaN) {
+      _result = (false, 'Age cannot be empty.');
+      return false;
+    }
+    if (username.isEmpty) {
+      _result = (false, 'Username cannot be empty.');
       return false;
     }
     return true;
-  }
-
-  void clearFields() {
-    emailController.clear();
-    passwordController.clear();
-    nameController.clear();
-    ageController.clear();
   }
 }

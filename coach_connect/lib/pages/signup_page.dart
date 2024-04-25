@@ -1,4 +1,4 @@
-import 'package:coach_connect/mvvm/observer.dart';
+import 'package:coach_connect/utils/constants.dart';
 import 'package:coach_connect/view_models/signup_viewmodel.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -11,9 +11,13 @@ class SignupPage extends StatefulWidget {
   State<SignupPage> createState() => _SignupPageState();
 }
 
-class _SignupPageState extends State<SignupPage> implements EventObserver {
+class _SignupPageState extends State<SignupPage> {
   final SignupViewModel _viewModel = SignupViewModel();
-  bool _isLoading = false;
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _ageController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -31,22 +35,26 @@ class _SignupPageState extends State<SignupPage> implements EventObserver {
         child: ListView(
           children: [
             TextField(
-              controller: _viewModel.emailController,
+              controller: _emailController,
               decoration: InputDecoration(labelText: LocaleKeys.email.tr()),
             ),
             TextField(
-              controller: _viewModel.passwordController,
+              controller: _passwordController,
               decoration: InputDecoration(labelText: LocaleKeys.password.tr()),
               obscureText: true,
             ),
             TextField(
-              controller: _viewModel.nameController,
+              controller: _nameController,
               decoration: InputDecoration(labelText: LocaleKeys.name.tr()),
             ),
             TextField(
-              controller: _viewModel.ageController,
+              controller: _ageController,
               decoration: InputDecoration(labelText: LocaleKeys.age.tr()),
               keyboardType: TextInputType.number,
+            ),
+            TextField(
+              controller: _usernameController,
+              decoration: const InputDecoration(labelText: 'Username'),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -57,10 +65,10 @@ class _SignupPageState extends State<SignupPage> implements EventObserver {
             ),
             ListTile(
               title: Text(LocaleKeys.client.tr()),
-              leading: Radio<String>(
-                value: 'client',
+              leading: Radio<AccountType>(
+                value: AccountType.client,
                 groupValue: _viewModel.accountType,
-                onChanged: (String? value) {
+                onChanged: (AccountType? value) {
                   setState(() {
                     _viewModel.accountType = value!;
                   });
@@ -69,10 +77,10 @@ class _SignupPageState extends State<SignupPage> implements EventObserver {
             ),
             ListTile(
               title: Text(LocaleKeys.coach.tr()),
-              leading: Radio<String>(
-                value: 'coach',
+              leading: Radio<AccountType>(
+                value: AccountType.coach,
                 groupValue: _viewModel.accountType,
-                onChanged: (String? value) {
+                onChanged: (AccountType? value) {
                   setState(() {
                     _viewModel.accountType = value!;
                   });
@@ -80,8 +88,8 @@ class _SignupPageState extends State<SignupPage> implements EventObserver {
               ),
             ),
             ElevatedButton(
-              onPressed: _signup,
-              child: _isLoading
+              onPressed: _viewModel.isLoading ? null : _signup,
+              child: _viewModel.isLoading
                   ? const CircularProgressIndicator(color: Colors.white)
                   : Text(LocaleKeys.signup.tr()),
             ),
@@ -92,19 +100,18 @@ class _SignupPageState extends State<SignupPage> implements EventObserver {
   }
 
   void _signup() async {
-    setState(() {
-      _isLoading = true; // Start loading
-    });
-    bool signupResult = await _viewModel.signup();
+    bool signupResult = await _viewModel.signup(
+        _emailController.text,
+        _passwordController.text,
+        _nameController.text,
+        int.tryParse(_ageController.text) ?? 0,
+        _usernameController.text);
     if (signupResult) {
       if (mounted) {
         Navigator.of(context).pop();
       }
     }
-    setState(() {
-      _isLoading = false; // Stop loading after the request is complete
-    });
-    _showSnackBar(_viewModel.returnMessage);
+    _showSnackBar(_viewModel.result.$2);
   }
 
   void _showSnackBar(String message) {
@@ -117,15 +124,22 @@ class _SignupPageState extends State<SignupPage> implements EventObserver {
   @override
   void initState() {
     super.initState();
-    _viewModel.subscribe(this);
+    _viewModel.addListener(_onViewModelUpdated);
   }
 
   @override
   void dispose() {
+    _viewModel.removeListener(_onViewModelUpdated);
+    _emailController.dispose();
+    _passwordController.dispose();
+    _nameController.dispose();
+    _ageController.dispose();
     super.dispose();
-    _viewModel.unsubscribe(this);
   }
 
-  @override
-  void notify(ViewEvent event) {}
+  void _onViewModelUpdated() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
 }
