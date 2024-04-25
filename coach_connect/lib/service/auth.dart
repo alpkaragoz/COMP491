@@ -127,63 +127,42 @@ class AuthenticationService {
     }
   }
 
-  Future<UserAccount> getRecieverUserAccountOfRequests() async {
-    User? currentUser = _firebaseAuth.currentUser;
-    if (currentUser == null) {
-      throw Exception('No user logged in');
-    }
-
+  Future<Request> getRequestObjectForClient() async {
     try {
+      User? currentUser = _firebaseAuth.currentUser;
+      if (currentUser == null) {
+        throw Exception('No user logged in');
+      }
       final query = _db
           .collection("requests")
           .where("senderId", isEqualTo: currentUser.uid);
       final querySnapshot = await query.get();
 
-      var request = Request.fromJson(querySnapshot.docs.first.data());
-      return await getUserAccountObject(request.receiverId) as UserAccount;
+      var request = Request.fromJson(
+          querySnapshot.docs.first.data(), querySnapshot.docs.first.id);
+      return request;
     } catch (e) {
       throw Exception('Error occurred while fetching receiver user account');
     }
   }
 
-  Future<String> cancelRequestFromClientToCoach() async {
-    final userId = FirebaseAuth.instance.currentUser?.uid;
-
-    if (userId == null) {
+  Future<String> cancelRequestFromClientToCoach(Request request) async {
+    if (FirebaseAuth.instance.currentUser?.uid == null) {
       return "No user logged in.";
     }
 
     try {
-      // Query the 'requests' collection to find the document with the current userId as 'senderId'
-      final querySnapshot = await _db
-          .collection('requests')
-          .where('senderId', isEqualTo: userId)
-          .limit(1)
-          .get();
-
-      if (querySnapshot.docs.isNotEmpty) {
-        // Document exists, delete it
-        await _db
-            .collection('requests')
-            .doc(querySnapshot.docs.first.id)
-            .delete();
-        return ("Request cancelled successfully.");
-      } else {
-        return ("No pending request found for the user.");
-      }
+      // Use the Request object's 'id' to directly access and delete the document
+      await _db.collection('requests').doc(request.id).delete();
+      return "Request cancelled successfully.";
     } catch (e) {
-      return ("Error cancelling request: $e");
+      return "Error cancelling request: $e";
     }
   }
 
   Future<String> sendRequestToCoach(String coachUsername) async {
-    final userId = FirebaseAuth.instance.currentUser?.uid;
-
-    if (userId == null) {
-      return ("User is not logged in.");
-    }
-
     try {
+      UserAccount currentUser = await getCurrentUserAccountObject();
       // Find receiverId by querying for a user with the provided coachUsername
       var users = await _db
           .collection('users')
@@ -200,12 +179,54 @@ class AuthenticationService {
 
       // Create a request in the 'requests' collection
       await _db.collection('requests').add({
-        'senderId': userId,
+        'senderId': currentUser.id,
         'receiverId': receiverId,
+        'senderUsername': currentUser.username,
+        'receiverUsername': coachUsername,
       });
       return ("Request to add coach sent successfully.");
     } catch (e) {
-      return ("Error sending request to Firestore: $e");
+      return ("Error sending request: $e");
+    }
+  }
+
+  Future<List<Request?>> getPendingRequestsForCoach() async {
+    final user = _firebaseAuth.currentUser;
+    if (user == null) {
+      return [];
+    }
+
+    try {
+      // Query Firestore for requests where the current user is the receiver
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('requests')
+          .where('receiverId', isEqualTo: user.uid)
+          .get();
+
+      // Map the documents to Request objects
+      List<Request?> requests = querySnapshot.docs.map((doc) {
+        return Request.fromJson(doc.data(), doc.id);
+      }).toList();
+
+      return requests;
+    } catch (e) {
+      return [];
+    }
+  }
+
+  Future<List<UserAccount?>> getClientObjectsForCoach() async {
+    try {
+      UserAccount currentUser = await getCurrentUserAccountObject();
+
+      // Fetch each client document by their ID
+      List<UserAccount?> clients = [];
+      for (String clientId in currentUser.clientIds) {
+        var client = await getUserAccountObject(clientId);
+        clients.add(client);
+      }
+      return clients;
+    } catch (e) {
+      return []; // Return an empty list on error
     }
   }
 }

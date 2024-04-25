@@ -1,3 +1,4 @@
+import 'package:coach_connect/models/request.dart';
 import 'package:coach_connect/models/user_account.dart';
 import 'package:flutter/material.dart';
 import 'package:coach_connect/service/auth.dart';
@@ -6,7 +7,7 @@ class ClientHomeViewModel extends ChangeNotifier {
   final AuthenticationService _auth = AuthenticationService();
   UserAccount user;
   ClientHomeViewModel(this.user);
-  UserAccount? pendingRequest;
+  Request? pendingRequest;
 
   Future<void> signOut() async {
     await _auth.signOut();
@@ -28,7 +29,7 @@ class ClientHomeViewModel extends ChangeNotifier {
     pendingRequest = null;
     notifyListeners();
     try {
-      pendingRequest = await _auth.getRecieverUserAccountOfRequests();
+      pendingRequest = await _auth.getRequestObjectForClient();
       notifyListeners();
     } catch (e) {
       // No request found.
@@ -36,7 +37,10 @@ class ClientHomeViewModel extends ChangeNotifier {
   }
 
   Future<String> cancelRequestFromClientToCoach() async {
-    var message = await _auth.cancelRequestFromClientToCoach();
+    if(pendingRequest == null) {
+      return "No request to cancel.";
+    }
+    var message = await _auth.cancelRequestFromClientToCoach(pendingRequest!);
     await getUserAccountOfRequest();
     notifyListeners();
     return message;

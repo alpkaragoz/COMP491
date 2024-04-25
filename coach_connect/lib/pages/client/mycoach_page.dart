@@ -50,7 +50,7 @@ class _MyCoachPageState extends State<MyCoachPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Text(
-                        "Request sent to: ${widget.viewModel.pendingRequest!.username}",
+                        "Request sent to: ${widget.viewModel.pendingRequest!.receierUsername}",
                         style: const TextStyle(
                             fontSize: 24, fontWeight: FontWeight.bold),
                       ),

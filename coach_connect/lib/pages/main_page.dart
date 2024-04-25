@@ -39,10 +39,12 @@ class MainPage extends StatelessWidget {
                           viewModel: CoachHomeViewModel(accountSnapshot.data!));
                     } else {
                       // Error
+                      _auth.signOut();
                       return _buildErrorWidget(context);
                     }
                   } else {
                     // No data is available
+                    _auth.signOut();
                     return _buildErrorWidget(context);
                   }
                 } else if (accountSnapshot.connectionState ==

@@ -1,3 +1,4 @@
+import 'package:coach_connect/pages/coach/myclients_page.dart';
 import 'package:coach_connect/pages/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:coach_connect/view_models/coach/coach_home_viewmodel.dart';
@@ -51,17 +52,36 @@ class CoachHomePage extends StatelessWidget {
   }
 
   Widget _buildCard(String title, BuildContext context) {
-    return Card(
-      elevation: 4.0,
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(
-            title,
-            textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+    return InkWell(
+      onTap: () {
+        if (title == "My Clients") {
+          navigateToClientDetails(context);
+        }
+      },
+      child: Card(
+        elevation: 4.0,
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              title,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
           ),
         ),
+      ),
+    );
+  }
+
+  void navigateToClientDetails(BuildContext context) async {
+    await viewModel.getClientObjectsForCoach();
+    await viewModel.getPendingRequestsForCoach();
+    await viewModel.refreshUserData();
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MyClientsPage(viewModel: viewModel),
       ),
     );
   }
