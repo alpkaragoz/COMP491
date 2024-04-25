@@ -1,4 +1,3 @@
-// client_homepage.dart
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -10,7 +9,32 @@ class ClientHomePage extends StatefulWidget {
 }
 
 class _ClientHomePageState extends State<ClientHomePage> {
-  // Define a unified elevated button style in one place
+  bool _useOrangeBlackTheme = false;
+  
+  ThemeData get appTheme => _useOrangeBlackTheme ? ThemeData(
+    primarySwatch: Colors.orange,
+    appBarTheme: const AppBarTheme(
+      backgroundColor: Colors.orange,
+      foregroundColor: Colors.black,
+    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        primary: Colors.orange,
+        onPrimary: Colors.black,
+      ),
+    ),
+    textTheme: const TextTheme(
+      headline6: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
+      bodyText2: TextStyle(fontSize: 16, color: Colors.black87),
+    ),
+  ) : ThemeData(
+    primarySwatch: Colors.blue,
+    textTheme: const TextTheme(
+      headline6: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
+      bodyText2: TextStyle(fontSize: 16, color: Colors.black87),
+    ),
+  );
+
   ButtonStyle getElevatedButtonStyle(Color bgColor) {
     return ElevatedButton.styleFrom(
       textStyle: const TextStyle(fontSize: 16, color: Colors.white),
@@ -28,13 +52,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Coach Connect',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        textTheme: const TextTheme(
-          headline6: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
-          bodyText2: TextStyle(fontSize: 16, color: Colors.black87),
-        ),
-      ),
+      theme: appTheme,
       home: Scaffold(
         appBar: AppBar(
           title: const Text('Coach Connect'),
@@ -50,8 +68,9 @@ class _ClientHomePageState extends State<ClientHomePage> {
                 style: Theme.of(context).textTheme.headline6,
               ),
               const SizedBox(height: 32),
+              // Existing buttons here...
               ElevatedButton(
-                style: getElevatedButtonStyle(Colors.blue),
+                style: getElevatedButtonStyle(Theme.of(context).primaryColor),
                 onPressed: () {
                   // TODO: Implement My Workouts functionality
                 },
@@ -59,7 +78,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
               ),
               const SizedBox(height: 16),
               ElevatedButton(
-                style: getElevatedButtonStyle(Colors.blue),
+                style: getElevatedButtonStyle(Theme.of(context).primaryColor),
                 onPressed: () {
                   // TODO: Implement Connect functionality
                 },
@@ -67,7 +86,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
               ),
               const SizedBox(height: 16),
               ElevatedButton(
-                style: getElevatedButtonStyle(Colors.blue),
+                style: getElevatedButtonStyle(Theme.of(context).primaryColor),
                 onPressed: () {
                   // TODO: Implement My Coach functionality
                 },
@@ -75,7 +94,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
               ),
               const SizedBox(height: 16),
               ElevatedButton(
-                style: getElevatedButtonStyle(Colors.blue),
+                style: getElevatedButtonStyle(Theme.of(context).primaryColor),
                 onPressed: () {
                   // TODO: Implement Settings functionality
                 },
@@ -86,6 +105,16 @@ class _ClientHomePageState extends State<ClientHomePage> {
                 style: getElevatedButtonStyle(Colors.red),
                 onPressed: _signOut,
                 child: const Text('Logout'),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                style: getElevatedButtonStyle(Colors.grey),
+                onPressed: () {
+                  setState(() {
+                    _useOrangeBlackTheme = !_useOrangeBlackTheme;
+                  });
+                },
+                child: Text(_useOrangeBlackTheme ? 'Switch to Blue Theme' : 'Switch to Orange & Black Theme'),
               ),
             ],
           ),
