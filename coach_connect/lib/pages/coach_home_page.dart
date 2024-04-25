@@ -1,129 +1,149 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:coach_connect/pages/coach/myclients_page.dart';
+import 'package:coach_connect/pages/login_page.dart';
 import 'package:flutter/material.dart';
+import 'package:coach_connect/view_models/coach/coach_home_viewmodel.dart';
 
-class ClientHomePage extends StatefulWidget {
-  const ClientHomePage({Key? key}) : super(key: key);
+class CoachHomePage extends StatefulWidget {
+  const CoachHomePage({Key? key, required this.viewModel}) : super(key: key);
+
+  final CoachHomeViewModel viewModel;
 
   @override
-  State<ClientHomePage> createState() => _ClientHomePageState();
+  _CoachHomePageState createState() => _CoachHomePageState();
 }
 
-class _ClientHomePageState extends State<ClientHomePage> {
+class _CoachHomePageState extends State<CoachHomePage> {
   bool _useOrangeBlackTheme = false;
-  
-  ThemeData get appTheme => _useOrangeBlackTheme ? ThemeData(
-    primarySwatch: Colors.orange,
-    appBarTheme: const AppBarTheme(
-      backgroundColor: Colors.orange,
-      foregroundColor: Colors.black,
-    ),
-    elevatedButtonTheme: ElevatedButtonThemeData(
-      style: ElevatedButton.styleFrom(
-        primary: Colors.orange,
-        onPrimary: Colors.black,
-      ),
-    ),
-    textTheme: const TextTheme(
-      headline6: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
-      bodyText2: TextStyle(fontSize: 16, color: Colors.black87),
-    ),
-  ) : ThemeData(
-    primarySwatch: Colors.blue,
-    textTheme: const TextTheme(
-      headline6: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
-      bodyText2: TextStyle(fontSize: 16, color: Colors.black87),
-    ),
-  );
 
-  ButtonStyle getElevatedButtonStyle(Color bgColor) {
-    return ElevatedButton.styleFrom(
-      textStyle: const TextStyle(fontSize: 16, color: Colors.white),
-      backgroundColor: bgColor,
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
+  @override
+  Widget build(BuildContext context) {
+    ThemeData theme = _useOrangeBlackTheme ? ThemeData(
+      primarySwatch: Colors.orange,
+      appBarTheme: AppBarTheme(
+        backgroundColor: Colors.black,
+        foregroundColor: Colors.white,
+      ),
+      cardTheme: CardTheme(
+        color: Colors.orange,
+        shadowColor: Colors.black,
+      ),
+      textTheme: TextTheme(
+        headline6: TextStyle(color: Colors.white),
+        bodyText2: TextStyle(color: Colors.black),
+      ),
+    ) : Theme.of(context);
+    
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Welcome, ${widget.viewModel.user?.name}'),
+        actions: [
+          IconButton(
+            icon: Icon(_useOrangeBlackTheme ? Icons.light_mode : Icons.dark_mode),
+            onPressed: () {
+              setState(() {
+                _useOrangeBlackTheme = !_useOrangeBlackTheme;
+              });
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.logout),
+            color: Colors.red,
+            onPressed: () => _showSignOutConfirmation(context),
+          ),
+        ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: <Widget>[
+            const SizedBox(height: 20),
+            Expanded(
+              child: GridView.count(
+                crossAxisCount: 2,
+                childAspectRatio: 1.0,
+                crossAxisSpacing: 20,
+                mainAxisSpacing: 20,
+                children: <String>[
+                  'Create/View Workouts',
+                  'Chat',
+                  'My Clients',
+                  'Settings',
+                ].map((title) => _buildCard(title, context, theme)).toList(),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  String clientName = 'Janice Johan'; // Replace with actual client name from firebase later on after getting clients
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Coach Connect',
-      theme: appTheme,
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Coach Connect'),
-        ),
-        body: Container(
-          color: Colors.white,
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text(
-                'Welcome, $clientName',
-                style: Theme.of(context).textTheme.headline6,
+  Widget _buildCard(String title, BuildContext context, ThemeData theme) {
+    return InkWell(
+      onTap: () {
+        if (title == "My Clients") {
+          navigateToClientDetails(context);
+        }
+      },
+      child: Card(
+        elevation: 4.0,
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              title,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: theme.textTheme.bodyText2?.color,
               ),
-              const SizedBox(height: 32),
-              // Existing buttons here...
-              ElevatedButton(
-                style: getElevatedButtonStyle(Theme.of(context).primaryColor),
-                onPressed: () {
-                  // TODO: Implement My Workouts functionality
-                },
-                child: const Text('My Workouts'),
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                style: getElevatedButtonStyle(Theme.of(context).primaryColor),
-                onPressed: () {
-                  // TODO: Implement Connect functionality
-                },
-                child: const Text('Connect'),
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                style: getElevatedButtonStyle(Theme.of(context).primaryColor),
-                onPressed: () {
-                  // TODO: Implement My Coach functionality
-                },
-                child: const Text('My Coach'),
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                style: getElevatedButtonStyle(Theme.of(context).primaryColor),
-                onPressed: () {
-                  // TODO: Implement Settings functionality
-                },
-                child: const Text('Settings'),
-              ),
-              const SizedBox(height: 32),
-              ElevatedButton(
-                style: getElevatedButtonStyle(Colors.red),
-                onPressed: _signOut,
-                child: const Text('Logout'),
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                style: getElevatedButtonStyle(Colors.grey),
-                onPressed: () {
-                  setState(() {
-                    _useOrangeBlackTheme = !_useOrangeBlackTheme;
-                  });
-                },
-                child: Text(_useOrangeBlackTheme ? 'Switch to Blue Theme' : 'Switch to Orange & Black Theme'),
-              ),
-            ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  Future<void> _signOut() async {
-    await FirebaseAuth.instance.signOut();
+  void navigateToClientDetails(BuildContext context) async {
+    await widget.viewModel.getClientObjectsForCoach();
+    await widget.viewModel.getPendingRequestsForCoach();
+    await widget.viewModel.refreshUserData();
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MyClientsPage(viewModel: widget.viewModel),
+      ),
+    );
+  }
+
+  void _showSignOutConfirmation(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Sign Out'),
+          content: const Text('Are you sure you want to sign out?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () async {
+                Navigator.of(context).pop(); // Dismiss the dialog
+                await widget.viewModel.signOut(); // Proceed with sign out
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginPage()),
+                );
+              },
+              child: const Text('Yes', style: TextStyle(color: Colors.red)),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Dismiss the dialog but stay in the app
+              },
+              child: const Text('No'),
+            ),
+          ],
+        );
+      },
+    );
   }
 }
