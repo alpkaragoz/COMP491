@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:coach_connect/models/request.dart';
 import 'package:coach_connect/models/user_account.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:coach_connect/service/auth.dart';
 
@@ -70,6 +72,17 @@ class ClientHomeViewModel extends ChangeNotifier {
       return message;
     } catch (e) {
       return ("Failed to send request to coach: $e");
+    }
+  }
+
+  Future<void> removeCoachFromClient({required String clientId, required String coachId}) async {
+    try{
+      final data = await FirebaseFirestore.instance.collection("users").doc(clientId).update({"coachId": FieldValue.delete()});
+      final data2 = await FirebaseFirestore.instance.collection("users").doc(coachId).update({"clientIds": FieldValue.arrayRemove([clientId])});
+      
+    }
+    catch(e){
+      print(e);
     }
   }
 }

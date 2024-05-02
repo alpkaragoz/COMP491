@@ -1,3 +1,6 @@
+import 'dart:ffi';
+
+import 'package:coach_connect/pages/client/client_home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:coach_connect/view_models/client/client_home_viewmodel.dart';
 
@@ -59,19 +62,37 @@ class _MyCoachPageState extends State<MyCoachPage> {
                         onPressed: () {
                           _isLoading ? null : _cancelRequest();
                         },
-                        child: _isLoading ? const CircularProgressIndicator() : const Text("Cancel"),
+                        child: _isLoading
+                            ? const CircularProgressIndicator()
+                            : const Text("Cancel"),
                       ),
                     ],
                   )
             : Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
+                  SizedBox.shrink(),
                   Text(
                     "Coach Name: ${widget.viewModel.currentCoachName}",
                     style: const TextStyle(
                         fontSize: 24, fontWeight: FontWeight.bold),
                   ),
                   // More coach details can be added here
+                  Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        await ClientHomeViewModel(widget.viewModel.user).removeCoachFromClient(clientId: widget.viewModel.user.id, coachId: widget.viewModel.user.coachId);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) =>  ClientHomePage(viewModel: widget.viewModel,)),
+                  );
+                      },
+                      child: _isLoading
+                          ? const CircularProgressIndicator()
+                          : const Text("Leave Coach"),
+                    ),
+                  ),
                 ],
               ),
       ),
@@ -89,7 +110,7 @@ class _MyCoachPageState extends State<MyCoachPage> {
   void _cancelRequest() async {
     _setLoading(true);
     var message = await widget.viewModel.cancelRequestFromClientToCoach();
-   _setLoading(false);
+    _setLoading(false);
     _showSnackBar(message);
   }
 
@@ -106,7 +127,7 @@ class _MyCoachPageState extends State<MyCoachPage> {
     super.dispose();
   }
 
-  void _setLoading(bool bool){
+  void _setLoading(bool bool) {
     _isLoading = bool;
     setState(() {});
   }
