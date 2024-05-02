@@ -1,8 +1,13 @@
+import 'dart:ffi';
+
+import 'package:coach_connect/pages/client/client_home_page.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:coach_connect/view_models/client/client_home_viewmodel.dart';
 
 class ClientWorkoutPage extends StatelessWidget {
-  const ClientWorkoutPage({Key? key}) : super(key: key);
+  final ClientHomeViewModel viewModel;
+
+  const ClientWorkoutPage({super.key, required this.viewModel});
 
   @override
   Widget build(BuildContext context) {
