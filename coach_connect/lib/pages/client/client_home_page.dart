@@ -1,3 +1,4 @@
+import 'package:coach_connect/pages/client/client_myworkouts_weekly_page.dart';
 import 'package:coach_connect/pages/client/client_workout_page.dart';
 import 'package:coach_connect/pages/client/mycoach_page.dart';
 import 'package:coach_connect/pages/login_page.dart';
@@ -59,7 +60,7 @@ class ClientHomePage extends StatelessWidget {
           navigateToCoachDetails(context);
         }
         else if (title == "My Workouts") {
-          navigateToClientWorkoutPage(context);
+          navigateToClientMyWorkoutsWeeklyPage(context);
         }
       },
       child: Card(
@@ -89,12 +90,11 @@ class ClientHomePage extends StatelessWidget {
     );
   }
 
-  void navigateToClientWorkoutPage(BuildContext context) async {
-    // await viewModel.refreshUserData(); // Refresh user data
+  void navigateToClientMyWorkoutsWeeklyPage(BuildContext context) async {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ClientWorkoutPage(viewModel: viewModel),
+        builder: (context) => ClientMyWorkoutsWeeklyPage(viewModel: viewModel),
       ),
     );
   }

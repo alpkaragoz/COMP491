@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:coach_connect/pages/client/client_home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:coach_connect/view_models/client/client_home_viewmodel.dart';
