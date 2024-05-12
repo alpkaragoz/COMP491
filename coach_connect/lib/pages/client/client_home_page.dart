@@ -1,3 +1,5 @@
+import 'package:coach_connect/pages/client/client_myworkouts_weekly_page.dart';
+import 'package:coach_connect/pages/client/client_workout_page.dart';
 import 'package:coach_connect/pages/client/mycoach_page.dart';
 import 'package:coach_connect/pages/login_page.dart';
 import 'package:flutter/material.dart';
@@ -57,6 +59,9 @@ class ClientHomePage extends StatelessWidget {
         if (title == "My Coach") {
           navigateToCoachDetails(context);
         }
+        else if (title == "My Workouts") {
+          navigateToClientMyWorkoutsWeeklyPage(context);
+        }
       },
       child: Card(
         elevation: 4.0,
@@ -81,6 +86,15 @@ class ClientHomePage extends StatelessWidget {
       context,
       MaterialPageRoute(
         builder: (context) => MyCoachPage(viewModel: viewModel),
+      ),
+    );
+  }
+
+  void navigateToClientMyWorkoutsWeeklyPage(BuildContext context) async {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ClientMyWorkoutsWeeklyPage(viewModel: viewModel),
       ),
     );
   }
