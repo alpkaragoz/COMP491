@@ -13,7 +13,6 @@ class MyClientsPage extends StatefulWidget {
 
 class _MyClientsPageState extends State<MyClientsPage> {
   final TextEditingController _requestController = TextEditingController();
-  var _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +76,6 @@ class _MyClientsPageState extends State<MyClientsPage> {
 
   void _setLoading(bool bool) {
     setState(() {
-      _isLoading = bool;
     });
   }
 

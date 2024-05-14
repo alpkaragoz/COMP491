@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:coach_connect/models/request.dart';
 import 'package:coach_connect/models/user_account.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:coach_connect/service/auth.dart';
 
@@ -52,7 +51,7 @@ class ClientHomeViewModel extends ChangeNotifier {
   }
 
   Future<String> cancelRequestFromClientToCoach() async {
-    if(pendingRequest == null) {
+    if (pendingRequest == null) {
       return "No request to cancel.";
     }
     var message = await _auth.cancelRequestFromClientToCoach(pendingRequest!);
@@ -75,14 +74,22 @@ class ClientHomeViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> removeCoachFromClient({required String clientId, required String coachId}) async {
-    try{
-      final data = await FirebaseFirestore.instance.collection("users").doc(clientId).update({"coachId": FieldValue.delete()});
-      final data2 = await FirebaseFirestore.instance.collection("users").doc(coachId).update({"clientIds": FieldValue.arrayRemove([clientId])});
-      
-    }
-    catch(e){
-      print(e);
+  Future<void> removeCoachFromClient(
+      {required String clientId, required String coachId}) async {
+    final clientRef =
+        FirebaseFirestore.instance.collection('users').doc(clientId);
+    final coachRef =
+        FirebaseFirestore.instance.collection('users').doc(coachId);
+
+    try {
+      await FirebaseFirestore.instance.runTransaction((transaction) async {
+        transaction.update(clientRef, {'coachId': FieldValue.delete()});
+        transaction.update(coachRef, {
+          'clientIds': FieldValue.arrayRemove([clientId])
+        });
+      });
+    } catch (e) {
+      return;
     }
   }
 }

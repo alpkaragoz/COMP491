@@ -1,11 +1,10 @@
-import 'package:coach_connect/models/request.dart';
 import 'package:flutter/material.dart';
 import 'package:coach_connect/view_models/coach/coach_home_viewmodel.dart';
 
 class CoachWorkoutPage extends StatelessWidget {
   final CoachHomeViewModel viewModel;
 
-  const CoachWorkoutPage({Key? key, required this.viewModel}) : super(key: key);
+  const CoachWorkoutPage({super.key, required this.viewModel});
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +18,7 @@ class CoachWorkoutPage extends StatelessWidget {
         children: [
           Expanded(
             child: GridView.builder(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 5,
               ),
               itemCount: 30, // 5 (top row) + 5 (left column) + 5x5 (rest of the grid)
@@ -41,12 +40,12 @@ class CoachWorkoutPage extends StatelessWidget {
                       onPressed: () {
                         // Add your logic for the "+" button here
                       },
-                      child: Icon(Icons.add),
+                      child: const Icon(Icons.add),
                     ),
                   );
                 } else {
                   // Text fields for the rest of the grid
-                  return Center(
+                  return const Center(
                     child: TextField(
                       decoration: InputDecoration(
                         border: OutlineInputBorder(),
@@ -63,7 +62,7 @@ class CoachWorkoutPage extends StatelessWidget {
               onPressed: () {
                 // Add your logic for the button at the bottom here
               },
-              child: Text('Create Workout'),
+              child: const Text('Create Workout'),
             ),
           ),
         ],

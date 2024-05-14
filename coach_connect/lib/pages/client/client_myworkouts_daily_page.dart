@@ -5,8 +5,7 @@ import 'package:coach_connect/view_models/client/client_home_viewmodel.dart';
 class ClientMyWorkoutsDailyPage extends StatelessWidget {
   final ClientHomeViewModel viewModel;
 
-  const ClientMyWorkoutsDailyPage({Key? key, required this.viewModel})
-      : super(key: key);
+  const ClientMyWorkoutsDailyPage({super.key, required this.viewModel});
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +18,7 @@ class ClientMyWorkoutsDailyPage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               border: Border(
                 top: BorderSide(color: Colors.black, width: 1.0),
               ),
@@ -36,9 +35,9 @@ class ClientMyWorkoutsDailyPage extends StatelessWidget {
                     backgroundColor:
                         MaterialStateProperty.all<Color>(Colors.black),
                     minimumSize: MaterialStateProperty.all<Size>(
-                        Size(double.infinity, 48)),
+                        const Size(double.infinity, 48)),
                   ),
-                  child: Text(
+                  child: const Text(
                     'Monday',
                     style: TextStyle(color: Colors.white),
                   ),

@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:coach_connect/view_models/client/client_home_viewmodel.dart';
 
-import 'package:flutter/material.dart';
 
 class ClientWorkoutPage extends StatefulWidget {
   final ClientHomeViewModel viewModel;
 
-  const ClientWorkoutPage({Key? key, required this.viewModel})
-      : super(key: key);
+  const ClientWorkoutPage({super.key, required this.viewModel});
 
   @override
   _ClientWorkoutPageState createState() => _ClientWorkoutPageState();
@@ -31,8 +29,8 @@ class _ClientWorkoutPageState extends State<ClientWorkoutPage> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8.0),
                   child: Divider(
                     color: Colors.black,
                     thickness: 1.0,
@@ -62,7 +60,7 @@ class _ClientWorkoutPageState extends State<ClientWorkoutPage> {
                 }),
                 if (_isExpandedSaturday)
                   _buildExpandableContent('Set:3 RPE:8 Reps:10 KG:60'),
-                SizedBox(
+                const SizedBox(
                     height:
                         16.0), // Add some space between the content and the button
               ],
@@ -77,7 +75,7 @@ class _ClientWorkoutPageState extends State<ClientWorkoutPage> {
                 onPressed: () {
                   // Add your logic for starting the workout here
                 },
-                child: Text('Start Workout'),
+                child: const Text('Start Workout'),
               ),
             ),
           ),
@@ -94,11 +92,11 @@ class _ClientWorkoutPageState extends State<ClientWorkoutPage> {
         decoration: BoxDecoration(
           color: buttonColor,
           borderRadius: BorderRadius.circular(10.0),
-          border: Border(
+          border: const Border(
             top: BorderSide(color: Colors.black, width: 1.0),
           ),
         ),
-        margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+        margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
           child: Row(
@@ -106,7 +104,7 @@ class _ClientWorkoutPageState extends State<ClientWorkoutPage> {
             children: [
               Text(
                 day,
-                style: TextStyle(color: Colors.white, fontSize: 16.0),
+                style: const TextStyle(color: Colors.white, fontSize: 16.0),
               ),
               Icon(
                 isExpanded ? Icons.arrow_drop_up : Icons.arrow_drop_down,
@@ -137,7 +135,7 @@ class _ClientWorkoutPageState extends State<ClientWorkoutPage> {
               children: [
                 Text(
                   content,
-                  style: TextStyle(color: Colors.white),
+                  style: const TextStyle(color: Colors.white),
                 ),
                 // Add other widgets here if needed
               ],

@@ -69,7 +69,7 @@ class _MyCoachPageState extends State<MyCoachPage> {
             : Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  SizedBox.shrink(),
+                  const SizedBox.shrink(),
                   Text(
                     "Coach Name: ${widget.viewModel.currentCoachName}",
                     style: const TextStyle(
