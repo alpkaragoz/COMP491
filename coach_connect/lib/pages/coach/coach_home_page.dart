@@ -1,4 +1,5 @@
-import 'package:coach_connect/pages/coach/coach_workout_page.dart';
+import 'package:coach_connect/pages/coach/coach_workout/coach_workout_clients_page.dart';
+import 'package:coach_connect/pages/coach/coach_workout/coach_workout_page.dart';
 import 'package:coach_connect/pages/coach/myclients_page.dart';
 import 'package:coach_connect/pages/login_page.dart';
 import 'package:flutter/material.dart';
@@ -95,7 +96,7 @@ class CoachHomePage extends StatelessWidget {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => CoachWorkoutPage(viewModel: viewModel),
+        builder: (context) => CoachWorkoutClientsPage(viewModel: viewModel)
       ),
     );
   }

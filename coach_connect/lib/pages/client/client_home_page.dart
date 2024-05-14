@@ -1,5 +1,5 @@
-import 'package:coach_connect/pages/client/client_myworkouts_weekly_page.dart';
-import 'package:coach_connect/pages/client/client_workout_page.dart';
+import 'package:coach_connect/pages/client/client_workout/client_myworkouts_weekly_page.dart';
+import 'package:coach_connect/pages/client/client_workout/client_workout_page.dart';
 import 'package:coach_connect/pages/client/mycoach_page.dart';
 import 'package:coach_connect/pages/login_page.dart';
 import 'package:flutter/material.dart';

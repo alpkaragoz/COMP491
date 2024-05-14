@@ -1,18 +1,21 @@
-import 'package:coach_connect/pages/client/client_myworkouts_daily_page.dart';
+import 'package:coach_connect/pages/client/client_workout/client_myworkouts_daily_page.dart';
+import 'package:coach_connect/pages/coach/coach_workout/coach_workout_page.dart';
+import 'package:coach_connect/pages/coach/coach_workout/coach_workout_week_selection.dart';
+import 'package:coach_connect/view_models/coach/coach_home_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:coach_connect/view_models/client/client_home_viewmodel.dart';
 
-class ClientMyWorkoutsWeeklyPage extends StatelessWidget {
-  final ClientHomeViewModel viewModel;
+class CoachWorkoutClientsPage extends StatelessWidget {
+  final CoachHomeViewModel viewModel;
 
-  const ClientMyWorkoutsWeeklyPage({Key? key, required this.viewModel})
+  const CoachWorkoutClientsPage({Key? key, required this.viewModel})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Workouts'),
+        title: const Text('My Clients'),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -39,7 +42,7 @@ class ClientMyWorkoutsWeeklyPage extends StatelessWidget {
                         Size(double.infinity, 48)),
                   ),
                   child: Text(
-                    'Week 1',
+                    'Koray',
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
@@ -56,7 +59,7 @@ class ClientMyWorkoutsWeeklyPage extends StatelessWidget {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ClientMyWorkoutsDailyPage(viewModel: viewModel),
+        builder: (context) => CoachWorkoutWeekSelectionPage(viewModel: viewModel)
       ),
     );
   }
