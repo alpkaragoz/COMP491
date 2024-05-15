@@ -23,7 +23,8 @@ class _CoachChatListPageState extends State<CoachChatListPage> {
   Future<void> _initializeChats() async {
     try {
       // Fetch all client IDs associated with this coach
-      var clientsQuery = await FirebaseFirestore.instance.collection('users')
+      var clientsQuery = await FirebaseFirestore.instance
+          .collection('users')
           .where('coachId', isEqualTo: widget.coachId)
           .get();
 
@@ -31,18 +32,22 @@ class _CoachChatListPageState extends State<CoachChatListPage> {
 
       // Check and create chat documents if they don't exist
       for (var clientId in clientIds) {
-        var chatQuery = await FirebaseFirestore.instance.collection('chats')
-            .where('participantIds', arrayContains: widget.coachId)
-            .get();
+        if (clientId.isNotEmpty) {
+          var chatQuery = await FirebaseFirestore.instance
+              .collection('chats')
+              .where('participantIds', arrayContains: widget.coachId)
+              .get();
 
-        var chatExists = chatQuery.docs.any((doc) => (doc['participantIds'] as List).contains(clientId));
+          var chatExists = chatQuery.docs
+              .any((doc) => (doc['participantIds'] as List).contains(clientId));
 
-        if (!chatExists) {
-          // Create the chat document if it doesn't exist
-          await FirebaseFirestore.instance.collection('chats').add({
-            'participantIds': [widget.coachId, clientId],
-            'isActive': true,
-          });
+          if (!chatExists) {
+            // Create the chat document if it doesn't exist
+            await FirebaseFirestore.instance.collection('chats').add({
+              'participantIds': [widget.coachId, clientId],
+              'isActive': true,
+            });
+          }
         }
       }
 
@@ -50,7 +55,6 @@ class _CoachChatListPageState extends State<CoachChatListPage> {
         isLoading = false;
       });
     } catch (e) {
-      print("Error initializing chats: $e");
       setState(() {
         isLoading = false;
       });
@@ -58,7 +62,8 @@ class _CoachChatListPageState extends State<CoachChatListPage> {
   }
 
   Future<String> _getUsername(String userId) async {
-    var userDoc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+    var userDoc =
+        await FirebaseFirestore.instance.collection('users').doc(userId).get();
     return userDoc['username'];
   }
 
@@ -88,20 +93,26 @@ class _CoachChatListPageState extends State<CoachChatListPage> {
             return const Center(child: CircularProgressIndicator());
           }
           var chatDocs = snapshot.data!.docs;
+          if (chatDocs.isEmpty) {
+            return const Center(
+              child: Text("No Chats Found."),
+            );
+          }
           return ListView.builder(
             itemCount: chatDocs.length,
             itemBuilder: (context, index) {
               var chatDoc = chatDocs[index];
               var chatId = chatDoc.id;
               var participants = chatDoc['participantIds'];
-              var otherParticipant = participants.firstWhere((id) => id != widget.coachId);
+              var otherParticipant =
+                  participants.firstWhere((id) => id != widget.coachId);
 
               return FutureBuilder<String>(
                 future: _getUsername(otherParticipant),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
                     return const ListTile(
-                      title: Text("No Chats Found."),
+                      title: Text("Loading..."),
                     );
                   }
                   var username = snapshot.data!;

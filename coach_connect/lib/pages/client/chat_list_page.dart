@@ -29,7 +29,7 @@ class _ChatListPageState extends State<ChatListPage> {
           .get();
       var currentCoachId = userDoc['coachId'];
 
-      if (currentCoachId != null) {
+      if (currentCoachId != null && currentCoachId.isNotEmpty) {
         // Check if the chat document exists
         var chatQuery = await FirebaseFirestore.instance
             .collection('chats')
@@ -90,6 +90,11 @@ class _ChatListPageState extends State<ChatListPage> {
             return const Center(child: CircularProgressIndicator());
           }
           var chatDocs = snapshot.data!.docs;
+          if (chatDocs.isEmpty) {
+            return const Center(
+              child: Text("No Chats Found."),
+            );
+          }
           return ListView.builder(
             itemCount: chatDocs.length,
             itemBuilder: (context, index) {
@@ -104,7 +109,7 @@ class _ChatListPageState extends State<ChatListPage> {
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
                     return const ListTile(
-                      title: Text("No Chats Found."),
+                      title: Text("Loading..."),
                     );
                   }
                   var username = snapshot.data!;
@@ -114,13 +119,11 @@ class _ChatListPageState extends State<ChatListPage> {
                         children: [
                           const TextSpan(
                             text: "Chat with ",
-                            style: TextStyle(
-                                color: Colors.black), // Style for "Chat with"
+                            style: TextStyle(color: Colors.black),
                           ),
                           TextSpan(
                             text: username,
-                            style: const TextStyle(
-                                color: Colors.green), // Style for $username
+                            style: const TextStyle(color: Colors.green),
                           ),
                         ],
                       ),
