@@ -49,7 +49,6 @@ class _CoachSettingsPageState extends State<CoachSettingsPage> {
         isLoading = false;
       });
     } catch (e) {
-      print("Error fetching user info: $e");
       setState(() {
         isLoading = false;
       });

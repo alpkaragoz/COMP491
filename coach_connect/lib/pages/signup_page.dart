@@ -23,48 +23,115 @@ class _SignupPageState extends State<SignupPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(LocaleKeys.signup.tr()),
+        title: Text(
+          LocaleKeys.signup.tr(),
+          style: const TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
+        ),
+        backgroundColor: const Color.fromARGB(255, 28, 40, 44),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context)
-              .pop(), // This takes the user back to the previous screen
+          icon: const Icon(Icons.arrow_back,
+              color: Color.fromARGB(255, 226, 182, 167)),
+          onPressed: () => Navigator.of(context).pop(),
         ),
       ),
+      backgroundColor: const Color.fromARGB(255, 28, 40, 44),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: ListView(
           children: [
             TextField(
               controller: _emailController,
-              decoration: InputDecoration(labelText: LocaleKeys.email.tr()),
+              decoration: InputDecoration(
+                labelText: LocaleKeys.email.tr(),
+                labelStyle:
+                    const TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
+                filled: true,
+                fillColor: const Color.fromARGB(255, 56, 80, 88),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              ),
+              style: const TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
             ),
+            const SizedBox(height: 16),
             TextField(
               controller: _passwordController,
-              decoration: InputDecoration(labelText: LocaleKeys.password.tr()),
+              decoration: InputDecoration(
+                labelText: LocaleKeys.password.tr(),
+                labelStyle:
+                    const TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
+                filled: true,
+                fillColor: const Color.fromARGB(255, 56, 80, 88),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              ),
+              style: const TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
               obscureText: true,
             ),
+            const SizedBox(height: 16),
             TextField(
               controller: _nameController,
-              decoration: InputDecoration(labelText: LocaleKeys.name.tr()),
+              decoration: InputDecoration(
+                labelText: LocaleKeys.name.tr(),
+                labelStyle:
+                    const TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
+                filled: true,
+                fillColor: const Color.fromARGB(255, 56, 80, 88),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              ),
+              style: const TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
             ),
+            const SizedBox(height: 16),
             TextField(
               controller: _ageController,
-              decoration: InputDecoration(labelText: LocaleKeys.age.tr()),
+              decoration: InputDecoration(
+                labelText: LocaleKeys.age.tr(),
+                labelStyle:
+                    const TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
+                filled: true,
+                fillColor: const Color.fromARGB(255, 56, 80, 88),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              ),
+              style: const TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
               keyboardType: TextInputType.number,
             ),
+            const SizedBox(height: 16),
             TextField(
               controller: _usernameController,
-              decoration: const InputDecoration(labelText: 'Username'),
+              decoration: InputDecoration(
+                labelText: 'Username',
+                labelStyle:
+                    const TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
+                filled: true,
+                fillColor: const Color.fromARGB(255, 56, 80, 88),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              ),
+              style: const TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
             ),
+            const SizedBox(height: 16),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 16.0),
               child: Text(
                 LocaleKeys.signupAccountTypePrompt.tr(),
-                style: Theme.of(context).textTheme.titleMedium,
+                style: TextStyle(
+                  color: const Color.fromARGB(255, 226, 182, 167),
+                  fontSize: Theme.of(context).textTheme.titleMedium?.fontSize,
+                ),
               ),
             ),
             ListTile(
-              title: Text(LocaleKeys.client.tr()),
+              title: Text(
+                LocaleKeys.client.tr(),
+                style:
+                    const TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
+              ),
               leading: Radio<AccountType>(
                 value: AccountType.client,
                 groupValue: _viewModel.accountType,
@@ -73,10 +140,16 @@ class _SignupPageState extends State<SignupPage> {
                     _viewModel.accountType = value!;
                   });
                 },
+                fillColor: MaterialStateColor.resolveWith(
+                    (states) => const Color.fromARGB(255, 226, 182, 167)),
               ),
             ),
             ListTile(
-              title: Text(LocaleKeys.coach.tr()),
+              title: Text(
+                LocaleKeys.coach.tr(),
+                style:
+                    const TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
+              ),
               leading: Radio<AccountType>(
                 value: AccountType.coach,
                 groupValue: _viewModel.accountType,
@@ -85,13 +158,28 @@ class _SignupPageState extends State<SignupPage> {
                     _viewModel.accountType = value!;
                   });
                 },
+                fillColor: MaterialStateColor.resolveWith(
+                    (states) => const Color.fromARGB(255, 226, 182, 167)),
               ),
             ),
             ElevatedButton(
               onPressed: _viewModel.isLoading ? null : _signup,
+              style: ElevatedButton.styleFrom(
+                foregroundColor: const Color.fromARGB(255, 226, 182, 167),
+                backgroundColor: const Color.fromARGB(255, 56, 80, 88),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              ),
               child: _viewModel.isLoading
-                  ? const CircularProgressIndicator(color: Colors.white)
-                  : Text(LocaleKeys.signup.tr()),
+                  ? const CircularProgressIndicator(color: Color.fromARGB(255, 226, 182, 167))
+                  : Text(
+                      LocaleKeys.signup.tr(),
+                      style: const TextStyle(
+                          color: Color.fromARGB(255, 226, 182, 167)),
+                    ),
             ),
           ],
         ),
@@ -134,6 +222,7 @@ class _SignupPageState extends State<SignupPage> {
     _passwordController.dispose();
     _nameController.dispose();
     _ageController.dispose();
+    _usernameController.dispose();
     super.dispose();
   }
 

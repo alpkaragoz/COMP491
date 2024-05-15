@@ -69,17 +69,35 @@ class _ChatListPageState extends State<ChatListPage> {
     if (isLoading) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text("Chats"),
+          title: const Text(
+            "Chats",
+            style: TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
+          ),
+          backgroundColor: const Color.fromARGB(255, 28, 40, 44),
+          iconTheme: const IconThemeData(
+            color: Color.fromARGB(255, 226, 182, 167),
+          ),
         ),
+        backgroundColor: const Color.fromARGB(255, 28, 40, 44),
         body: const Center(
-          child: CircularProgressIndicator(),
+          child: CircularProgressIndicator(
+            color: Color.fromARGB(255, 226, 182, 167),
+          ),
         ),
       );
     }
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Chats"),
+        title: const Text(
+          "Chats",
+          style: TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
+        ),
+        backgroundColor: const Color.fromARGB(255, 28, 40, 44),
+        iconTheme: const IconThemeData(
+          color: Color.fromARGB(255, 226, 182, 167),
+        ),
       ),
+      backgroundColor: const Color.fromARGB(255, 28, 40, 44),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('chats')
@@ -87,12 +105,19 @@ class _ChatListPageState extends State<ChatListPage> {
             .snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+              child: CircularProgressIndicator(
+                color: Color.fromARGB(255, 226, 182, 167),
+              ),
+            );
           }
           var chatDocs = snapshot.data!.docs;
           if (chatDocs.isEmpty) {
             return const Center(
-              child: Text("No Chats Found."),
+              child: Text(
+                "No Chats Found.",
+                style: TextStyle(color: Colors.white),
+              ),
             );
           }
           return ListView.builder(
@@ -109,7 +134,10 @@ class _ChatListPageState extends State<ChatListPage> {
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
                     return const ListTile(
-                      title: Text("Loading..."),
+                      title: Text(
+                        "Loading...",
+                        style: TextStyle(color: Colors.white),
+                      ),
                     );
                   }
                   var username = snapshot.data!;
@@ -119,11 +147,12 @@ class _ChatListPageState extends State<ChatListPage> {
                         children: [
                           const TextSpan(
                             text: "Chat with ",
-                            style: TextStyle(color: Colors.black),
+                            style: TextStyle(color: Colors.white),
                           ),
                           TextSpan(
                             text: username,
-                            style: const TextStyle(color: Colors.green),
+                            style: const TextStyle(
+                                color: Color.fromARGB(255, 226, 182, 167)),
                           ),
                         ],
                       ),
@@ -138,11 +167,17 @@ class _ChatListPageState extends State<ChatListPage> {
                           .snapshots(),
                       builder: (context, snapshot) {
                         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                          return const Text("No messages yet");
+                          return const Text(
+                            "No messages yet",
+                            style: TextStyle(color: Colors.white),
+                          );
                         }
                         var lastMessage = snapshot.data!.docs.first;
                         var messageText = lastMessage['text'];
-                        return Text(messageText);
+                        return Text(
+                          messageText,
+                          style: const TextStyle(color: Colors.white),
+                        );
                       },
                     ),
                     onTap: () {

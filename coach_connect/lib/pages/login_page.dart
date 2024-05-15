@@ -23,8 +23,13 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(LocaleKeys.login.tr()),
+        title: Text(
+          LocaleKeys.login.tr(),
+          style: const TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
+        ),
+        backgroundColor: const Color.fromARGB(255, 28, 40, 44),
       ),
+      backgroundColor: const Color.fromARGB(255, 28, 40, 44),
       body: Form(
         key: _formKey,
         child: Padding(
@@ -33,8 +38,16 @@ class _LoginPageState extends State<LoginPage> {
             children: <Widget>[
               TextFormField(
                 controller: _emailController,
-                decoration:
-                    InputDecoration(labelText: LocaleKeys.email.tr()),
+                decoration: InputDecoration(
+                  labelText: LocaleKeys.email.tr(),
+                  labelStyle: const TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
+                  filled: true,
+                  fillColor: const Color.fromARGB(255, 56, 80, 88),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                ),
+                style: const TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your email';
@@ -42,10 +55,19 @@ class _LoginPageState extends State<LoginPage> {
                   return null;
                 },
               ),
+              const SizedBox(height: 16),
               TextFormField(
                 controller: _passwordController,
-                decoration:
-                    InputDecoration(labelText: LocaleKeys.password.tr()),
+                decoration: InputDecoration(
+                  labelText: LocaleKeys.password.tr(),
+                  labelStyle: const TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
+                  filled: true,
+                  fillColor: const Color.fromARGB(255, 56, 80, 88),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                ),
+                style: const TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
                 obscureText: true,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -54,15 +76,25 @@ class _LoginPageState extends State<LoginPage> {
                   return null;
                 },
               ),
-              Padding(
-                padding: const EdgeInsets.only(top: 20.0),
-                child: ElevatedButton(
-                  onPressed: _viewModel.isLoading ? null : _login,
-                  child: _viewModel.isLoading
-                      ? const CircularProgressIndicator(color: Colors.white)
-                      : Text(LocaleKeys.login.tr()),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _viewModel.isLoading ? null : _login,
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: const Color.fromARGB(255, 226, 182, 167),
+                  backgroundColor: const Color.fromARGB(255, 56, 80, 88),
+                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
                 ),
+                child: _viewModel.isLoading
+                    ? const CircularProgressIndicator(color: Color.fromARGB(255, 226, 182, 167))
+                    : Text(
+                        LocaleKeys.login.tr(),
+                        style: const TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
+                      ),
               ),
+              const SizedBox(height: 16),
               TextButton(
                 onPressed: () {
                   Navigator.push(
@@ -73,6 +105,7 @@ class _LoginPageState extends State<LoginPage> {
                 child: Text(
                   LocaleKeys.signupPrompt.tr(),
                   textAlign: TextAlign.center,
+                  style: const TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
                 ),
               ),
               Expanded(
@@ -82,6 +115,14 @@ class _LoginPageState extends State<LoginPage> {
                     padding: const EdgeInsets.all(8.0),
                     child: ElevatedButton(
                       onPressed: _toggleLanguage,
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: const Color.fromARGB(255, 226, 182, 167),
+                        backgroundColor: const Color.fromARGB(255, 56, 80, 88),
+                        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                      ),
                       child: const Text('TR/EN'),
                     ),
                   ),

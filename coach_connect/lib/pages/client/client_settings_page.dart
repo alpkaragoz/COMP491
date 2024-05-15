@@ -60,49 +60,109 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
     if (isLoading) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text("Settings"),
+          title: const Text(
+            "Settings",
+            style: TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
+          ),
+          backgroundColor: const Color.fromARGB(255, 28, 40, 44),
+          iconTheme: const IconThemeData(
+            color: Color.fromARGB(255, 226, 182, 167),
+          ),
         ),
+        backgroundColor: const Color.fromARGB(255, 28, 40, 44),
         body: const Center(
-          child: CircularProgressIndicator(),
+          child: CircularProgressIndicator(
+            color: Color.fromARGB(255, 226, 182, 167),
+          ),
         ),
       );
     }
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Settings"),
+        title: const Text(
+          "Settings",
+          style: TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
+        ),
+        backgroundColor: const Color.fromARGB(255, 28, 40, 44),
+        iconTheme: const IconThemeData(
+          color: Color.fromARGB(255, 226, 182, 167),
+        ),
       ),
+      backgroundColor: const Color.fromARGB(255, 28, 40, 44),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: ListView(
           children: [
             ListTile(
-              title: const Text("Name"),
-              subtitle: Text(userInfo?['name'] ?? 'N/A'),
+              title: const Text(
+                "Name",
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ),
+              subtitle: Text(
+                userInfo?['name'] ?? 'N/A',
+                style: const TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
+              ),
             ),
             ListTile(
-              title: const Text("Age"),
-              subtitle: Text(userInfo?['age']?.toString() ?? 'N/A'),
+              title: const Text(
+                "Age",
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ),
+              subtitle: Text(
+                userInfo?['age']?.toString() ?? 'N/A',
+                style: const TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
+              ),
             ),
             ListTile(
-              title: const Text("Username"),
-              subtitle: Text(userInfo?['username'] ?? 'N/A'),
+              title: const Text(
+                "Username",
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ),
+              subtitle: Text(
+                userInfo?['username'] ?? 'N/A',
+                style: const TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
+              ),
             ),
             ListTile(
-              title: const Text("Email"),
-              subtitle: Text(userInfo?['email'] ?? 'N/A'),
+              title: const Text(
+                "Email",
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ),
+              subtitle: Text(
+                userInfo?['email'] ?? 'N/A',
+                style: const TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
+              ),
             ),
             ListTile(
-              title: const Text("Account Type"),
-              subtitle: Text(userInfo?['accountType'] ?? 'N/A'),
+              title: const Text(
+                "Account Type",
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ),
+              subtitle: Text(
+                userInfo?['accountType'] ?? 'N/A',
+                style: const TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
+              ),
             ),
             ListTile(
-              title: const Text("Coach Username"),
-              subtitle: Text(coachUsername ?? 'No coach assigned'),
+              title: const Text(
+                "Coach Username",
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ),
+              subtitle: Text(
+                coachUsername ?? 'No coach assigned',
+                style: const TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
+              ),
             ),
             ListTile(
-              title: const Text("Number of Workouts"),
-              subtitle: Text(workoutCount.toString()),
+              title: const Text(
+                "Number of Workouts",
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ),
+              subtitle: Text(
+                workoutCount.toString(),
+                style: const TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
+              ),
             ),
           ],
         ),

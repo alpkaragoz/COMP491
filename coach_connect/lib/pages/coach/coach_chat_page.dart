@@ -34,7 +34,6 @@ class _CoachChatPageState extends State<CoachChatPage> {
         isLoading = false;
       });
     } catch (e) {
-      print("Error initializing chat: $e");
       setState(() {
         isLoading = false;
       });
