@@ -135,7 +135,6 @@ class CoachHomePage extends StatelessWidget {
               onPressed: () async {
                 Navigator.of(context).pop(); // Dismiss the dialog
                 await viewModel.signOut(); // Proceed with sign out
-                MaterialPageRoute(builder: (context) => const LoginPage());
               },
               child: const Text('Yes', style: TextStyle(color: Colors.red)),
             ),

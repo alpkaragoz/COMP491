@@ -175,14 +175,6 @@ class _ClientHomePageState extends State<ClientHomePage> {
               onPressed: () async {
                 Navigator.of(context).pop(); // Dismiss the dialog
                 await widget.viewModel.signOut(); // Proceed with sign out
-                if (mounted) {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const LoginPage(),
-                    ),
-                  );
-                }
               },
               child: const Text(
                 'Yes',
