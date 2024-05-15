@@ -30,113 +30,117 @@ class _LoginPageState extends State<LoginPage> {
         backgroundColor: const Color.fromARGB(255, 28, 40, 44),
       ),
       backgroundColor: const Color.fromARGB(255, 28, 40, 44),
-      body: Form(
-        key: _formKey,
-        child: Padding(
+      body: SingleChildScrollView(
+        child: Container(
           padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: <Widget>[
-              // Add the logo image here
-              Padding(
-                padding: const EdgeInsets.only(bottom: 32.0),
-                child: Image.asset(
-                  'assets/cclogo.png',
-                  height: 200, // Adjust the height as needed
-                ),
-              ),
-              TextFormField(
-                controller: _emailController,
-                decoration: InputDecoration(
-                  labelText: LocaleKeys.email.tr(),
-                  labelStyle: const TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
-                  filled: true,
-                  fillColor: const Color.fromARGB(255, 56, 80, 88),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
+          child: IntrinsicHeight(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 32.0),
+                  child: Image.asset(
+                    'assets/cclogo.png',
+                    height: 200,
                   ),
                 ),
-                style: const TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your email';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _passwordController,
-                decoration: InputDecoration(
-                  labelText: LocaleKeys.password.tr(),
-                  labelStyle: const TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
-                  filled: true,
-                  fillColor: const Color.fromARGB(255, 56, 80, 88),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                ),
-                style: const TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
-                obscureText: true,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your password';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _viewModel.isLoading ? null : _login,
-                style: ElevatedButton.styleFrom(
-                  foregroundColor: const Color.fromARGB(255, 226, 182, 167),
-                  backgroundColor: const Color.fromARGB(255, 56, 80, 88),
-                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                ),
-                child: _viewModel.isLoading
-                    ? const CircularProgressIndicator(color: Color.fromARGB(255, 226, 182, 167))
-                    : Text(
-                        LocaleKeys.login.tr(),
-                        style: const TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
-                      ),
-              ),
-              const SizedBox(height: 16),
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const SignupPage()),
-                  );
-                },
-                child: Text(
-                  LocaleKeys.signupPrompt.tr(),
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
-                ),
-              ),
-              Expanded(
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: ElevatedButton(
-                      onPressed: _toggleLanguage,
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: const Color.fromARGB(255, 226, 182, 167),
-                        backgroundColor: const Color.fromARGB(255, 56, 80, 88),
-                        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                      ),
-                      child: const Text('TR/EN'),
+                TextFormField(
+                  controller: _emailController,
+                  decoration: InputDecoration(
+                    labelText: LocaleKeys.email.tr(),
+                    labelStyle: const TextStyle(
+                        color: Color.fromARGB(255, 226, 182, 167)),
+                    filled: true,
+                    fillColor: const Color.fromARGB(255, 56, 80, 88),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
                     ),
                   ),
+                  style: const TextStyle(
+                      color: Color.fromARGB(255, 226, 182, 167)),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your email';
+                    }
+                    return null;
+                  },
                 ),
-              ),
-            ],
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _passwordController,
+                  decoration: InputDecoration(
+                    labelText: LocaleKeys.password.tr(),
+                    labelStyle: const TextStyle(
+                        color: Color.fromARGB(255, 226, 182, 167)),
+                    filled: true,
+                    fillColor: const Color.fromARGB(255, 56, 80, 88),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                  ),
+                  style: const TextStyle(
+                      color: Color.fromARGB(255, 226, 182, 167)),
+                  obscureText: true,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your password';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: _viewModel.isLoading ? null : _login,
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: const Color.fromARGB(255, 226, 182, 167),
+                    backgroundColor: const Color.fromARGB(255, 56, 80, 88),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 32, vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                  ),
+                  child: _viewModel.isLoading
+                      ? const CircularProgressIndicator(
+                          color: Color.fromARGB(255, 226, 182, 167))
+                      : Text(
+                          LocaleKeys.login.tr(),
+                          style: const TextStyle(
+                              color: Color.fromARGB(255, 226, 182, 167)),
+                        ),
+                ),
+                const SizedBox(height: 16),
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const SignupPage()),
+                    );
+                  },
+                  child: Text(
+                    LocaleKeys.signupPrompt.tr(),
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                        color: Color.fromARGB(255, 226, 182, 167)),
+                  ),
+                ),
+                const Spacer(), // Adds flexible space
+                ElevatedButton(
+                  onPressed: _toggleLanguage,
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: const Color.fromARGB(255, 226, 182, 167),
+                    backgroundColor: const Color.fromARGB(255, 56, 80, 88),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 32, vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                  ),
+                  child: const Text('TR/EN'),
+                ),
+              ],
+            ),
           ),
         ),
       ),
