@@ -163,15 +163,16 @@ class AuthenticationService {
   Future<String> sendRequestToCoach(String coachUsername) async {
     try {
       UserAccount currentUser = await getCurrentUserAccountObject();
-      // Find receiverId by querying for a user with the provided coachUsername
+      // Find receiverId by querying for a user with the provided coachUsername and accountType "coach"
       var users = await _db
           .collection('users')
           .where('username', isEqualTo: coachUsername)
+          .where('accountType', isEqualTo: 'coach')
           .limit(1)
           .get();
 
       if (users.docs.isEmpty) {
-        return ("No user found with the username: $coachUsername");
+        return ("No coach found with the username: $coachUsername");
       }
 
       // Assuming the first document found is the correct user
