@@ -36,6 +36,14 @@ class _LoginPageState extends State<LoginPage> {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: <Widget>[
+              // Add the logo image here
+              Padding(
+                padding: const EdgeInsets.only(bottom: 32.0),
+                child: Image.asset(
+                  'assets/cclogo.png',
+                  height: 200, // Adjust the height as needed
+                ),
+              ),
               TextFormField(
                 controller: _emailController,
                 decoration: InputDecoration(
