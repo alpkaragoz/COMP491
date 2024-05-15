@@ -1,5 +1,5 @@
 name: coach_connect
-description: "A new Flutter project."
+description: "Coach Connect"
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -43,7 +43,19 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  
+  flutter_launcher_icons: ^0.9.2
+  flutter_native_splash: ^2.0.4+1
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/cclogo.png"
+
+flutter_native_splash:
+  color: "#ffffff" # Background color of the splash screen
+  image: assets/cclogo.png # Path to your splash screen image
+  android: true
+  ios: true
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -66,9 +78,8 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/
+    - assets/cclogo.png
     - assets/translations/
-
 
 
   # An image asset can refer to one or more resolution-specific "variants", see
