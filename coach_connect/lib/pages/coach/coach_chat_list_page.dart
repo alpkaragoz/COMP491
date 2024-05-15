@@ -1,17 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'client_chat_page.dart';
+import 'coach_chat_page.dart';
 
-class ChatListPage extends StatefulWidget {
-  final String currentUserId;
+class CoachChatListPage extends StatefulWidget {
+  final String coachId;
 
-  const ChatListPage({super.key, required this.currentUserId});
+  const CoachChatListPage({super.key, required this.coachId});
 
   @override
-  State<ChatListPage> createState() => _ChatListPageState();
+  State<CoachChatListPage> createState() => _CoachChatListPageState();
 }
 
-class _ChatListPageState extends State<ChatListPage> {
+class _CoachChatListPageState extends State<CoachChatListPage> {
   bool isLoading = true;
 
   @override
@@ -22,27 +22,25 @@ class _ChatListPageState extends State<ChatListPage> {
 
   Future<void> _initializeChats() async {
     try {
-      // Fetch the current coach ID for the user
-      var userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(widget.currentUserId)
+      // Fetch all client IDs associated with this coach
+      var clientsQuery = await FirebaseFirestore.instance.collection('users')
+          .where('coachId', isEqualTo: widget.coachId)
           .get();
-      var currentCoachId = userDoc['coachId'];
 
-      if (currentCoachId != null) {
-        // Check if the chat document exists
-        var chatQuery = await FirebaseFirestore.instance
-            .collection('chats')
-            .where('participantIds', arrayContains: widget.currentUserId)
+      var clientIds = clientsQuery.docs.map((doc) => doc.id).toList();
+
+      // Check and create chat documents if they don't exist
+      for (var clientId in clientIds) {
+        var chatQuery = await FirebaseFirestore.instance.collection('chats')
+            .where('participantIds', arrayContains: widget.coachId)
             .get();
 
-        var chatExists = chatQuery.docs.any(
-            (doc) => (doc['participantIds'] as List).contains(currentCoachId));
+        var chatExists = chatQuery.docs.any((doc) => (doc['participantIds'] as List).contains(clientId));
 
         if (!chatExists) {
           // Create the chat document if it doesn't exist
           await FirebaseFirestore.instance.collection('chats').add({
-            'participantIds': [widget.currentUserId, currentCoachId],
+            'participantIds': [widget.coachId, clientId],
             'isActive': true,
           });
         }
@@ -52,6 +50,7 @@ class _ChatListPageState extends State<ChatListPage> {
         isLoading = false;
       });
     } catch (e) {
+      print("Error initializing chats: $e");
       setState(() {
         isLoading = false;
       });
@@ -59,8 +58,7 @@ class _ChatListPageState extends State<ChatListPage> {
   }
 
   Future<String> _getUsername(String userId) async {
-    var userDoc =
-        await FirebaseFirestore.instance.collection('users').doc(userId).get();
+    var userDoc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
     return userDoc['username'];
   }
 
@@ -83,7 +81,7 @@ class _ChatListPageState extends State<ChatListPage> {
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('chats')
-            .where('participantIds', arrayContains: widget.currentUserId)
+            .where('participantIds', arrayContains: widget.coachId)
             .snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
@@ -96,8 +94,7 @@ class _ChatListPageState extends State<ChatListPage> {
               var chatDoc = chatDocs[index];
               var chatId = chatDoc.id;
               var participants = chatDoc['participantIds'];
-              var otherParticipant =
-                  participants.firstWhere((id) => id != widget.currentUserId);
+              var otherParticipant = participants.firstWhere((id) => id != widget.coachId);
 
               return FutureBuilder<String>(
                 future: _getUsername(otherParticipant),
@@ -114,13 +111,11 @@ class _ChatListPageState extends State<ChatListPage> {
                         children: [
                           const TextSpan(
                             text: "Chat with ",
-                            style: TextStyle(
-                                color: Colors.black), // Style for "Chat with"
+                            style: TextStyle(color: Colors.black),
                           ),
                           TextSpan(
                             text: username,
-                            style: const TextStyle(
-                                color: Colors.green), // Style for $username
+                            style: const TextStyle(color: Colors.green),
                           ),
                         ],
                       ),
@@ -146,8 +141,8 @@ class _ChatListPageState extends State<ChatListPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => ClientChatPage(
-                            currentUserId: widget.currentUserId,
+                          builder: (context) => CoachChatPage(
+                            coachId: widget.coachId,
                             chatId: chatId,
                           ),
                         ),

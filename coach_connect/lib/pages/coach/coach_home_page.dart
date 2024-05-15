@@ -1,3 +1,4 @@
+import 'package:coach_connect/pages/coach/coach_chat_list_page.dart';
 import 'package:coach_connect/pages/coach/coach_workout_page.dart';
 import 'package:coach_connect/pages/coach/myclients_page.dart';
 import 'package:coach_connect/pages/login_page.dart';
@@ -57,10 +58,11 @@ class CoachHomePage extends StatelessWidget {
       onTap: () {
         if (title == "My Clients") {
           navigateToClientDetails(context);
-        } else if (title == "Create/View Workouts") { 
+        } else if (title == "Create/View Workouts") {
           navigateToCoachWorkoutPage(context);
+        } else if (title == "Chat") {
+          navigateToChat(context);
         }
-
       },
       child: Card(
         elevation: 4.0,
@@ -96,6 +98,15 @@ class CoachHomePage extends StatelessWidget {
       context,
       MaterialPageRoute(
         builder: (context) => CoachWorkoutPage(viewModel: viewModel),
+      ),
+    );
+  }
+
+  void navigateToChat(BuildContext context) async {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CoachChatListPage(coachId: viewModel.user!.id),
       ),
     );
   }

@@ -5,13 +5,19 @@ import 'package:coach_connect/pages/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:coach_connect/view_models/client/client_home_viewmodel.dart';
 
-class ClientHomePage extends StatelessWidget {
+class ClientHomePage extends StatefulWidget {
   const ClientHomePage({
     super.key,
     required this.viewModel,
   });
+
   final ClientHomeViewModel viewModel;
 
+  @override
+  State<ClientHomePage> createState() => _ClientHomePageState();
+}
+
+class _ClientHomePageState extends State<ClientHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,7 +35,7 @@ class ClientHomePage extends StatelessWidget {
         child: Column(
           children: <Widget>[
             Text(
-              'Welcome, ${viewModel.user.name}',
+              'Welcome, ${widget.viewModel.user.name}',
               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
@@ -58,11 +64,9 @@ class ClientHomePage extends StatelessWidget {
       onTap: () {
         if (title == "My Coach") {
           navigateToCoachDetails(context);
-        }
-        else if (title == "My Workouts") {
+        } else if (title == "My Workouts") {
           navigateToClientMyWorkoutsWeeklyPage(context);
-        }
-        else if(title == "Chat") {
+        } else if (title == "Chat") {
           navigateToChat(context);
         }
       },
@@ -83,32 +87,40 @@ class ClientHomePage extends StatelessWidget {
   }
 
   void navigateToCoachDetails(BuildContext context) async {
-    await viewModel.refreshUserData(); // Refresh user data
-    await viewModel.getUserAccountOfRequest();
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => MyCoachPage(viewModel: viewModel),
-      ),
-    );
+    await widget.viewModel.refreshUserData(); // Refresh user data
+    await widget.viewModel.getUserAccountOfRequest();
+    if (mounted) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MyCoachPage(viewModel: widget.viewModel),
+        ),
+      );
+    }
   }
 
   void navigateToClientMyWorkoutsWeeklyPage(BuildContext context) async {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ClientMyWorkoutsWeeklyPage(viewModel: viewModel),
-      ),
-    );
+    if (mounted) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              ClientMyWorkoutsWeeklyPage(viewModel: widget.viewModel),
+        ),
+      );
+    }
   }
 
-    void navigateToChat(BuildContext context) async {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ChatListPage(currentUserId: viewModel.user.id),
-      ),
-    );
+  void navigateToChat(BuildContext context) async {
+    if (mounted) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              ChatListPage(currentUserId: widget.viewModel.user.id),
+        ),
+      );
+    }
   }
 
   void _showSignOutConfirmation(BuildContext context) {
@@ -122,7 +134,7 @@ class ClientHomePage extends StatelessWidget {
             TextButton(
               onPressed: () async {
                 Navigator.of(context).pop(); // Dismiss the dialog
-                await viewModel.signOut(); // Proceed with sign out
+                await widget.viewModel.signOut(); // Proceed with sign out
                 MaterialPageRoute(builder: (context) => const LoginPage());
               },
               child: const Text('Yes', style: TextStyle(color: Colors.red)),
