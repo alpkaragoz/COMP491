@@ -13,6 +13,19 @@ class SelectedWeeksPage extends StatefulWidget {
 class _SelectedWeeksPageState extends State<SelectedWeeksPage> {
   int selectedWeek = 1; // Initialize selectedWeek to 1
   int selectedDay = 1; // Initialize selectedWeek to 1
+  TextEditingController exerciseController =
+      TextEditingController(); // Controller for the exercise TextField
+  List<List<String>> enteredExercisesByDay = [
+    []
+  ]; // Track the entered exercises by day
+
+  void addDay() {
+    setState(() {
+      enteredExercisesByDay
+          .add([]); // Add a new day with an empty list of exercises
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,37 +54,97 @@ class _SelectedWeeksPageState extends State<SelectedWeeksPage> {
               }),
             ),
           ),
-          SizedBox(height: 20),
           Expanded(
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: widget.selectedWeeks.length,
-              itemBuilder: (context, index) {
-                final week = widget.selectedWeeks[index];
-                return Column(
-                  children: [
-                    Text('Day $selectedDay'),
-                    Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: DropdownButton<int>(
-                        value: selectedWeek,
-                        onChanged: (value) {
-                          setState(() {
-                            selectedWeek = value!;
-                          });
-                        },
-                        items: List.generate(
-                          7,
-                          (index) => DropdownMenuItem<int>(
-                            value: index + 1,
-                            child: Text('Exercise ${index + 1}'),
-                          ),
+            child: Column(
+              children: [
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: enteredExercisesByDay.length,
+                    itemBuilder: (context, index) {
+                      return Container(
+                        margin: EdgeInsets.all(8.0),
+                        padding: EdgeInsets.all(8.0),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[200], // Light grey color
+                          borderRadius: BorderRadius.circular(20.0),
                         ),
-                      ),
-                    ),
-                  ],
-                );
-              },
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Day ${index + 1}'),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: List.generate(
+                                  enteredExercisesByDay[index].length,
+                                  (exerciseIndex) {
+                                final exerciseNumber = exerciseIndex + 1;
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 4.0,
+                                  ),
+                                  child: Text(
+                                      '$exerciseNumber. ${enteredExercisesByDay[index][exerciseIndex]}'),
+                                );
+                              }),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                showModalBottomSheet<void>(
+                                  context: context,
+                                  isScrollControlled: true,
+                                  builder: (BuildContext context) {
+                                    return Container(
+                                      padding: EdgeInsets.only(
+                                        bottom: MediaQuery.of(context)
+                                            .viewInsets
+                                            .bottom,
+                                      ),
+                                      height: 200,
+                                      child: Column(
+                                        children: [
+                                          TextField(
+                                            controller:
+                                                exerciseController, // Use the controller
+                                            decoration: InputDecoration(
+                                              hintText: 'Enter exercise',
+                                              border: OutlineInputBorder(),
+                                            ),
+                                          ),
+                                          SizedBox(height: 10),
+                                          ElevatedButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                enteredExercisesByDay[index]
+                                                    .add(exerciseController
+                                                        .text); // Add the entered exercise
+                                                exerciseController
+                                                    .clear(); // Clear the text field
+                                              });
+                                            },
+                                            child: Text('Add'),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
+                              child: Text('Add Exercise'),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton(
+                    onPressed: addDay,
+                    child: Text('Add Day'),
+                  ),
+                ),
+              ],
             ),
           ),
         ],

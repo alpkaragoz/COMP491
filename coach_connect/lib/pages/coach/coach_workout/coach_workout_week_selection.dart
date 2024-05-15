@@ -86,8 +86,8 @@ class _WeekSelectorState extends State<WeekSelector> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => SelectedWeeksPage(selectedWeeks: selectedWeeks)
-                  ),
+                      builder: (context) =>
+                          SelectedWeeksPage(selectedWeeks: selectedWeeks)),
                 );
               },
               child: Text('Next'),
@@ -98,5 +98,3 @@ class _WeekSelectorState extends State<WeekSelector> {
     );
   }
 }
-
-
