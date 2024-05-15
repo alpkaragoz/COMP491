@@ -1,5 +1,6 @@
 import 'package:coach_connect/pages/client/chat_list_page.dart';
 import 'package:coach_connect/pages/client/client_myworkouts_weekly_page.dart';
+import 'package:coach_connect/pages/client/client_settings_page.dart';
 import 'package:coach_connect/pages/client/mycoach_page.dart';
 import 'package:coach_connect/pages/login_page.dart';
 import 'package:flutter/material.dart';
@@ -68,6 +69,8 @@ class _ClientHomePageState extends State<ClientHomePage> {
           navigateToClientMyWorkoutsWeeklyPage(context);
         } else if (title == "Chat") {
           navigateToChat(context);
+        } else if (title == "Settings") {
+          navigateToSettings(context);
         }
       },
       child: Card(
@@ -118,6 +121,18 @@ class _ClientHomePageState extends State<ClientHomePage> {
         MaterialPageRoute(
           builder: (context) =>
               ChatListPage(currentUserId: widget.viewModel.user.id),
+        ),
+      );
+    }
+  }
+
+  void navigateToSettings(BuildContext context) async {
+    if (mounted) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              ClientSettingsPage(userId: widget.viewModel.user.id),
         ),
       );
     }

@@ -1,4 +1,5 @@
 import 'package:coach_connect/pages/coach/coach_chat_list_page.dart';
+import 'package:coach_connect/pages/coach/coach_settings_page.dart';
 import 'package:coach_connect/pages/coach/coach_workout_page.dart';
 import 'package:coach_connect/pages/coach/myclients_page.dart';
 import 'package:coach_connect/pages/login_page.dart';
@@ -62,6 +63,8 @@ class CoachHomePage extends StatelessWidget {
           navigateToCoachWorkoutPage(context);
         } else if (title == "Chat") {
           navigateToChat(context);
+        } else if (title == "Settings") {
+          navigateToSettings(context);
         }
       },
       child: Card(
@@ -107,6 +110,15 @@ class CoachHomePage extends StatelessWidget {
       context,
       MaterialPageRoute(
         builder: (context) => CoachChatListPage(coachId: viewModel.user!.id),
+      ),
+    );
+  }
+
+  void navigateToSettings(BuildContext context) async {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CoachSettingsPage(userId: viewModel.user!.id),
       ),
     );
   }

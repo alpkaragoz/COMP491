@@ -34,10 +34,10 @@ class _LoginPageState extends State<LoginPage> {
               TextFormField(
                 controller: _emailController,
                 decoration:
-                    InputDecoration(labelText: LocaleKeys.username.tr()),
+                    InputDecoration(labelText: LocaleKeys.email.tr()),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter your username';
+                    return 'Please enter your email';
                   }
                   return null;
                 },
