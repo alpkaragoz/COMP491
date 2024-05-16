@@ -2,15 +2,31 @@ import 'package:coach_connect/models/request.dart';
 import 'package:flutter/material.dart';
 import 'package:coach_connect/view_models/coach/coach_home_viewmodel.dart';
 
-class CoachWorkoutPage extends StatelessWidget {
+class CoachWorkoutPage extends StatefulWidget {
   final CoachHomeViewModel viewModel;
 
   const CoachWorkoutPage({Key? key, required this.viewModel}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    List<String> topStrings = ['Set', 'RPE', 'Reps', 'KG', 'Video'];
+  _CoachWorkoutPageState createState() => _CoachWorkoutPageState();
+}
 
+class _CoachWorkoutPageState extends State<CoachWorkoutPage> {
+  List<List<String>> workoutData = [
+    ['Set', 'RPE', 'Reps', 'KG', 'Video'],
+    ['1', '', '', '', ''],
+  ];
+  int setCounter = 2;
+
+  void addRow() {
+    setState(() {
+      workoutData.add([setCounter.toString(), '', '', '', '']);
+      setCounter++;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Coach Workout Add Page'),
@@ -22,32 +38,33 @@ class CoachWorkoutPage extends StatelessWidget {
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 5,
               ),
-              itemCount: 30, // 5 (top row) + 5 (left column) + 5x5 (rest of the grid)
+              itemCount: workoutData.length * 5,
               itemBuilder: (BuildContext context, int index) {
-                if (index < 5) {
-                  // Top row with different strings
+                int rowIndex = index ~/ 5;
+                int columnIndex = index % 5;
+                if (rowIndex == 0) {
                   return Center(
-                    child: Text(topStrings[index]),
+                    child: Text(workoutData[rowIndex][columnIndex]),
                   );
-                } else if (index % 5 == 0) {
-                  // First column with strings
+                } else if (columnIndex == 0) {
                   return Center(
-                    child: Text('${index ~/ 5}'),
+                    child: Text(workoutData[rowIndex][columnIndex]),
                   );
-                } else if (index % 5 == 4) {
-                  // Last column (column E) with "+" buttons
+                } else if (columnIndex == 4) {
                   return Center(
                     child: ElevatedButton(
                       onPressed: () {
-                        // Add your logic for the "+" button here
+                        // Add your logic for the video button here
                       },
                       child: Icon(Icons.add),
                     ),
                   );
                 } else {
-                  // Text fields for the rest of the grid
                   return Center(
                     child: TextField(
+                      onChanged: (text) {
+                        workoutData[rowIndex][columnIndex] = text;
+                      },
                       decoration: InputDecoration(
                         border: OutlineInputBorder(),
                       ),
@@ -57,13 +74,19 @@ class CoachWorkoutPage extends StatelessWidget {
               },
             ),
           ),
+          ElevatedButton(
+            onPressed: () {
+              addRow();
+            },
+            child: Text('Add Set'),
+          ),
           Padding(
-            padding: const EdgeInsets.all(50.0),
+            padding: const EdgeInsets.all(20.0),
             child: ElevatedButton(
               onPressed: () {
                 // Add your logic for the button at the bottom here
               },
-              child: Text('Create Workout'),
+              child: Text('Create Exercise'),
             ),
           ),
         ],

@@ -1,9 +1,12 @@
+import 'package:coach_connect/pages/coach/coach_workout/coach_workout_page.dart';
 import 'package:flutter/material.dart';
+import 'package:coach_connect/view_models/coach/coach_home_viewmodel.dart';
 
 class SelectedWeeksPage extends StatefulWidget {
   final List<int> selectedWeeks;
+  final CoachHomeViewModel viewModel;
 
-  const SelectedWeeksPage({Key? key, required this.selectedWeeks})
+  const SelectedWeeksPage({Key? key,required this.viewModel, required this.selectedWeeks})
       : super(key: key);
 
   @override
@@ -112,17 +115,17 @@ class _SelectedWeeksPageState extends State<SelectedWeeksPage> {
                                           ),
                                           SizedBox(height: 10),
                                           ElevatedButton(
-                                            onPressed: () {
-                                              setState(() {
-                                                enteredExercisesByDay[index]
-                                                    .add(exerciseController
-                                                        .text); // Add the entered exercise
-                                                exerciseController
-                                                    .clear(); // Clear the text field
-                                              });
-                                            },
-                                            child: Text('Add'),
-                                          ),
+                                onPressed: () {
+                                  Navigator.pop(context); // Close the bottom sheet
+                                  Navigator.push( // Navigate to CoachWorkoutPage
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => CoachWorkoutPage(viewModel: widget.viewModel)
+                                    ),
+                                  );
+                                },
+                                child: Text('Add'),
+                              ),
                                         ],
                                       ),
                                     );

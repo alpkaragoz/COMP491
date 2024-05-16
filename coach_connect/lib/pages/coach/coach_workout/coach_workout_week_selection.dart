@@ -87,8 +87,8 @@ class _WeekSelectorState extends State<WeekSelector> {
                   context,
                   MaterialPageRoute(
                       builder: (context) =>
-                          SelectedWeeksPage(selectedWeeks: selectedWeeks)),
-                );
+                          SelectedWeeksPage(viewModel: widget.viewModel, selectedWeeks: selectedWeeks)
+                ));
               },
               child: Text('Next'),
             ),

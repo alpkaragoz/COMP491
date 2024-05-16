@@ -1,7 +1,9 @@
 import 'package:coach_connect/pages/client/client_workout/client_myworkouts_daily_page.dart';
+import 'package:coach_connect/pages/coach/coach_workout/coach_workoutIds.dart';
 import 'package:coach_connect/pages/coach/coach_workout/coach_workout_page.dart';
 import 'package:coach_connect/pages/coach/coach_workout/coach_workout_week_selection.dart';
 import 'package:coach_connect/view_models/coach/coach_home_viewmodel.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:coach_connect/view_models/client/client_home_viewmodel.dart';
 
@@ -11,17 +13,22 @@ class CoachWorkoutClientsPage extends StatelessWidget {
   const CoachWorkoutClientsPage({Key? key, required this.viewModel})
       : super(key: key);
 
+      
+
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Clients'),
-      ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Container(
+Widget build(BuildContext context) {
+  final clientList = viewModel.user!.clientIds;
+
+  return Scaffold(
+    appBar: AppBar(
+      title: const Text('My Clients'),
+    ),
+    body: Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Expanded(
+          child: Container(
             decoration: BoxDecoration(
               border: Border(
                 top: BorderSide(color: Colors.black, width: 1.0),
@@ -29,38 +36,41 @@ class CoachWorkoutClientsPage extends StatelessWidget {
             ),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16.0),
-                child: ElevatedButton(
-                  onPressed: () {
-                    navigateToClientMyWorkoutsDailyPage(context);
-                  },
-                  style: ButtonStyle(
-                    backgroundColor:
-                        MaterialStateProperty.all<Color>(Colors.black),
-                    minimumSize: MaterialStateProperty.all<Size>(
-                        Size(double.infinity, 48)),
-                  ),
-                  child: Text(
-                    'Koray',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: clientList.length,
+                itemBuilder: (context, index) {
+                  return FutureBuilder(
+                    future: CoachHomeViewModel(viewModel.user).getUser(clientList[index]),
+                    builder: (context, snapshot) {
+                      final clientName = snapshot.data?.name;
+                      return ElevatedButton(
+                        onPressed: () {
+                          // Handle button click here
+                          // You can navigate to a new page or perform any other action
+                          navigateToWorkoutsIdPage(context);
+                        },
+                        child: Text(clientName.toString()),
+                      );
+                    },
+                  );
+                },
               ),
             ),
           ),
-          // Add other widgets below the button if needed
-        ],
-      ),
-    );
-  }
+        ),
+        // Add other widgets below the button if needed
+      ],
+    ),
+  );
+}
 
-  void navigateToClientMyWorkoutsDailyPage(BuildContext context) async {
+
+  void navigateToWorkoutsIdPage(BuildContext context) async {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => CoachWorkoutWeekSelectionPage(viewModel: viewModel)
-      ),
+          builder: (context) => CoachWorkoutIdsPage(viewModel: viewModel)),
     );
   }
 }
