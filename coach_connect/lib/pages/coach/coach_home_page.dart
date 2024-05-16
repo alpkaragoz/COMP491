@@ -2,7 +2,6 @@ import 'package:coach_connect/pages/coach/coach_chat_list_page.dart';
 import 'package:coach_connect/pages/coach/coach_settings_page.dart';
 import 'package:coach_connect/pages/coach/coach_workout_page.dart';
 import 'package:coach_connect/pages/coach/myclients_page.dart';
-import 'package:coach_connect/pages/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:coach_connect/view_models/coach/coach_home_viewmodel.dart';
 
