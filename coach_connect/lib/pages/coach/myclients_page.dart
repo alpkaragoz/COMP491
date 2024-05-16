@@ -18,14 +18,28 @@ class _MyClientsPageState extends State<MyClientsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("My Clients and Requests"),
+        title: const Text(
+          "My Clients and Requests",
+          style: TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
+        ),
+        backgroundColor: const Color.fromARGB(255, 28, 40, 44),
+        iconTheme: const IconThemeData(
+          color: Color.fromARGB(255, 226, 182, 167),
+        ),
       ),
+      backgroundColor: const Color.fromARGB(255, 28, 40, 44),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Padding(
             padding: EdgeInsets.all(8.0),
-            child: Text("Clients", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            child: Text(
+              "Clients",
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white),
+            ),
           ),
           Expanded(
             flex: 2,
@@ -33,16 +47,26 @@ class _MyClientsPageState extends State<MyClientsPage> {
               itemCount: widget.viewModel.clients.length,
               itemBuilder: (context, index) {
                 return ListTile(
-                  title: Text(widget.viewModel.clients[index]?.username ?? "no data found"),
-                  subtitle: const Text("Details about the client..."),
+                  title: Text(
+                    '${index + 1}. ${widget.viewModel.clients[index]?.username ?? "no data found"}',
+                    style: const TextStyle(
+                      color: Color.fromARGB(255, 226, 182, 167),
+                    ),
+                  ),
                 );
               },
             ),
           ),
-          const Divider(height: 1),
+          const Divider(height: 1, color: Colors.white),
           const Padding(
             padding: EdgeInsets.all(8.0),
-            child: Text("Pending Requests", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            child: Text(
+              "Pending Requests",
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white),
+            ),
           ),
           Expanded(
             flex: 1,
@@ -50,18 +74,28 @@ class _MyClientsPageState extends State<MyClientsPage> {
               itemCount: widget.viewModel.requests.length,
               itemBuilder: (context, index) {
                 return ListTile(
-                  title: Text(widget.viewModel.requests[index]?.senderUsername ?? "no data found"),
-                  subtitle: const Text("Request details..."),
+                  title: Text(
+                    widget.viewModel.requests[index]?.senderUsername ??
+                        "no data found",
+                    style: const TextStyle(
+                        color: Color.fromARGB(255, 226, 182, 167)),
+                  ),
+                  subtitle: const Text(
+                    "Request details...",
+                    style: TextStyle(color: Colors.white),
+                  ),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       IconButton(
                         icon: const Icon(Icons.check, color: Colors.green),
-                        onPressed: () => _acceptRequest(widget.viewModel.requests[index]!),
+                        onPressed: () =>
+                            _acceptRequest(widget.viewModel.requests[index]!),
                       ),
                       IconButton(
                         icon: const Icon(Icons.close, color: Colors.red),
-                        onPressed: () => _denyRequest(widget.viewModel.requests[index]!),
+                        onPressed: () =>
+                            _denyRequest(widget.viewModel.requests[index]!),
                       ),
                     ],
                   ),
@@ -75,8 +109,7 @@ class _MyClientsPageState extends State<MyClientsPage> {
   }
 
   void _setLoading(bool bool) {
-    setState(() {
-    });
+    setState(() {});
   }
 
   void _acceptRequest(Request request) async {
@@ -94,7 +127,8 @@ class _MyClientsPageState extends State<MyClientsPage> {
   }
 
   void _showSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override

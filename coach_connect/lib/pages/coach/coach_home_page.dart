@@ -10,12 +10,21 @@ class CoachHomePage extends StatelessWidget {
     super.key,
     required this.viewModel,
   });
+
   final CoachHomeViewModel viewModel;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        title: const Text(
+          'Coach Home',
+          style: TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
+        ),
+        backgroundColor: const Color.fromARGB(255, 28, 40, 44),
+        iconTheme: const IconThemeData(
+          color: Color.fromARGB(255, 226, 182, 167),
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
@@ -24,13 +33,18 @@ class CoachHomePage extends StatelessWidget {
           ),
         ],
       ),
+      backgroundColor: const Color.fromARGB(255, 28, 40, 44),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: <Widget>[
             Text(
               'Welcome, ${viewModel.user?.name}',
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Color.fromARGB(255, 226, 182, 167),
+              ),
             ),
             const SizedBox(height: 20),
             Expanded(
@@ -54,6 +68,24 @@ class CoachHomePage extends StatelessWidget {
   }
 
   Widget _buildCard(String title, BuildContext context) {
+    IconData iconData;
+    switch (title) {
+      case 'Create/View Workouts':
+        iconData = Icons.fitness_center;
+        break;
+      case 'Chat':
+        iconData = Icons.chat;
+        break;
+      case 'My Clients':
+        iconData = Icons.people;
+        break;
+      case 'Settings':
+        iconData = Icons.settings;
+        break;
+      default:
+        iconData = Icons.help;
+    }
+
     return InkWell(
       onTap: () {
         if (title == "My Clients") {
@@ -67,15 +99,25 @@ class CoachHomePage extends StatelessWidget {
         }
       },
       child: Card(
+        color: const Color.fromARGB(255, 56, 80, 88),
         elevation: 4.0,
         child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              title,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(iconData,
+                  size: 40, color: Color.fromARGB(255, 226, 182, 167)),
+              const SizedBox(height: 8),
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromARGB(255, 226, 182, 167),
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -95,7 +137,6 @@ class CoachHomePage extends StatelessWidget {
   }
 
   void navigateToCoachWorkoutPage(BuildContext context) async {
-    // await viewModel.refreshUserData(); // Refresh user data
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -127,8 +168,15 @@ class CoachHomePage extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Sign Out'),
-          content: const Text('Are you sure you want to sign out?'),
+          title: const Text(
+            'Sign Out',
+            style: TextStyle(color: Colors.white),
+          ),
+          content: const Text(
+            'Are you sure you want to sign out?',
+            style: TextStyle(color: Colors.white),
+          ),
+          backgroundColor: const Color.fromARGB(255, 56, 80, 88),
           actions: <Widget>[
             TextButton(
               onPressed: () async {
@@ -142,7 +190,7 @@ class CoachHomePage extends StatelessWidget {
                 Navigator.of(context)
                     .pop(); // Dismiss the dialog but stay in the app
               },
-              child: const Text('No'),
+              child: const Text('No', style: TextStyle(color: Colors.white)),
             ),
           ],
         );

@@ -115,13 +115,13 @@ class _ClientChatPageState extends State<ClientChatPage> {
                               horizontal: 24, vertical: 10),
                           decoration: BoxDecoration(
                             color: message.senderId == widget.currentUserId
-                                ? Color.fromARGB(255, 56, 80, 88)
+                                ? Color.fromARGB(255, 226, 182, 167)
                                 : Colors.grey[300],
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
                             message.text,
-                            style: const TextStyle(color: Colors.white),
+                            style: const TextStyle(color: Colors.black),
                           ),
                         ),
                       ),

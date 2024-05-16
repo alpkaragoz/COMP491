@@ -25,7 +25,10 @@ class _CoachChatPageState extends State<CoachChatPage> {
 
   Future<void> _initializeChat() async {
     try {
-      var chatDoc = await FirebaseFirestore.instance.collection('chats').doc(widget.chatId).get();
+      var chatDoc = await FirebaseFirestore.instance
+          .collection('chats')
+          .doc(widget.chatId)
+          .get();
       if (chatDoc.exists) {
         isActive = chatDoc['isActive'];
       }
@@ -45,17 +48,35 @@ class _CoachChatPageState extends State<CoachChatPage> {
     if (isLoading) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text("Chat"),
+          title: const Text(
+            "Chat",
+            style: TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
+          ),
+          backgroundColor: const Color.fromARGB(255, 28, 40, 44),
+          iconTheme: const IconThemeData(
+            color: Color.fromARGB(255, 226, 182, 167),
+          ),
         ),
+        backgroundColor: const Color.fromARGB(255, 28, 40, 44),
         body: const Center(
-          child: CircularProgressIndicator(),
+          child: CircularProgressIndicator(
+            color: Color.fromARGB(255, 226, 182, 167),
+          ),
         ),
       );
     }
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Chat"),
+        title: const Text(
+          "Chat",
+          style: TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
+        ),
+        backgroundColor: const Color.fromARGB(255, 28, 40, 44),
+        iconTheme: const IconThemeData(
+          color: Color.fromARGB(255, 226, 182, 167),
+        ),
       ),
+      backgroundColor: const Color.fromARGB(255, 28, 40, 44),
       body: Column(
         children: [
           Expanded(
@@ -67,9 +88,16 @@ class _CoachChatPageState extends State<CoachChatPage> {
                   .orderBy('timestamp', descending: true)
                   .snapshots(),
               builder: (context, snapshot) {
-                if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+                if (!snapshot.hasData) {
+                  return const Center(
+                    child: CircularProgressIndicator(
+                      color: Color.fromARGB(255, 226, 182, 167),
+                    ),
+                  );
+                }
                 var messages = snapshot.data!.docs
-                    .map((doc) => ChatMessage.fromFirestore(doc.data() as Map<String, dynamic>, doc.id))
+                    .map((doc) => ChatMessage.fromFirestore(
+                        doc.data() as Map<String, dynamic>, doc.id))
                     .toList();
                 return ListView.builder(
                   reverse: true,
@@ -78,14 +106,22 @@ class _CoachChatPageState extends State<CoachChatPage> {
                     final message = messages[index];
                     return ListTile(
                       title: Align(
-                        alignment: message.senderId == widget.coachId ? Alignment.centerRight : Alignment.centerLeft,
+                        alignment: message.senderId == widget.coachId
+                            ? Alignment.centerRight
+                            : Alignment.centerLeft,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 24, vertical: 10),
                           decoration: BoxDecoration(
-                            color: message.senderId == widget.coachId ? Colors.blue[100] : Colors.grey[300],
+                            color: message.senderId == widget.coachId
+                                ? Color.fromARGB(255, 226, 182, 167)
+                                : Colors.grey[300],
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: Text(message.text),
+                          child: Text(
+                            message.text,
+                            style: const TextStyle(color: Colors.black),
+                          ),
                         ),
                       ),
                     );
@@ -104,16 +140,21 @@ class _CoachChatPageState extends State<CoachChatPage> {
                       controller: _controller,
                       decoration: InputDecoration(
                         labelText: "Type a message",
-                        fillColor: Colors.white,
+                        labelStyle: const TextStyle(
+                            color: Color.fromARGB(255, 226, 182, 167)),
+                        fillColor: const Color.fromARGB(255, 56, 80, 88),
                         filled: true,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
+                      style: const TextStyle(
+                          color: Color.fromARGB(255, 226, 182, 167)),
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.send),
+                    icon: const Icon(Icons.send,
+                        color: Color.fromARGB(255, 226, 182, 167)),
                     onPressed: () => _sendMessage(),
                   ),
                 ],
@@ -126,7 +167,11 @@ class _CoachChatPageState extends State<CoachChatPage> {
 
   void _sendMessage() {
     if (_controller.text.isNotEmpty) {
-      FirebaseFirestore.instance.collection('chats').doc(widget.chatId).collection('messages').add({
+      FirebaseFirestore.instance
+          .collection('chats')
+          .doc(widget.chatId)
+          .collection('messages')
+          .add({
         'senderId': widget.coachId,
         'text': _controller.text,
         'timestamp': FieldValue.serverTimestamp(),
