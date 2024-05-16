@@ -1,6 +1,8 @@
 import 'package:coach_connect/models/request.dart';
+import 'package:coach_connect/models/user_account.dart';
 import 'package:flutter/material.dart';
 import 'package:coach_connect/view_models/coach/coach_home_viewmodel.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class MyClientsPage extends StatefulWidget {
   final CoachHomeViewModel viewModel;
@@ -52,6 +54,10 @@ class _MyClientsPageState extends State<MyClientsPage> {
                     style: const TextStyle(
                       color: Color.fromARGB(255, 226, 182, 167),
                     ),
+                  ),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.close, color: Colors.red),
+                    onPressed: () => _showRemoveClientDialog(widget.viewModel.clients[index]!),
                   ),
                 );
               },
@@ -108,7 +114,7 @@ class _MyClientsPageState extends State<MyClientsPage> {
     );
   }
 
-  void _setLoading(bool bool) {
+  void _setLoading(bool loading) {
     setState(() {});
   }
 
@@ -129,6 +135,54 @@ class _MyClientsPageState extends State<MyClientsPage> {
   void _showSnackBar(String message) {
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  void _showRemoveClientDialog(UserAccount client) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Remove Client"),
+          content: const Text("Are you sure you want to remove this client?"),
+          actions: <Widget>[
+            TextButton(
+              child: const Text("Cancel"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text("Remove"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                _removeClient(client);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _removeClient(UserAccount client) async {
+    _setLoading(true);
+    try {
+      // Remove client ID from coach's clientIds array
+      await FirebaseFirestore.instance.collection('users').doc(widget.viewModel.user!.id).update({
+        'clientIds': FieldValue.arrayRemove([client.id])
+      });
+
+      // Remove coachId from client's document
+      await FirebaseFirestore.instance.collection('users').doc(client.id).update({
+        'coachId': FieldValue.delete()
+      });
+      await widget.viewModel.getClientObjectsForCoach();
+      await widget.viewModel.getPendingRequestsForCoach();
+      _showSnackBar("Client removed successfully");
+    } catch (e) {
+      _showSnackBar("Error removing client: $e");
+    }
+    _setLoading(false);
   }
 
   @override
