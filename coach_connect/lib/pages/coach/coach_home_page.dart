@@ -5,13 +5,26 @@ import 'package:coach_connect/pages/coach/myclients_page.dart';
 import 'package:flutter/material.dart';
 import 'package:coach_connect/view_models/coach/coach_home_viewmodel.dart';
 
-class CoachHomePage extends StatelessWidget {
+class CoachHomePage extends StatefulWidget {
   const CoachHomePage({
     super.key,
     required this.viewModel,
   });
 
   final CoachHomeViewModel viewModel;
+
+  @override
+  State<CoachHomePage> createState() => _CoachHomePageState();
+}
+
+class _CoachHomePageState extends State<CoachHomePage> {
+  String? loadingCardTitle;
+
+  void setLoadingCard(String? title) {
+    setState(() {
+      loadingCardTitle = title;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +52,7 @@ class CoachHomePage extends StatelessWidget {
         child: Column(
           children: <Widget>[
             Text(
-              'Welcome, ${viewModel.user?.name}',
+              'Welcome, ${widget.viewModel.user?.name}',
               style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -88,6 +101,7 @@ class CoachHomePage extends StatelessWidget {
 
     return InkWell(
       onTap: () {
+        setLoadingCard(title);
         if (title == "My Clients") {
           navigateToClientDetails(context);
         } else if (title == "Create/View Workouts") {
@@ -102,63 +116,76 @@ class CoachHomePage extends StatelessWidget {
         color: const Color.fromARGB(255, 56, 80, 88),
         elevation: 4.0,
         child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(iconData,
-                  size: 40, color: Color.fromARGB(255, 226, 182, 167)),
-              const SizedBox(height: 8),
-              Text(
-                title,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Color.fromARGB(255, 226, 182, 167),
+          child: loadingCardTitle == title
+              ? const CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    Color.fromARGB(255, 226, 182, 167),
+                  ),
+                )
+              : Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(iconData,
+                        size: 40,
+                        color: const Color.fromARGB(255, 226, 182, 167)),
+                    const SizedBox(height: 8),
+                    Text(
+                      title,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Color.fromARGB(255, 226, 182, 167),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
-          ),
         ),
       ),
     );
   }
 
   void navigateToClientDetails(BuildContext context) async {
-    await viewModel.getClientObjectsForCoach();
-    await viewModel.getPendingRequestsForCoach();
-    await viewModel.refreshUserData();
+    await widget.viewModel.getClientObjectsForCoach();
+    await widget.viewModel.getPendingRequestsForCoach();
+    await widget.viewModel.refreshUserData();
+    setLoadingCard(null);
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => MyClientsPage(viewModel: viewModel),
+        builder: (context) => MyClientsPage(viewModel: widget.viewModel),
       ),
     );
   }
 
   void navigateToCoachWorkoutPage(BuildContext context) async {
+    setLoadingCard(null);
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => CoachWorkoutPage(viewModel: viewModel),
+        builder: (context) => CoachWorkoutPage(viewModel: widget.viewModel),
       ),
     );
   }
 
   void navigateToChat(BuildContext context) async {
+    setLoadingCard(null);
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => CoachChatListPage(coachId: viewModel.user!.id),
+        builder: (context) =>
+            CoachChatListPage(coachId: widget.viewModel.user!.id),
       ),
     );
   }
 
   void navigateToSettings(BuildContext context) async {
+    setLoadingCard(null);
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => CoachSettingsPage(userId: viewModel.user!.id),
+        builder: (context) =>
+            CoachSettingsPage(userId: widget.viewModel.user!.id),
       ),
     );
   }
@@ -181,7 +208,7 @@ class CoachHomePage extends StatelessWidget {
             TextButton(
               onPressed: () async {
                 Navigator.of(context).pop(); // Dismiss the dialog
-                await viewModel.signOut(); // Proceed with sign out
+                await widget.viewModel.signOut(); // Proceed with sign out
               },
               child: const Text('Yes', style: TextStyle(color: Colors.red)),
             ),

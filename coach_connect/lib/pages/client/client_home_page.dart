@@ -18,6 +18,14 @@ class ClientHomePage extends StatefulWidget {
 }
 
 class _ClientHomePageState extends State<ClientHomePage> {
+  String? loadingCardTitle;
+
+  void setLoadingCard(String? title) {
+    setState(() {
+      loadingCardTitle = title;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,9 +37,9 @@ class _ClientHomePageState extends State<ClientHomePage> {
             onPressed: () => _showSignOutConfirmation(context),
           ),
         ],
-        backgroundColor: const Color.fromARGB(255,28,40,44),
+        backgroundColor: const Color.fromARGB(255, 28, 40, 44),
       ),
-      backgroundColor: const Color.fromARGB(255,28,40,44),
+      backgroundColor: const Color.fromARGB(255, 28, 40, 44),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -56,7 +64,10 @@ class _ClientHomePageState extends State<ClientHomePage> {
                   {'title': 'Chat', 'icon': Icons.chat},
                   {'title': 'My Coach', 'icon': Icons.person},
                   {'title': 'Settings', 'icon': Icons.settings},
-                ].map((item) => _buildCard(item['title'], item['icon'], context)).toList(),
+                ]
+                    .map((item) =>
+                        _buildCard(item['title'], item['icon'], context))
+                    .toList(),
               ),
             ),
           ],
@@ -67,46 +78,56 @@ class _ClientHomePageState extends State<ClientHomePage> {
 
   Widget _buildCard(String title, IconData icon, BuildContext context) {
     return InkWell(
-      onTap: () {
+      onTap: () async {
+        setLoadingCard(title);
         if (title == "My Coach") {
-          navigateToCoachDetails(context);
+          await navigateToCoachDetails(context);
         } else if (title == "My Workouts") {
-          navigateToClientMyWorkoutsWeeklyPage(context);
+          await navigateToClientMyWorkoutsWeeklyPage(context);
         } else if (title == "Chat") {
-          navigateToChat(context);
+          await navigateToChat(context);
         } else if (title == "Settings") {
-          navigateToSettings(context);
+          await navigateToSettings(context);
         }
+        setLoadingCard(null);
       },
       child: Card(
         elevation: 4.0,
         color: const Color.fromARGB(255, 56, 80, 88),
         child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(icon, size: 48, color: const Color.fromARGB(255, 226, 182, 167)),
-                const SizedBox(height: 10),
-                Text(
-                  title,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Color.fromARGB(255, 226, 182, 167),
+          child: loadingCardTitle == title
+              ? const CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    Color.fromARGB(255, 226, 182, 167),
+                  ),
+                )
+              : Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(icon,
+                          size: 48,
+                          color: const Color.fromARGB(255, 226, 182, 167)),
+                      const SizedBox(height: 10),
+                      Text(
+                        title,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Color.fromARGB(255, 226, 182, 167),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
-            ),
-          ),
         ),
       ),
     );
   }
 
-  void navigateToCoachDetails(BuildContext context) async {
+  Future<void> navigateToCoachDetails(BuildContext context) async {
     await widget.viewModel.refreshUserData(); // Refresh user data
     await widget.viewModel.getUserAccountOfRequest();
     if (mounted) {
@@ -119,7 +140,8 @@ class _ClientHomePageState extends State<ClientHomePage> {
     }
   }
 
-  void navigateToClientMyWorkoutsWeeklyPage(BuildContext context) async {
+  Future<void> navigateToClientMyWorkoutsWeeklyPage(
+      BuildContext context) async {
     if (mounted) {
       Navigator.push(
         context,
@@ -131,7 +153,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
     }
   }
 
-  void navigateToChat(BuildContext context) async {
+  Future<void> navigateToChat(BuildContext context) async {
     if (mounted) {
       Navigator.push(
         context,
@@ -143,7 +165,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
     }
   }
 
-  void navigateToSettings(BuildContext context) async {
+  Future<void> navigateToSettings(BuildContext context) async {
     if (mounted) {
       Navigator.push(
         context,
@@ -182,7 +204,8 @@ class _ClientHomePageState extends State<ClientHomePage> {
             ),
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Dismiss the dialog but stay in the app
+                Navigator.of(context)
+                    .pop(); // Dismiss the dialog but stay in the app
               },
               child: const Text(
                 'No',
