@@ -1,6 +1,8 @@
+import 'package:coach_connect/models/user_account.dart';
 import 'package:coach_connect/pages/coach/coach_workout/coach_workoutIds.dart';
 import 'package:coach_connect/view_models/coach/coach_home_viewmodel.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 class CoachWorkoutClientsPage extends StatelessWidget {
   final CoachHomeViewModel viewModel;
@@ -37,15 +39,21 @@ Widget build(BuildContext context) {
                 itemBuilder: (context, index) {
                   return FutureBuilder(
                     future: CoachHomeViewModel(viewModel.user).getUser(clientList[index]),
-                    builder: (context, snapshot) {
+                    builder: (context, AsyncSnapshot<UserAccount?> snapshot) {
                       final clientName = snapshot.data?.name;
+                      final clientId = snapshot.data?.id;
                       return ElevatedButton(
                         onPressed: () {
                           // Handle button click here
                           // You can navigate to a new page or perform any other action
-                          navigateToWorkoutsIdPage(context);
+                          navigateToWorkoutsIdPage(context, clientId.toString());
                         },
-                        child: Text(clientName.toString()),
+
+                        child: snapshot.connectionState != ConnectionState.waiting ?  Text(
+                          
+                        clientName.toString()): CircularProgressIndicator()
+                      
+                          
                       );
                     },
                   );
@@ -61,11 +69,11 @@ Widget build(BuildContext context) {
 }
 
 
-  void navigateToWorkoutsIdPage(BuildContext context) async {
+  void navigateToWorkoutsIdPage(BuildContext context, String id) async {
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => CoachWorkoutIdsPage(viewModel: viewModel)),
+          builder: (context) => CoachWorkoutIdsPage(viewModel: viewModel, clientId: id,)),
     );
   }
 }
