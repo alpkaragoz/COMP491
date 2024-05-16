@@ -1,9 +1,6 @@
-import 'package:coach_connect/pages/client/client_workout/client_myworkouts_daily_page.dart';
 import 'package:coach_connect/pages/coach/coach_workout/coach_workout_days_planning.dart';
-import 'package:coach_connect/pages/coach/coach_workout/coach_workout_page.dart';
 import 'package:coach_connect/view_models/coach/coach_home_viewmodel.dart';
 import 'package:flutter/material.dart';
-import 'package:coach_connect/view_models/client/client_home_viewmodel.dart';
 
 class CoachWorkoutWeekSelectionPage extends StatefulWidget {
   final CoachHomeViewModel viewModel;

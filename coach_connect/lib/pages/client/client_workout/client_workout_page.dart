@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:coach_connect/view_models/client/client_home_viewmodel.dart';
 
-import 'package:flutter/material.dart';
-
 class ClientWorkoutPage extends StatefulWidget {
   final ClientHomeViewModel viewModel;
 

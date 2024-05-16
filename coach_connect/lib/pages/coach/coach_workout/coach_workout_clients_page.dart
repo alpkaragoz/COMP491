@@ -1,11 +1,6 @@
-import 'package:coach_connect/pages/client/client_workout/client_myworkouts_daily_page.dart';
 import 'package:coach_connect/pages/coach/coach_workout/coach_workoutIds.dart';
-import 'package:coach_connect/pages/coach/coach_workout/coach_workout_page.dart';
-import 'package:coach_connect/pages/coach/coach_workout/coach_workout_week_selection.dart';
 import 'package:coach_connect/view_models/coach/coach_home_viewmodel.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:coach_connect/view_models/client/client_home_viewmodel.dart';
 
 class CoachWorkoutClientsPage extends StatelessWidget {
   final CoachHomeViewModel viewModel;

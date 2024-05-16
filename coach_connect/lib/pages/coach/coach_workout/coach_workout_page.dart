@@ -1,4 +1,3 @@
-import 'package:coach_connect/models/request.dart';
 import 'package:flutter/material.dart';
 import 'package:coach_connect/view_models/coach/coach_home_viewmodel.dart';
 
