@@ -1,6 +1,6 @@
 import 'package:coach_connect/pages/coach/coach_chat_list_page.dart';
 import 'package:coach_connect/pages/coach/coach_settings_page.dart';
-import 'package:coach_connect/pages/coach/coach_workout_page.dart';
+import 'package:coach_connect/pages/coach/coach_workout/coach_workout_clients_page.dart';
 import 'package:coach_connect/pages/coach/myclients_page.dart';
 import 'package:flutter/material.dart';
 import 'package:coach_connect/view_models/coach/coach_home_viewmodel.dart';
@@ -159,11 +159,11 @@ class _CoachHomePageState extends State<CoachHomePage> {
   }
 
   void navigateToCoachWorkoutPage(BuildContext context) async {
-    setLoadingCard(null);
+    // await viewModel.refreshUserData(); // Refresh user data
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => CoachWorkoutPage(viewModel: widget.viewModel),
+        builder: (context) => CoachWorkoutClientsPage(viewModel: widget.viewModel)
       ),
     );
   }

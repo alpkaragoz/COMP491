@@ -1,11 +1,12 @@
-import 'package:coach_connect/pages/client/client_workout_page.dart';
+import 'package:coach_connect/pages/client/client_workout/client_workout_page.dart';
 import 'package:flutter/material.dart';
 import 'package:coach_connect/view_models/client/client_home_viewmodel.dart';
 
 class ClientMyWorkoutsDailyPage extends StatelessWidget {
   final ClientHomeViewModel viewModel;
 
-  const ClientMyWorkoutsDailyPage({super.key, required this.viewModel});
+  const ClientMyWorkoutsDailyPage({Key? key, required this.viewModel})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +19,7 @@ class ClientMyWorkoutsDailyPage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Container(
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               border: Border(
                 top: BorderSide(color: Colors.black, width: 1.0),
               ),
@@ -35,9 +36,9 @@ class ClientMyWorkoutsDailyPage extends StatelessWidget {
                     backgroundColor:
                         MaterialStateProperty.all<Color>(Colors.black),
                     minimumSize: MaterialStateProperty.all<Size>(
-                        const Size(double.infinity, 48)),
+                        Size(double.infinity, 48)),
                   ),
-                  child: const Text(
+                  child: Text(
                     'Monday',
                     style: TextStyle(color: Colors.white),
                   ),
