@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:coach_connect/models/request.dart';
 import 'package:coach_connect/models/user_account.dart';
+import 'package:coach_connect/models/week.dart';
+import 'package:coach_connect/models/workout.dart';
 import 'package:coach_connect/service/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
@@ -70,9 +72,13 @@ class CoachHomeViewModel extends ChangeNotifier {
 
   Future<List<String>> getWorkouts(String clientId) async {
     try {
-      final userDoc = await FirebaseFirestore.instance.collection('users').doc(clientId).get();
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(clientId)
+          .get();
       if (userDoc.exists) {
-        final workoutIds = List<String>.from(userDoc.data()?['workoutIds'] ?? []);
+        final workoutIds =
+            List<String>.from(userDoc.data()?['workoutIds'] ?? []);
         return workoutIds;
       }
     } catch (e) {
@@ -83,7 +89,10 @@ class CoachHomeViewModel extends ChangeNotifier {
 
   Future<Map<String, dynamic>?> getWorkout(String workoutId) async {
     try {
-      final workoutDoc = await FirebaseFirestore.instance.collection('workouts').doc(workoutId).get();
+      final workoutDoc = await FirebaseFirestore.instance
+          .collection('workouts')
+          .doc(workoutId)
+          .get();
       if (workoutDoc.exists) {
         return workoutDoc.data();
       }
@@ -93,23 +102,72 @@ class CoachHomeViewModel extends ChangeNotifier {
     return null;
   }
 
-  Future<void> addWorkoutId(String clientId) async {
+  Future<void> addWorkoutId(WorkoutModel workoutModel) async {
     try {
-      final userDoc = await FirebaseFirestore.instance.collection('users').doc(clientId).get();
-      final workoutIds = List<String>.from(userDoc.data()?['workoutIds'] ?? []);
-      final newWorkoutName = 'Workout ${workoutIds.length + 1}';
-      final id = Uuid().v4();
-
-      await FirebaseFirestore.instance.collection('users').doc(clientId).update({
-        'workoutIds': FieldValue.arrayUnion([id]),
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(workoutModel.clientId)
+          .update({
+        'workoutIds': FieldValue.arrayUnion([workoutModel.id]),
       });
 
-      await FirebaseFirestore.instance.collection('workouts').doc(id).set({
-        'id': id,
-        'name': newWorkoutName, // Set the new workout name
-      });
+      await FirebaseFirestore.instance
+          .collection('workouts')
+          .doc(workoutModel.id)
+          .set(workoutModel.toJson());
     } catch (e) {
       print("Error adding workout: $e");
     }
   }
+
+  Future<String> getWorkoutCount(String id) async {
+    final userDoc =
+        await FirebaseFirestore.instance.collection('users').doc(id).get();
+    final workoutIds = List<String>.from(userDoc.data()?['workoutIds'] ?? []);
+    final newWorkoutName = 'Workout ${workoutIds.length + 1}';
+
+    return newWorkoutName;
+  }
+
+  Future<void> setWeeks(String workoutId, List<int> weekList) async {
+    // Reference to the collection where weeks will be added
+    CollectionReference weeksCollection = FirebaseFirestore.instance
+        .collection("workouts")
+        .doc(workoutId)
+        .collection("weeks");
+
+    // Iterate over the list of weeks and add each week as a new document
+    for (int week in weekList) {
+      for (int i = 0; i < week; i++) {
+        final weekModel =
+            WeekModel(name: "Week ${i+1}"); // Remove id field from weekModel
+        // Add the week model to the collection using the auto-generated document ID
+        DocumentReference documentReference =
+            await weeksCollection.add(weekModel.toJson());
+        // Get the document ID from the reference
+        String documentId = documentReference.id;
+        print("Added document with ID: $documentId");
+        final weekModel2 = WeekModel(id: documentId, name: "Week ${i+1}");
+        await weeksCollection.doc(documentId).update(weekModel2.toJson());
+      }
+    }
+  }
+
+Future<int> getWeekCount(String workoutId) async {
+  try {
+    final QuerySnapshot weekSnapshot = await FirebaseFirestore.instance
+        .collection('workouts')
+        .doc(workoutId)
+        .collection("weeks")
+        .get();
+
+    // Get the number of documents in the collection
+    final int count = weekSnapshot.size;
+
+    return count;
+  } catch (e) {
+    print("Error getting week count: $e");
+    return 0; // Return 0 if there's an error
+  }
+}
 }

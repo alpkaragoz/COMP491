@@ -1,6 +1,9 @@
+import 'package:coach_connect/models/workout.dart';
+import 'package:coach_connect/pages/coach/coach_workout/coach_workout_days_planning.dart';
 import 'package:coach_connect/pages/coach/coach_workout/coach_workout_week_selection.dart';
 import 'package:coach_connect/view_models/coach/coach_home_viewmodel.dart';
 import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
 
 class CoachWorkoutIdsPage extends StatefulWidget {
   final CoachHomeViewModel viewModel;
@@ -40,6 +43,8 @@ class _CoachWorkoutIdsPageState extends State<CoachWorkoutIdsPage> {
       });
     }
   }
+  var count = 0;
+  var workout = "Workout";
 
   @override
   Widget build(BuildContext context) {
@@ -143,8 +148,10 @@ class _CoachWorkoutIdsPageState extends State<CoachWorkoutIdsPage> {
   }
 
   Future<void> addWorkout() async {
+
     try {
-      await widget.viewModel.addWorkoutId(widget.clientId);
+      final name = await widget.viewModel.getWorkoutCount(widget.clientId);
+      await widget.viewModel.addWorkoutId(WorkoutModel(id: Uuid().v4(),clientId: widget.clientId, coachId: widget.viewModel.user!.id, name: name));
       await fetchWorkouts();
     } catch (e) {
       // Handle errors
@@ -153,15 +160,34 @@ class _CoachWorkoutIdsPageState extends State<CoachWorkoutIdsPage> {
   }
 
   void navigateToClientMyWorkoutsDailyPage(
-      BuildContext context, String workoutId) async {
-    Navigator.push(
+
+      BuildContext context, workoutId) async {
+        final weekCount = await widget.viewModel.getWeekCount(workoutId);
+        if (weekCount == 0) {
+          Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => CoachWorkoutWeekSelectionPage(
           viewModel: widget.viewModel,
           workoutId: workoutId,
+          
         ),
       ),
     );
+        }
+        /* else {
+          Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SelectedWeeksPage(
+                      viewModel: widget.viewModel,
+                      workoutId: widget.workoutId,
+                      selectedWeeks: selectedWeeks,
+                    ),
+                  ),
+                );
+
+        } */
+    
   }
 }
