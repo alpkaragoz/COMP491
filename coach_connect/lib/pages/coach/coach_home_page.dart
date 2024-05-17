@@ -42,7 +42,7 @@ class _CoachHomePageState extends State<CoachHomePage> {
           IconButton(
             icon: const Icon(Icons.logout),
             color: Colors.red,
-            onPressed: () => _showSignOutConfirmation(context),
+            onPressed: loadingCardTitle != null ? null : () => _showSignOutConfirmation(context),
           ),
         ],
       ),
@@ -100,18 +100,20 @@ class _CoachHomePageState extends State<CoachHomePage> {
     }
 
     return InkWell(
-      onTap: () {
-        setLoadingCard(title);
-        if (title == "My Clients") {
-          navigateToClientDetails(context);
-        } else if (title == "Create/View Workouts") {
-          navigateToCoachWorkoutPage(context);
-        } else if (title == "Chat") {
-          navigateToChat(context);
-        } else if (title == "Settings") {
-          navigateToSettings(context);
-        }
-      },
+      onTap: loadingCardTitle != null
+          ? null
+          : () {
+              setLoadingCard(title);
+              if (title == "My Clients") {
+                navigateToClientDetails(context);
+              } else if (title == "Create/View Workouts") {
+                navigateToCoachWorkoutPage(context);
+              } else if (title == "Chat") {
+                navigateToChat(context);
+              } else if (title == "Settings") {
+                navigateToSettings(context);
+              }
+            },
       child: Card(
         color: const Color.fromARGB(255, 56, 80, 88),
         elevation: 4.0,
@@ -159,35 +161,33 @@ class _CoachHomePageState extends State<CoachHomePage> {
   }
 
   void navigateToCoachWorkoutPage(BuildContext context) async {
-    // await viewModel.refreshUserData(); // Refresh user data
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => CoachWorkoutClientsPage(viewModel: widget.viewModel)
+        builder: (context) => CoachWorkoutClientsPage(viewModel: widget.viewModel),
       ),
     );
+    setLoadingCard(null);
   }
 
   void navigateToChat(BuildContext context) async {
-    setLoadingCard(null);
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) =>
-            CoachChatListPage(coachId: widget.viewModel.user!.id),
+        builder: (context) => CoachChatListPage(coachId: widget.viewModel.user!.id),
       ),
     );
+    setLoadingCard(null);
   }
 
   void navigateToSettings(BuildContext context) async {
-    setLoadingCard(null);
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) =>
-            CoachSettingsPage(userId: widget.viewModel.user!.id),
+        builder: (context) => CoachSettingsPage(userId: widget.viewModel.user!.id),
       ),
     );
+    setLoadingCard(null);
   }
 
   void _showSignOutConfirmation(BuildContext context) {
@@ -208,14 +208,15 @@ class _CoachHomePageState extends State<CoachHomePage> {
             TextButton(
               onPressed: () async {
                 Navigator.of(context).pop(); // Dismiss the dialog
+                setLoadingCard('Signing Out');
                 await widget.viewModel.signOut(); // Proceed with sign out
+                setLoadingCard(null);
               },
               child: const Text('Yes', style: TextStyle(color: Colors.red)),
             ),
             TextButton(
               onPressed: () {
-                Navigator.of(context)
-                    .pop(); // Dismiss the dialog but stay in the app
+                Navigator.of(context).pop(); // Dismiss the dialog but stay in the app
               },
               child: const Text('No', style: TextStyle(color: Colors.white)),
             ),

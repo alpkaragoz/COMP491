@@ -4,7 +4,6 @@ import 'package:coach_connect/pages/client/mycoach_page.dart';
 import 'package:flutter/material.dart';
 import 'package:coach_connect/view_models/client/client_home_viewmodel.dart';
 import 'package:coach_connect/pages/client/client_workout/client_myworkouts_weekly_page.dart';
-import 'package:coach_connect/pages/client/client_workout/client_workout_page.dart';
 
 class ClientHomePage extends StatefulWidget {
   const ClientHomePage({
@@ -35,7 +34,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
           IconButton(
             icon: const Icon(Icons.logout),
             color: Colors.red,
-            onPressed: () => _showSignOutConfirmation(context),
+            onPressed: loadingCardTitle != null ? null : () => _showSignOutConfirmation(context),
           ),
         ],
         backgroundColor: const Color.fromARGB(255, 28, 40, 44),
@@ -79,19 +78,21 @@ class _ClientHomePageState extends State<ClientHomePage> {
 
   Widget _buildCard(String title, IconData icon, BuildContext context) {
     return InkWell(
-      onTap: () async {
-        setLoadingCard(title);
-        if (title == "My Coach") {
-          await navigateToCoachDetails(context);
-        } else if (title == "My Workouts") {
-          navigateToClientMyWorkoutsWeeklyPage(context);
-        } else if (title == "Chat") {
-          await navigateToChat(context);
-        } else if (title == "Settings") {
-          await navigateToSettings(context);
-        }
-        setLoadingCard(null);
-      },
+      onTap: loadingCardTitle != null
+          ? null
+          : () async {
+              setLoadingCard(title);
+              if (title == "My Coach") {
+                await navigateToCoachDetails(context);
+              } else if (title == "My Workouts") {
+                navigateToClientMyWorkoutsWeeklyPage(context);
+              } else if (title == "Chat") {
+                await navigateToChat(context);
+              } else if (title == "Settings") {
+                await navigateToSettings(context);
+              }
+              setLoadingCard(null);
+            },
       child: Card(
         elevation: 4.0,
         color: const Color.fromARGB(255, 56, 80, 88),
@@ -141,7 +142,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
     }
   }
 
-  void navigateToClientMyWorkoutsWeeklyPage(BuildContext context) async {
+  void navigateToClientMyWorkoutsWeeklyPage(BuildContext context) {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -192,7 +193,9 @@ class _ClientHomePageState extends State<ClientHomePage> {
             TextButton(
               onPressed: () async {
                 Navigator.of(context).pop(); // Dismiss the dialog
+                setLoadingCard('Signing Out');
                 await widget.viewModel.signOut(); // Proceed with sign out
+                setLoadingCard(null);
               },
               child: const Text(
                 'Yes',
