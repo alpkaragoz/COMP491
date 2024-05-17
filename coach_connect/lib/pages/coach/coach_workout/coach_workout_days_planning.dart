@@ -5,8 +5,9 @@ import 'package:coach_connect/view_models/coach/coach_home_viewmodel.dart';
 class SelectedWeeksPage extends StatefulWidget {
   final List<int> selectedWeeks;
   final CoachHomeViewModel viewModel;
+  final String workoutId;
 
-  const SelectedWeeksPage({Key? key,required this.viewModel, required this.selectedWeeks})
+  const SelectedWeeksPage({Key? key,required this.viewModel, required this.selectedWeeks, required this.workoutId})
       : super(key: key);
 
   @override

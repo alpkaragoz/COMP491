@@ -63,23 +63,53 @@ class CoachHomeViewModel extends ChangeNotifier {
         return userModel;
       }
     } catch (e) {
-      print("error during getting user data $e");
+      print("Error during getting user data: $e");
     }
     return null;
   }
 
-  Future<void> addWorkoutId(String userId) async {
+  Future<List<String>> getWorkouts(String clientId) async {
     try {
-      final id = Uuid().v4();
-      await FirebaseFirestore.instance.collection("users").doc(userId).update({
-        "workoutIds": FieldValue.arrayUnion([id])
-      });
-      await FirebaseFirestore.instance
-          .collection("workouts")
-          .doc(id)
-          .set({"id": id});
+      final userDoc = await FirebaseFirestore.instance.collection('users').doc(clientId).get();
+      if (userDoc.exists) {
+        final workoutIds = List<String>.from(userDoc.data()?['workoutIds'] ?? []);
+        return workoutIds;
+      }
     } catch (e) {
-      print("asdasda $e");
+      print("Error fetching workouts: $e");
+    }
+    return [];
+  }
+
+  Future<Map<String, dynamic>?> getWorkout(String workoutId) async {
+    try {
+      final workoutDoc = await FirebaseFirestore.instance.collection('workouts').doc(workoutId).get();
+      if (workoutDoc.exists) {
+        return workoutDoc.data();
+      }
+    } catch (e) {
+      print("Error fetching workout: $e");
+    }
+    return null;
+  }
+
+  Future<void> addWorkoutId(String clientId) async {
+    try {
+      final userDoc = await FirebaseFirestore.instance.collection('users').doc(clientId).get();
+      final workoutIds = List<String>.from(userDoc.data()?['workoutIds'] ?? []);
+      final newWorkoutName = 'Workout ${workoutIds.length + 1}';
+      final id = Uuid().v4();
+
+      await FirebaseFirestore.instance.collection('users').doc(clientId).update({
+        'workoutIds': FieldValue.arrayUnion([id]),
+      });
+
+      await FirebaseFirestore.instance.collection('workouts').doc(id).set({
+        'id': id,
+        'name': newWorkoutName, // Set the new workout name
+      });
+    } catch (e) {
+      print("Error adding workout: $e");
     }
   }
 }
