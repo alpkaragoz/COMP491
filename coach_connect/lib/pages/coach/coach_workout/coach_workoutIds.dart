@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 
 class CoachWorkoutIdsPage extends StatefulWidget {
   final CoachHomeViewModel viewModel;
+  final String clientId;
 
-  const CoachWorkoutIdsPage({Key? key, required this.viewModel})
+  const CoachWorkoutIdsPage(
+      {Key? key, required this.viewModel, required this.clientId})
       : super(key: key);
 
   @override
@@ -13,17 +15,30 @@ class CoachWorkoutIdsPage extends StatefulWidget {
 }
 
 class _CoachWorkoutIdsPageState extends State<CoachWorkoutIdsPage> {
-  List<List<String>> workouts = [[]];
+  List<String> workouts = [];
   bool hasWorkouts = false;
 
-  void addDay() {
-    setState(() {
-      if (!hasWorkouts) {
-        hasWorkouts = true; // Set to true only if there are no workouts
-      } else {
-        workouts.add([]); // Add a new day with an empty list of exercises
-      }
-    });
+  @override
+  void initState() {
+    super.initState();
+    fetchWorkouts();
+  }
+
+  Future<void> fetchWorkouts() async {
+    try {
+      final fetchedWorkouts = await widget.viewModel.getWorkouts(widget.clientId);
+      setState(() {
+        workouts = fetchedWorkouts;
+        hasWorkouts = workouts.isNotEmpty;
+      });
+    } catch (e) {
+      // Handle errors
+      print('Error fetching workouts: $e');
+      setState(() {
+        workouts = [];
+        hasWorkouts = false;
+      });
+    }
   }
 
   @override
@@ -41,41 +56,52 @@ class _CoachWorkoutIdsPageState extends State<CoachWorkoutIdsPage> {
                 ? ListView.builder(
                     itemCount: workouts.length,
                     itemBuilder: (context, index) {
-                      return GestureDetector(
-                        onTap: () {
-                          navigateToClientMyWorkoutsDailyPage(context);
+                      final workoutId = workouts[index];
+                      return FutureBuilder(
+                        future: widget.viewModel.getWorkout(workoutId),
+                        builder: (context,
+                            AsyncSnapshot<Map<String, dynamic>?> snapshot) {
+                          final workoutName =
+                              snapshot.data?['name'] ?? 'Unnamed Workout';
+                          return Container(
+                            decoration: BoxDecoration(
+                              border: Border(
+                                top:
+                                    BorderSide(color: Colors.black, width: 1.0),
+                              ),
+                            ),
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 16.0),
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  if (workoutId != null) {
+                                    navigateToClientMyWorkoutsDailyPage(
+                                        context, workoutId);
+                                  }
+                                },
+                                style: ButtonStyle(
+                                  backgroundColor:
+                                      MaterialStateProperty.all<Color>(
+                                          Colors.black),
+                                  minimumSize: MaterialStateProperty.all<Size>(
+                                      Size(double.infinity, 48)),
+                                ),
+                                child: snapshot.connectionState !=
+                                        ConnectionState.waiting
+                                    ? Text(
+                                        workoutName,
+                                        style: TextStyle(color: Colors.white),
+                                      )
+                                    : CircularProgressIndicator(
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                                Colors.white),
+                                      ),
+                              ),
+                            ),
+                          );
                         },
-                        child: Container(
-                          margin: EdgeInsets.all(8.0),
-                          padding: EdgeInsets.all(8.0),
-                          decoration: BoxDecoration(
-                            color: Colors.black, // Light grey color
-                            borderRadius: BorderRadius.circular(20.0),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Workout ${index + 1}',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: List.generate(
-                                    workouts[index].length, (exerciseIndex) {
-                                  final exerciseNumber = exerciseIndex + 1;
-                                  return Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 4.0,
-                                    ),
-                                    child: Text(
-                                        '$exerciseNumber. ${workouts[index][exerciseIndex]}'),
-                                  );
-                                }),
-                              ),
-                            ],
-                          ),
-                        ),
                       );
                     },
                   )
@@ -94,7 +120,9 @@ class _CoachWorkoutIdsPageState extends State<CoachWorkoutIdsPage> {
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 16.0),
                 child: ElevatedButton(
-                  onPressed: addDay,
+                  onPressed: () async {
+                    await addWorkout();
+                  },
                   style: ButtonStyle(
                     backgroundColor:
                         MaterialStateProperty.all<Color>(Colors.black),
@@ -114,12 +142,26 @@ class _CoachWorkoutIdsPageState extends State<CoachWorkoutIdsPage> {
     );
   }
 
-  void navigateToClientMyWorkoutsDailyPage(BuildContext context) async {
+  Future<void> addWorkout() async {
+    try {
+      await widget.viewModel.addWorkoutId(widget.clientId);
+      await fetchWorkouts();
+    } catch (e) {
+      // Handle errors
+      print('Error adding workout: $e');
+    }
+  }
+
+  void navigateToClientMyWorkoutsDailyPage(
+      BuildContext context, String workoutId) async {
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) =>
-              CoachWorkoutWeekSelectionPage(viewModel: widget.viewModel)),
+        builder: (context) => CoachWorkoutWeekSelectionPage(
+          viewModel: widget.viewModel,
+          workoutId: workoutId,
+        ),
+      ),
     );
   }
 }

@@ -4,9 +4,13 @@ import 'package:flutter/material.dart';
 
 class CoachWorkoutWeekSelectionPage extends StatefulWidget {
   final CoachHomeViewModel viewModel;
+  final String workoutId;
 
-  const CoachWorkoutWeekSelectionPage({Key? key, required this.viewModel})
-      : super(key: key);
+  const CoachWorkoutWeekSelectionPage({
+    Key? key,
+    required this.viewModel,
+    required this.workoutId,
+  }) : super(key: key);
 
   @override
   _CoachWorkoutWeekSelectionPageState createState() =>
@@ -21,15 +25,23 @@ class _CoachWorkoutWeekSelectionPageState
       appBar: AppBar(
         title: Text('Week Selection'),
       ),
-      body: WeekSelector(viewModel: widget.viewModel),
+      body: WeekSelector(
+        viewModel: widget.viewModel,
+        workoutId: widget.workoutId,
+      ),
     );
   }
 }
 
 class WeekSelector extends StatefulWidget {
   final CoachHomeViewModel viewModel;
+  final String workoutId;
 
-  const WeekSelector({Key? key, required this.viewModel}) : super(key: key);
+  const WeekSelector({
+    Key? key,
+    required this.viewModel,
+    required this.workoutId,
+  }) : super(key: key);
 
   @override
   _WeekSelectorState createState() => _WeekSelectorState();
@@ -83,9 +95,13 @@ class _WeekSelectorState extends State<WeekSelector> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) =>
-                          SelectedWeeksPage(viewModel: widget.viewModel, selectedWeeks: selectedWeeks)
-                ));
+                    builder: (context) => SelectedWeeksPage(
+                      viewModel: widget.viewModel,
+                      workoutId: widget.workoutId,
+                      selectedWeeks: selectedWeeks,
+                    ),
+                  ),
+                );
               },
               child: Text('Next'),
             ),
