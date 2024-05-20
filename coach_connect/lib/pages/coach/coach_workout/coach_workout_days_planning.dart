@@ -1,4 +1,4 @@
-import 'package:coach_connect/pages/coach/coach_workout/coach_workout_page.dart';
+import 'package:coach_connect/models/day.dart';
 import 'package:flutter/material.dart';
 import 'package:coach_connect/view_models/coach/coach_home_viewmodel.dart';
 
@@ -7,27 +7,42 @@ class SelectedWeeksPage extends StatefulWidget {
   final CoachHomeViewModel viewModel;
   final String workoutId;
 
-  const SelectedWeeksPage({Key? key,required this.viewModel, required this.selectedWeeks, required this.workoutId})
-      : super(key: key);
+  const SelectedWeeksPage({
+    Key? key,
+    required this.viewModel,
+    required this.selectedWeeks,
+    required this.workoutId,
+  }) : super(key: key);
 
   @override
   _SelectedWeeksPageState createState() => _SelectedWeeksPageState();
 }
 
 class _SelectedWeeksPageState extends State<SelectedWeeksPage> {
-  int selectedWeek = 1; // Initialize selectedWeek to 1
-  int selectedDay = 1; // Initialize selectedWeek to 1
-  TextEditingController exerciseController =
-      TextEditingController(); // Controller for the exercise TextField
-  List<List<String>> enteredExercisesByDay = [
-    []
-  ]; // Track the entered exercises by day
+  int selectedWeek = 1;
+  TextEditingController exerciseController = TextEditingController();
+  List<List<String>> enteredExercisesByDay = [[]];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchDaysForWeek(selectedWeek);
+  }
+
+  Future<void> fetchDaysForWeek(int week) async {
+    final weekId = 'Week$week';
+    final days = await widget.viewModel.getDays(widget.workoutId, weekId);
+    setState(() {
+      enteredExercisesByDay = days.map((day) => [day.name!]).toList();
+    });
+  }
 
   void addDay() {
     setState(() {
-      enteredExercisesByDay
-          .add([]); // Add a new day with an empty list of exercises
+      enteredExercisesByDay.add([]);
     });
+    final dayModel = DayModel(name: 'Day${enteredExercisesByDay.length}', id: 'day${enteredExercisesByDay.length}');
+    widget.viewModel.addDayToWeek(widget.workoutId, 'Week$selectedWeek', dayModel);
   }
 
   @override
@@ -51,6 +66,7 @@ class _SelectedWeeksPageState extends State<SelectedWeeksPage> {
                       setState(() {
                         selectedWeek = week;
                       });
+                      fetchDaysForWeek(week);
                     },
                     child: Text('Week $week'),
                   ),
@@ -69,7 +85,7 @@ class _SelectedWeeksPageState extends State<SelectedWeeksPage> {
                         margin: EdgeInsets.all(8.0),
                         padding: EdgeInsets.all(8.0),
                         decoration: BoxDecoration(
-                          color: Colors.grey[200], // Light grey color
+                          color: Colors.grey[200],
                           borderRadius: BorderRadius.circular(20.0),
                         ),
                         child: Column(
@@ -97,37 +113,43 @@ class _SelectedWeeksPageState extends State<SelectedWeeksPage> {
                                   context: context,
                                   isScrollControlled: true,
                                   builder: (BuildContext context) {
-                                    return Container(
-                                      padding: EdgeInsets.only(
-                                        bottom: MediaQuery.of(context)
-                                            .viewInsets
-                                            .bottom,
-                                      ),
-                                      height: 200,
-                                      child: Column(
-                                        children: [
-                                          TextField(
-                                            controller:
-                                                exerciseController, // Use the controller
-                                            decoration: InputDecoration(
-                                              hintText: 'Enter exercise',
-                                              border: OutlineInputBorder(),
-                                            ),
+                                    return Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: SingleChildScrollView(
+                                        padding: EdgeInsets.only(
+                                          bottom: MediaQuery.of(context)
+                                              .viewInsets
+                                              .bottom,
+                                        ),
+                                        child: Container(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 16),
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              SizedBox(height: 16),
+                                              TextField(
+                                                controller: exerciseController,
+                                                decoration: InputDecoration(
+                                                  hintText: 'Enter exercise',
+                                                  border: OutlineInputBorder(),
+                                                ),
+                                              ),
+                                              SizedBox(height: 10),
+                                              ElevatedButton(
+                                                onPressed: () {
+                                                  setState(() {
+                                                    enteredExercisesByDay[index]
+                                                        .add(exerciseController.text);
+                                                    exerciseController.clear();
+                                                  });
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Text('Add'),
+                                              ),
+                                            ],
                                           ),
-                                          SizedBox(height: 10),
-                                          ElevatedButton(
-                                onPressed: () {
-                                  Navigator.pop(context); // Close the bottom sheet
-                                  Navigator.push( // Navigate to CoachWorkoutPage
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => CoachWorkoutPage(viewModel: widget.viewModel)
-                                    ),
-                                  );
-                                },
-                                child: Text('Add'),
-                              ),
-                                        ],
+                                        ),
                                       ),
                                     );
                                   },

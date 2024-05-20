@@ -1,19 +1,19 @@
 import 'exercise.dart';
 
-class WeekModel {
+class ExerciseModel {
   String? id;
   String? name;
 
-  WeekModel({
+  ExerciseModel({
     this.id,
     this.name,
   });
 
-  WeekModel copyWith({
+  ExerciseModel copyWith({
     String? id,
     String? name,
   }) {
-    return WeekModel(
+    return ExerciseModel(
       id: id ?? this.id,
       name: name ?? this.name,
     );
@@ -26,15 +26,15 @@ class WeekModel {
     };
   }
 
-  factory WeekModel.fromJson(Map<String, dynamic> json) {
-    return WeekModel(
+  factory ExerciseModel.fromJson(Map<String, dynamic> json) {
+    return ExerciseModel(
       id: json['id'] as String?,
       name: json['name'] as String?,
     );
   }
 
   @override
-  String toString() => "weekModel(id: $id,name: $name)";
+  String toString() => "exerciseModel(id: $id,name: $name)";
 
   @override
   int get hashCode => Object.hash(id, name);
@@ -42,7 +42,7 @@ class WeekModel {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is WeekModel &&
+      other is ExerciseModel &&
           runtimeType == other.runtimeType &&
           id == other.id &&
           name == other.name;
