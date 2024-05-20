@@ -1,95 +1,157 @@
 import 'package:flutter/material.dart';
+import 'package:coach_connect/models/set.dart';
 import 'package:coach_connect/view_models/coach/coach_home_viewmodel.dart';
 
 class CoachWorkoutPage extends StatefulWidget {
   final CoachHomeViewModel viewModel;
+  final String workoutId;
+  final String weekId;
+  final String dayId;
+  final String exerciseId; 
+  final String exerciseName; // Add exerciseName parameter
 
-  const CoachWorkoutPage({Key? key, required this.viewModel}) : super(key: key);
+  const CoachWorkoutPage({
+    Key? key,
+    required this.viewModel,
+    required this.workoutId,
+    required this.weekId,
+    required this.dayId,
+    required this.exerciseId, 
+    required this.exerciseName, // Add exerciseName parameter
+  }) : super(key: key);
 
   @override
   _CoachWorkoutPageState createState() => _CoachWorkoutPageState();
 }
 
 class _CoachWorkoutPageState extends State<CoachWorkoutPage> {
-  List<List<String>> workoutData = [
-    ['Set', 'RPE', 'Reps', 'KG', 'Video'],
-    ['1', '', '', '', ''],
-  ];
-  int setCounter = 2;
+  List<SetModel> sets = [];
 
-  void addRow() {
+  TextEditingController rpeController = TextEditingController();
+  TextEditingController repsController = TextEditingController();
+  TextEditingController kgController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    fetchSets();
+  }
+
+  Future<void> fetchSets() async {
+    final fetchedSets = await widget.viewModel.getSets(
+      widget.workoutId,
+      widget.weekId,
+      widget.dayId,
+      widget.exerciseId,
+    );
     setState(() {
-      workoutData.add([setCounter.toString(), '', '', '', '']);
-      setCounter++;
+      sets = fetchedSets;
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Coach Workout Add Page'),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: GridView.builder(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 5,
-              ),
-              itemCount: workoutData.length * 5,
-              itemBuilder: (BuildContext context, int index) {
-                int rowIndex = index ~/ 5;
-                int columnIndex = index % 5;
-                if (rowIndex == 0) {
-                  return Center(
-                    child: Text(workoutData[rowIndex][columnIndex]),
-                  );
-                } else if (columnIndex == 0) {
-                  return Center(
-                    child: Text(workoutData[rowIndex][columnIndex]),
-                  );
-                } else if (columnIndex == 4) {
-                  return Center(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        // Add your logic for the video button here
-                      },
-                      child: Icon(Icons.add),
-                    ),
-                  );
-                } else {
-                  return Center(
-                    child: TextField(
-                      onChanged: (text) {
-                        workoutData[rowIndex][columnIndex] = text;
-                      },
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                  );
-                }
-              },
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              addRow();
-            },
-            child: Text('Add Set'),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: ElevatedButton(
-              onPressed: () {
-                // Add your logic for the button at the bottom here
-              },
-              child: Text('Create Exercise'),
-            ),
-          ),
-        ],
-      ),
-    );
+  void addSet() {
+    final newSet = SetModel(id: 'set${sets.length + 1}');
+    setState(() {
+      sets.add(newSet);
+    });
   }
+
+  void saveSet(int index) async {
+  final updatedSet = sets[index].copyWith(
+    rpe: rpeController.text,
+    reps: repsController.text,
+    kg: kgController.text,
+  );
+
+  await widget.viewModel.addSetToExercise(
+    widget.workoutId,
+    widget.weekId,
+    widget.dayId,
+    widget.exerciseId,
+    updatedSet,
+  );
+
+  setState(() {
+    sets[index] = updatedSet;
+  });
+
+  Navigator.pop(context); // Close the bottom sheet only
+}
+
+
+  @override
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      title: Text(widget.exerciseName), // Use exerciseName as the title
+    ),
+    body: Column(
+      children: [
+        Expanded(
+          child: ListView.builder(
+            itemCount: sets.length,
+            itemBuilder: (context, index) {
+              final set = sets[index];
+              return ListTile(
+                title: Text('Set ${index + 1}'),
+                subtitle: Text('RPE: ${set.rpe}, Reps: ${set.reps}, Kg: ${set.kg}'),
+                onTap: () {
+                  rpeController.text = set.rpe ?? '';
+                  repsController.text = set.reps ?? '';
+                  kgController.text = set.kg ?? '';
+
+                  FocusScope.of(context).requestFocus(FocusNode());
+
+                  showModalBottomSheet<void>(
+                    context: context,
+                    isScrollControlled: true, // Ensure bottom sheet is scrollable
+                    builder: (BuildContext context) {
+                      return SingleChildScrollView(
+                        padding: EdgeInsets.only(
+                          bottom: MediaQuery.of(context).viewInsets.bottom,
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              TextField(
+                                controller: rpeController,
+                                decoration: InputDecoration(labelText: 'RPE'),
+                                keyboardType: TextInputType.number,
+                              ),
+                              TextField(
+                                controller: repsController,
+                                decoration: InputDecoration(labelText: 'Reps'),
+                                keyboardType: TextInputType.number,
+                              ),
+                              TextField(
+                                controller: kgController,
+                                decoration: InputDecoration(labelText: 'Kg'),
+                                keyboardType: TextInputType.number,
+                              ),
+                              ElevatedButton(
+                                onPressed: () => saveSet(index),
+                                child: Text('Save Set'),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+              );
+            },
+          ),
+        ),
+        ElevatedButton(
+          onPressed: addSet,
+          child: Text('Add Set'),
+        ),
+      ],
+    ),
+  );
+}
+
 }

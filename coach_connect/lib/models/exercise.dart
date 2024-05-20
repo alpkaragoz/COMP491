@@ -1,5 +1,3 @@
-import 'exercise.dart';
-
 class ExerciseModel {
   String? id;
   String? name;

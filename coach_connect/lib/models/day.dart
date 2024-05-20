@@ -1,5 +1,3 @@
-import 'exercise.dart';
-
 class DayModel {
   String? id;
   String? name;

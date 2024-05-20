@@ -3,12 +3,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:coach_connect/models/day.dart';
 import 'package:coach_connect/models/exercise.dart';
 import 'package:coach_connect/models/request.dart';
+import 'package:coach_connect/models/set.dart';
 import 'package:coach_connect/models/user_account.dart';
 import 'package:coach_connect/models/week.dart';
 import 'package:coach_connect/models/workout.dart';
 import 'package:coach_connect/service/auth.dart';
 import 'package:flutter/material.dart';
-import 'package:uuid/uuid.dart';
 
 class CoachHomeViewModel extends ChangeNotifier {
   UserAccount? user;
@@ -231,6 +231,50 @@ class CoachHomeViewModel extends ChangeNotifier {
           .toList();
     } catch (e) {
       print('Error fetching exercises: $e');
+      return [];
+    }
+  }
+
+
+  Future<void> addSetToExercise(
+      String workoutId, String weekId, String dayId, String exerciseId, SetModel setModel) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('workouts')
+          .doc(workoutId)
+          .collection('weeks')
+          .doc(weekId)
+          .collection('days')
+          .doc(dayId)
+          .collection('exercises')
+          .doc(exerciseId)
+          .collection('sets')
+          .doc(setModel.id)
+          .set(setModel.toJson());
+    } catch (e) {
+      print('Error adding set: $e');
+    }
+  }
+
+  Future<List<SetModel>> getSets(
+      String workoutId, String weekId, String dayId, String exerciseId) async {
+    try {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('workouts')
+          .doc(workoutId)
+          .collection('weeks')
+          .doc(weekId)
+          .collection('days')
+          .doc(dayId)
+          .collection('exercises')
+          .doc(exerciseId)
+          .collection('sets')
+          .get();
+      return snapshot.docs
+          .map((doc) => SetModel.fromJson(doc.data()))
+          .toList();
+    } catch (e) {
+      print('Error fetching sets: $e');
       return [];
     }
   }

@@ -1,5 +1,4 @@
 import 'package:coach_connect/models/workout.dart';
-import 'package:coach_connect/pages/coach/coach_workout/coach_workout_days_planning.dart';
 import 'package:coach_connect/pages/coach/coach_workout/coach_workout_week_selection.dart';
 import 'package:coach_connect/view_models/coach/coach_home_viewmodel.dart';
 import 'package:flutter/material.dart';
@@ -50,7 +49,7 @@ class _CoachWorkoutIdsPageState extends State<CoachWorkoutIdsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Workouts'),
+        title: const Text('Workouts'),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -80,10 +79,8 @@ class _CoachWorkoutIdsPageState extends State<CoachWorkoutIdsPage> {
                                   const EdgeInsets.symmetric(vertical: 16.0),
                               child: ElevatedButton(
                                 onPressed: () {
-                                  if (workoutId != null) {
                                     navigateToClientMyWorkoutsDailyPage(
                                         context, workoutId);
-                                  }
                                 },
                                 style: ButtonStyle(
                                   backgroundColor:

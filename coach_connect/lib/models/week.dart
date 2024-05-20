@@ -1,5 +1,3 @@
-import 'exercise.dart';
-
 class WeekModel {
   String? id;
   String? name;
