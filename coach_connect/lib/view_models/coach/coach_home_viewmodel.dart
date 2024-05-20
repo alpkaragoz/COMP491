@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:coach_connect/models/day.dart';
+import 'package:coach_connect/models/exercise.dart';
 import 'package:coach_connect/models/request.dart';
 import 'package:coach_connect/models/user_account.dart';
 import 'package:coach_connect/models/week.dart';
@@ -195,26 +196,26 @@ class CoachHomeViewModel extends ChangeNotifier {
     }
   }
 
-   Future<void> addExerciseToDay(
-      String workoutId, String weekId, String dayId, String exercise) async {
-    try {
-      final exerciseId = Uuid().v4();
-      await FirebaseFirestore.instance
-          .collection('workouts')
-          .doc(workoutId)
-          .collection('weeks')
-          .doc(weekId)
-          .collection('days')
-          .doc(dayId)
-          .collection('exercises')
-          .doc(exerciseId)
-          .set({'name': exercise, 'id': exerciseId});
-    } catch (e) {
-      print('Error adding exercise: $e');
-    }
+  Future<void> addExerciseToDay(
+    String workoutId, String weekId, String dayId, ExerciseModel exerciseModel) async {
+  try {
+    await FirebaseFirestore.instance
+        .collection('workouts')
+        .doc(workoutId)
+        .collection('weeks')
+        .doc(weekId)
+        .collection('days')
+        .doc(dayId)
+        .collection('exercises')
+        .doc(exerciseModel.id)
+        .set(exerciseModel.toJson());
+  } catch (e) {
+    print('Error adding exercise: $e');
   }
+}
 
-  Future<List<String>> getExercises(String workoutId, String weekId, String dayId) async {
+  Future<List<ExerciseModel>> getExercises(
+      String workoutId, String weekId, String dayId) async {
     try {
       final snapshot = await FirebaseFirestore.instance
           .collection('workouts')
@@ -225,7 +226,9 @@ class CoachHomeViewModel extends ChangeNotifier {
           .doc(dayId)
           .collection('exercises')
           .get();
-      return snapshot.docs.map((doc) => doc['name'] as String).toList();
+      return snapshot.docs
+          .map((doc) => ExerciseModel.fromJson(doc.data()))
+          .toList();
     } catch (e) {
       print('Error fetching exercises: $e');
       return [];
