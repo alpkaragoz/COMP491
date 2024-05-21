@@ -47,6 +47,9 @@ class _CoachWorkoutPageState extends State<CoachWorkoutPage> {
     );
     setState(() {
       sets = fetchedSets;
+      if (sets.isEmpty) {
+        addSet();
+      }
     });
   }
 
@@ -58,6 +61,17 @@ class _CoachWorkoutPageState extends State<CoachWorkoutPage> {
   }
 
   void saveSet(int index) async {
+    if (rpeController.text.isEmpty ||
+        repsController.text.isEmpty ||
+        kgController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Please enter values for RPE, Reps, and Kg.'),
+        ),
+      );
+      return;
+    }
+
     final updatedSet = sets[index].copyWith(
       rpe: rpeController.text,
       reps: repsController.text,
@@ -80,6 +94,26 @@ class _CoachWorkoutPageState extends State<CoachWorkoutPage> {
   }
 
   void saveExercise() {
+    bool allSetsValid = true;
+
+    for (var set in sets) {
+      if (set.rpe == null || set.rpe!.isEmpty ||
+          set.reps == null || set.reps!.isEmpty ||
+          set.kg == null || set.kg!.isEmpty) {
+        allSetsValid = false;
+        break;
+      }
+    }
+
+    if (!allSetsValid) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Please ensure all sets have values for RPE, Reps, and Kg.'),
+        ),
+      );
+      return;
+    }
+
     // Implement save exercise logic here
     Navigator.pop(context);
   }
