@@ -21,7 +21,7 @@ class _ClientWorkoutPageState extends State<ClientWorkoutPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Client My Workouts Page'),
+        title: const Text('Exercises'),
       ),
       body: Stack(
         children: [

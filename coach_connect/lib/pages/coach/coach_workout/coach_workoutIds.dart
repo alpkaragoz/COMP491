@@ -29,7 +29,8 @@ class _CoachWorkoutIdsPageState extends State<CoachWorkoutIdsPage> {
 
   Future<void> fetchWorkouts() async {
     try {
-      final fetchedWorkouts = await widget.viewModel.getWorkouts(widget.clientId);
+      final fetchedWorkouts =
+          await widget.viewModel.getWorkouts(widget.clientId);
       setState(() {
         workouts = fetchedWorkouts;
         hasWorkouts = workouts.isNotEmpty;
@@ -43,6 +44,7 @@ class _CoachWorkoutIdsPageState extends State<CoachWorkoutIdsPage> {
       });
     }
   }
+
   var count = 0;
   var workout = "Workout";
 
@@ -80,8 +82,8 @@ class _CoachWorkoutIdsPageState extends State<CoachWorkoutIdsPage> {
                                   const EdgeInsets.symmetric(vertical: 16.0),
                               child: ElevatedButton(
                                 onPressed: () {
-                                    navigateToClientMyWorkoutsDailyPage(
-                                        context, workoutId);
+                                  navigateToClientMyWorkoutsDailyPage(
+                                      context, workoutId);
                                 },
                                 style: ButtonStyle(
                                   backgroundColor:
@@ -146,10 +148,13 @@ class _CoachWorkoutIdsPageState extends State<CoachWorkoutIdsPage> {
   }
 
   Future<void> addWorkout() async {
-
     try {
       final name = await widget.viewModel.getWorkoutCount(widget.clientId);
-      await widget.viewModel.addWorkoutId(WorkoutModel(id: Uuid().v4(),clientId: widget.clientId, coachId: widget.viewModel.user!.id, name: name));
+      await widget.viewModel.addWorkoutId(WorkoutModel(
+          id: Uuid().v4(),
+          clientId: widget.clientId,
+          coachId: widget.viewModel.user!.id,
+          name: name));
       await fetchWorkouts();
     } catch (e) {
       // Handle errors
@@ -158,31 +163,28 @@ class _CoachWorkoutIdsPageState extends State<CoachWorkoutIdsPage> {
   }
 
   void navigateToClientMyWorkoutsDailyPage(
-
       BuildContext context, workoutId) async {
-        final weekCount = await widget.viewModel.getWeekCount(workoutId);
-        if (weekCount == 0) {
-          Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => CoachWorkoutWeekSelectionPage(
-          viewModel: widget.viewModel,
-          workoutId: workoutId,
-          
+    final weekCount = await widget.viewModel.getWeekCount(workoutId);
+    if (weekCount == 0) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => CoachWorkoutWeekSelectionPage(
+            viewModel: widget.viewModel,
+            workoutId: workoutId,
+          ),
         ),
-      ),
-    );
-        }
-        else {
-          final weekSelection = await widget.viewModel.generateWeekIndices(workoutId);
-          Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => SelectedWeeksPage(viewModel: widget.viewModel, selectedWeeks: weekSelection, workoutId: workoutId)
-                  )
-          );
-
-        }
-    
+      );
+    } else {
+      final weekSelection =
+          await widget.viewModel.generateWeekIndices(workoutId);
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => SelectedWeeksPage(
+                  viewModel: widget.viewModel,
+                  selectedWeeks: weekSelection,
+                  workoutId: workoutId)));
+    }
   }
 }

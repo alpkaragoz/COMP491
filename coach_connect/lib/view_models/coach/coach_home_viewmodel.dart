@@ -196,6 +196,22 @@ class CoachHomeViewModel extends ChangeNotifier {
     }
   }
 
+  Future<List<String>> getDayNames(String workoutId, String weekId) async {
+    try {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('workouts')
+          .doc(workoutId)
+          .collection('weeks')
+          .doc(weekId)
+          .collection('days')
+          .get();
+      return snapshot.docs.map((doc) => doc['name'] as String).toList();
+    } catch (e) {
+      print('Error fetching days: $e');
+      return [];
+    }
+  }
+
   Future<void> addExerciseToDay(String workoutId, String weekId, String dayId,
       ExerciseModel exerciseModel) async {
     try {
@@ -303,7 +319,8 @@ class CoachHomeViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> updateDay(String workoutId, String weekId, DayModel dayModel) async {
+  Future<void> updateDay(
+      String workoutId, String weekId, DayModel dayModel) async {
     try {
       await FirebaseFirestore.instance
           .collection('workouts')
@@ -318,5 +335,28 @@ class CoachHomeViewModel extends ChangeNotifier {
     }
   }
 
-  
+  Future<String?> getClientId(String workoutId) async {
+    try {
+      final documentSnapshot = await FirebaseFirestore.instance
+          .collection('workouts')
+          .doc(workoutId)
+          .get();
+
+      if (documentSnapshot.exists) {
+        final data = documentSnapshot.data();
+        if (data != null && data.containsKey('clientId')) {
+          return data['clientId'] as String?;
+        } else {
+          print('clientId not found in document.');
+          return null;
+        }
+      } else {
+        print('Document does not exist.');
+        return null;
+      }
+    } catch (e) {
+      print('Error fetching clientId: $e');
+      return null;
+    }
+  }
 }

@@ -26,6 +26,7 @@ class _SelectedWeeksPageState extends State<SelectedWeeksPage> {
   TextEditingController dayNameController = TextEditingController();
   List<List<ExerciseModel>> enteredExercisesByDay =
       List.generate(1, (index) => []);
+  List<String> dayNames = [];
 
   @override
   void initState() {
@@ -46,12 +47,20 @@ class _SelectedWeeksPageState extends State<SelectedWeeksPage> {
 
     setState(() {
       enteredExercisesByDay = exercises;
+      fetchDayNames(weekId);
+    });
+  }
+
+  Future<void> fetchDayNames(String weekId) async {
+    final names = await widget.viewModel.getDayNames(widget.workoutId, weekId);
+    setState(() {
+      dayNames = names;
     });
   }
 
   void addDay() async {
     final dayModel = DayModel(
-      name: 'Day${enteredExercisesByDay.length + 1}',
+      name: 'Day ${enteredExercisesByDay.length + 1}',
       id: 'day${enteredExercisesByDay.length + 1}',
     );
     await widget.viewModel
@@ -59,6 +68,7 @@ class _SelectedWeeksPageState extends State<SelectedWeeksPage> {
 
     setState(() {
       enteredExercisesByDay.add([]);
+      dayNames.add(dayModel.name);
     });
   }
 
@@ -74,8 +84,7 @@ class _SelectedWeeksPageState extends State<SelectedWeeksPage> {
     await widget.viewModel.updateDay(widget.workoutId, weekId, dayModel);
 
     setState(() {
-      // Update the name in your local state
-      enteredExercisesByDay[index] = enteredExercisesByDay[index];
+      dayNames[index] = newName;
     });
   }
 
@@ -129,7 +138,7 @@ class _SelectedWeeksPageState extends State<SelectedWeeksPage> {
                               children: [
                                 Expanded(
                                   child: Text(
-                                    'Day ${index + 1}',
+                                    dayNames.isNotEmpty ? dayNames[index] : 'Day ${index + 1}',
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16.0,
@@ -139,7 +148,7 @@ class _SelectedWeeksPageState extends State<SelectedWeeksPage> {
                                 IconButton(
                                   icon: Icon(Icons.edit),
                                   onPressed: () {
-                                    dayNameController.text = 'Day ${index + 1}';
+                                    dayNameController.text = dayNames.isNotEmpty ? dayNames[index] : 'Day ${index + 1}';
                                     showDialog(
                                       context: context,
                                       builder: (BuildContext context) {

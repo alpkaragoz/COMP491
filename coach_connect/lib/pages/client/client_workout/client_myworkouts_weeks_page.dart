@@ -14,7 +14,7 @@ class ClientMyWorkoutsWeeksPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Workouts'),
+        title: const Text('Weeks'),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
