@@ -196,23 +196,23 @@ class CoachHomeViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> addExerciseToDay(
-    String workoutId, String weekId, String dayId, ExerciseModel exerciseModel) async {
-  try {
-    await FirebaseFirestore.instance
-        .collection('workouts')
-        .doc(workoutId)
-        .collection('weeks')
-        .doc(weekId)
-        .collection('days')
-        .doc(dayId)
-        .collection('exercises')
-        .doc(exerciseModel.id)
-        .set(exerciseModel.toJson());
-  } catch (e) {
-    print('Error adding exercise: $e');
+  Future<void> addExerciseToDay(String workoutId, String weekId, String dayId,
+      ExerciseModel exerciseModel) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('workouts')
+          .doc(workoutId)
+          .collection('weeks')
+          .doc(weekId)
+          .collection('days')
+          .doc(dayId)
+          .collection('exercises')
+          .doc(exerciseModel.id)
+          .set(exerciseModel.toJson());
+    } catch (e) {
+      print('Error adding exercise: $e');
+    }
   }
-}
 
   Future<List<ExerciseModel>> getExercises(
       String workoutId, String weekId, String dayId) async {
@@ -235,9 +235,8 @@ class CoachHomeViewModel extends ChangeNotifier {
     }
   }
 
-
-  Future<void> addSetToExercise(
-      String workoutId, String weekId, String dayId, String exerciseId, SetModel setModel) async {
+  Future<void> addSetToExercise(String workoutId, String weekId, String dayId,
+      String exerciseId, SetModel setModel) async {
     try {
       await FirebaseFirestore.instance
           .collection('workouts')
@@ -270,12 +269,54 @@ class CoachHomeViewModel extends ChangeNotifier {
           .doc(exerciseId)
           .collection('sets')
           .get();
-      return snapshot.docs
-          .map((doc) => SetModel.fromJson(doc.data()))
-          .toList();
+      return snapshot.docs.map((doc) => SetModel.fromJson(doc.data())).toList();
     } catch (e) {
       print('Error fetching sets: $e');
       return [];
     }
   }
+
+  Future<int> getNumberOfWeeks(String workoutId) async {
+    try {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('workouts')
+          .doc(workoutId)
+          .collection('weeks')
+          .get();
+      return snapshot.size;
+    } catch (e) {
+      print('Error fetching number of weeks: $e');
+      return 0;
+    }
+  }
+
+  Future<List<int>> generateWeekIndices(String workoutId) async {
+    try {
+      final int numberOfWeeks = await getNumberOfWeeks(workoutId);
+      final List<int> weekIndices =
+          List<int>.generate(numberOfWeeks, (index) => index + 1);
+
+      return weekIndices;
+    } catch (e) {
+      print('Error generating week indices: $e');
+      return [];
+    }
+  }
+
+  Future<void> updateDay(String workoutId, String weekId, DayModel dayModel) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('workouts')
+          .doc(workoutId)
+          .collection('weeks')
+          .doc(weekId)
+          .collection('days')
+          .doc(dayModel.id)
+          .update(dayModel.toJson());
+    } catch (e) {
+      print('Error updating day: $e');
+    }
+  }
+
+  
 }

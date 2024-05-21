@@ -1,4 +1,5 @@
 import 'package:coach_connect/models/workout.dart';
+import 'package:coach_connect/pages/coach/coach_workout/coach_workout_days_planning.dart';
 import 'package:coach_connect/pages/coach/coach_workout/coach_workout_week_selection.dart';
 import 'package:coach_connect/view_models/coach/coach_home_viewmodel.dart';
 import 'package:flutter/material.dart';
@@ -172,19 +173,16 @@ class _CoachWorkoutIdsPageState extends State<CoachWorkoutIdsPage> {
       ),
     );
         }
-        /* else {
+        else {
+          final weekSelection = await widget.viewModel.generateWeekIndices(workoutId);
           Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => SelectedWeeksPage(
-                      viewModel: widget.viewModel,
-                      workoutId: widget.workoutId,
-                      selectedWeeks: selectedWeeks,
-                    ),
-                  ),
-                );
+                    builder: (context) => SelectedWeeksPage(viewModel: widget.viewModel, selectedWeeks: weekSelection, workoutId: workoutId)
+                  )
+          );
 
-        } */
+        }
     
   }
 }

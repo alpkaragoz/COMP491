@@ -23,6 +23,7 @@ class SelectedWeeksPage extends StatefulWidget {
 class _SelectedWeeksPageState extends State<SelectedWeeksPage> {
   int selectedWeek = 1;
   TextEditingController exerciseController = TextEditingController();
+  TextEditingController dayNameController = TextEditingController();
   List<List<ExerciseModel>> enteredExercisesByDay =
       List.generate(1, (index) => []);
 
@@ -50,13 +51,31 @@ class _SelectedWeeksPageState extends State<SelectedWeeksPage> {
 
   void addDay() async {
     final dayModel = DayModel(
-        name: 'Day${enteredExercisesByDay.length + 1}',
-        id: 'day${enteredExercisesByDay.length + 1}');
+      name: 'Day${enteredExercisesByDay.length + 1}',
+      id: 'day${enteredExercisesByDay.length + 1}',
+    );
     await widget.viewModel
         .addDayToWeek(widget.workoutId, 'Week$selectedWeek', dayModel);
 
     setState(() {
       enteredExercisesByDay.add([]);
+    });
+  }
+
+  void updateDayName(int index, String newName) async {
+    final dayId = 'day${index + 1}';
+    final weekId = 'Week$selectedWeek';
+
+    final dayModel = DayModel(
+      name: newName,
+      id: dayId,
+    );
+
+    await widget.viewModel.updateDay(widget.workoutId, weekId, dayModel);
+
+    setState(() {
+      // Update the name in your local state
+      enteredExercisesByDay[index] = enteredExercisesByDay[index];
     });
   }
 
@@ -106,12 +125,54 @@ class _SelectedWeeksPageState extends State<SelectedWeeksPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              'Day ${index + 1}',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16.0,
-                              ),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    'Day ${index + 1}',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16.0,
+                                    ),
+                                  ),
+                                ),
+                                IconButton(
+                                  icon: Icon(Icons.edit),
+                                  onPressed: () {
+                                    dayNameController.text = 'Day ${index + 1}';
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title: Text('Edit Day Name'),
+                                          content: TextField(
+                                            controller: dayNameController,
+                                            decoration: InputDecoration(
+                                              hintText: 'Enter new day name',
+                                            ),
+                                          ),
+                                          actions: <Widget>[
+                                            TextButton(
+                                              child: Text('Cancel'),
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                            ),
+                                            TextButton(
+                                              child: Text('Save'),
+                                              onPressed: () {
+                                                updateDayName(index,
+                                                    dayNameController.text);
+                                                Navigator.of(context).pop();
+                                              },
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  },
+                                ),
+                              ],
                             ),
                             SizedBox(height: 8.0),
                             Column(
@@ -124,8 +185,7 @@ class _SelectedWeeksPageState extends State<SelectedWeeksPage> {
                                   final exerciseNumber = exerciseIndex + 1;
                                   return Padding(
                                     padding: const EdgeInsets.symmetric(
-                                      vertical: 4.0,
-                                    ),
+                                        vertical: 4.0),
                                     child: Text(
                                       '$exerciseNumber. ${exercise.name}',
                                     ),
@@ -190,11 +250,10 @@ class _SelectedWeeksPageState extends State<SelectedWeeksPage> {
 
                                                     await widget.viewModel
                                                         .addExerciseToDay(
-                                                      widget.workoutId,
-                                                      weekId,
-                                                      dayId,
-                                                      exerciseModel,
-                                                    );
+                                                            widget.workoutId,
+                                                            weekId,
+                                                            dayId,
+                                                            exerciseModel);
 
                                                     setState(() {
                                                       enteredExercisesByDay[
