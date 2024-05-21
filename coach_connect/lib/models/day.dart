@@ -1,10 +1,10 @@
 class DayModel {
   String? id;
-  String? name;
+  String name; // Make name non-nullable
 
   DayModel({
     this.id,
-    this.name,
+    required this.name, // Require name in the constructor
   });
 
   DayModel copyWith({
@@ -27,7 +27,7 @@ class DayModel {
   factory DayModel.fromJson(Map<String, dynamic> json) {
     return DayModel(
       id: json['id'] as String?,
-      name: json['name'] as String?,
+      name: json['name'] as String, // Assume the JSON always has a non-null name
     );
   }
 

@@ -3,8 +3,9 @@ import 'package:coach_connect/view_models/client/client_home_viewmodel.dart';
 
 class ClientWorkoutPage extends StatefulWidget {
   final ClientHomeViewModel viewModel;
+  final String workoutId;
 
-  const ClientWorkoutPage({Key? key, required this.viewModel})
+  const ClientWorkoutPage({Key? key, required this.viewModel, required this.workoutId})
       : super(key: key);
 
   @override
@@ -36,24 +37,21 @@ class _ClientWorkoutPageState extends State<ClientWorkoutPage> {
                     thickness: 1.0,
                   ),
                 ),
-                _buildDayButton('Bench Press', Colors.black, _isExpandedMonday,
-                    () {
+                _buildDayButton('Bench Press', Colors.black, _isExpandedMonday, () {
                   setState(() {
                     _isExpandedMonday = !_isExpandedMonday;
                   });
                 }),
                 if (_isExpandedMonday)
                   _buildExpandableContent('Set:3 RPE:8 Reps:10 KG:60'),
-                _buildDayButton('Chest Fly', Colors.black, _isExpandedFriday,
-                    () {
+                _buildDayButton('Chest Fly', Colors.black, _isExpandedFriday, () {
                   setState(() {
                     _isExpandedFriday = !_isExpandedFriday;
                   });
                 }),
                 if (_isExpandedFriday)
                   _buildExpandableContent('Set:3 RPE:6 Reps:8 KG:50'),
-                _buildDayButton(
-                    'Triceps Extension', Colors.black, _isExpandedSaturday, () {
+                _buildDayButton('Triceps Extension', Colors.black, _isExpandedSaturday, () {
                   setState(() {
                     _isExpandedSaturday = !_isExpandedSaturday;
                   });
@@ -61,8 +59,7 @@ class _ClientWorkoutPageState extends State<ClientWorkoutPage> {
                 if (_isExpandedSaturday)
                   _buildExpandableContent('Set:3 RPE:8 Reps:10 KG:60'),
                 SizedBox(
-                    height:
-                        16.0), // Add some space between the content and the button
+                    height: 16.0), // Add some space between the content and the button
               ],
             ),
           ),
@@ -118,33 +115,32 @@ class _ClientWorkoutPageState extends State<ClientWorkoutPage> {
   }
 
   Widget _buildExpandableContent(String content) {
-  return Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-    child: Container(
-      decoration: BoxDecoration(
-        color: Colors.black87,
-        borderRadius: BorderRadius.circular(10.0), // Set border radius for curvy edges
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0), // Add padding to the black background
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.black87,
+          borderRadius: BorderRadius.circular(10.0), // Set border radius for curvy edges
+        ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: IntrinsicWidth(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  content,
-                  style: TextStyle(color: Colors.white),
-                ),
-                // Add other widgets here if needed
-              ],
+          padding: const EdgeInsets.all(8.0), // Add padding to the black background
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: IntrinsicWidth(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    content,
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  // Add other widgets here if needed
+                ],
+              ),
             ),
           ),
         ),
       ),
-    ),
-  );
-}
-
+    );
+  }
 }

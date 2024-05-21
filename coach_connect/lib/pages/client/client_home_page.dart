@@ -3,7 +3,7 @@ import 'package:coach_connect/pages/client/client_settings_page.dart';
 import 'package:coach_connect/pages/client/mycoach_page.dart';
 import 'package:flutter/material.dart';
 import 'package:coach_connect/view_models/client/client_home_viewmodel.dart';
-import 'package:coach_connect/pages/client/client_workout/client_myworkouts_weekly_page.dart';
+import 'package:coach_connect/pages/client/client_workout/client_myworkouts_page.dart';
 
 class ClientHomePage extends StatefulWidget {
   const ClientHomePage({
@@ -85,7 +85,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
               if (title == "My Coach") {
                 await navigateToCoachDetails(context);
               } else if (title == "My Workouts") {
-                navigateToClientMyWorkoutsWeeklyPage(context);
+                navigateToClientMyWorkoutsPage(context);
               } else if (title == "Chat") {
                 await navigateToChat(context);
               } else if (title == "Settings") {
@@ -142,11 +142,11 @@ class _ClientHomePageState extends State<ClientHomePage> {
     }
   }
 
-  void navigateToClientMyWorkoutsWeeklyPage(BuildContext context) {
+  void navigateToClientMyWorkoutsPage(BuildContext context) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ClientMyWorkoutsWeeklyPage(viewModel: widget.viewModel),
+        builder: (context) => ClientMyWorkoutsPage(viewModel: widget.viewModel),
       ),
     );
   }

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:coach_connect/models/day.dart';
 import 'package:coach_connect/models/request.dart';
 import 'package:coach_connect/models/user_account.dart';
 import 'package:flutter/material.dart';
@@ -92,4 +93,52 @@ class ClientHomeViewModel extends ChangeNotifier {
       return;
     }
   }
+
+  Future<List<String>> getWorkouts() async {
+  try {
+    final userDoc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.id)
+        .get();
+    if (userDoc.exists) {
+      final workoutIds = List<String>.from(userDoc.data()?['workoutIds'] ?? []);
+      return workoutIds;
+    }
+  } catch (e) {
+    print("Error fetching workouts: $e");
+  }
+  return [];
+}
+Future<Map<String, dynamic>?> getWorkout(String workoutId) async {
+    try {
+      final workoutDoc = await FirebaseFirestore.instance
+          .collection('workouts')
+          .doc(workoutId)
+          .get();
+      if (workoutDoc.exists) {
+        return workoutDoc.data();
+      }
+    } catch (e) {
+      print("Error fetching workout: $e");
+    }
+    return null;
+  }
+
+  Future<List<DayModel>> getDays(String workoutId, String weekId) async {
+    try {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('workouts')
+          .doc(workoutId)
+          .collection('weeks')
+          .doc(weekId)
+          .collection('days')
+          .get();
+      return snapshot.docs.map((doc) => DayModel.fromJson(doc.data())).toList();
+    } catch (e) {
+      print('Error fetching days: $e');
+      return [];
+    }
+  }
+
+
 }

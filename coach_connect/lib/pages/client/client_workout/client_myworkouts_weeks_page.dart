@@ -1,11 +1,13 @@
-import 'package:coach_connect/pages/client/client_workout/client_myworkouts_daily_page.dart';
+import 'package:coach_connect/pages/client/client_workout/client_myworkouts_days_page.dart';
+import 'package:coach_connect/pages/client/client_workout/client_workout_page.dart';
 import 'package:flutter/material.dart';
 import 'package:coach_connect/view_models/client/client_home_viewmodel.dart';
 
-class ClientMyWorkoutsWeeklyPage extends StatelessWidget {
+class ClientMyWorkoutsWeeksPage extends StatelessWidget {
   final ClientHomeViewModel viewModel;
+  final String workoutId;
 
-  const ClientMyWorkoutsWeeklyPage({Key? key, required this.viewModel})
+  const ClientMyWorkoutsWeeksPage({Key? key, required this.viewModel, required this.workoutId})
       : super(key: key);
 
   @override
@@ -30,7 +32,7 @@ class ClientMyWorkoutsWeeklyPage extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 16.0),
                 child: ElevatedButton(
                   onPressed: () {
-                    navigateToClientMyWorkoutsDailyPage(context);
+                    navigateToClientMyWorkoutsDaysPage(context);
                   },
                   style: ButtonStyle(
                     backgroundColor:
@@ -52,11 +54,11 @@ class ClientMyWorkoutsWeeklyPage extends StatelessWidget {
     );
   }
 
-  void navigateToClientMyWorkoutsDailyPage(BuildContext context) async {
+  void navigateToClientMyWorkoutsDaysPage(BuildContext context) async {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ClientMyWorkoutsDailyPage(viewModel: viewModel),
+        builder: (context) => ClientMyWorkoutsDaysPage(viewModel: viewModel, workoutId: workoutId)
       ),
     );
   }

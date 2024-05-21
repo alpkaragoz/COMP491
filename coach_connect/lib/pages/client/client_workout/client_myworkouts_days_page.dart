@@ -2,10 +2,11 @@ import 'package:coach_connect/pages/client/client_workout/client_workout_page.da
 import 'package:flutter/material.dart';
 import 'package:coach_connect/view_models/client/client_home_viewmodel.dart';
 
-class ClientMyWorkoutsDailyPage extends StatelessWidget {
+class ClientMyWorkoutsDaysPage extends StatelessWidget {
   final ClientHomeViewModel viewModel;
+  final String workoutId;
 
-  const ClientMyWorkoutsDailyPage({Key? key, required this.viewModel})
+  const ClientMyWorkoutsDaysPage({Key? key, required this.viewModel, required this.workoutId})
       : super(key: key);
 
   @override
@@ -56,7 +57,7 @@ class ClientMyWorkoutsDailyPage extends StatelessWidget {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ClientWorkoutPage(viewModel: viewModel),
+        builder: (context) => ClientWorkoutPage(viewModel: viewModel, workoutId: workoutId),
       ),
     );
   }
