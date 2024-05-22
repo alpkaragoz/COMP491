@@ -359,4 +359,132 @@ class CoachHomeViewModel extends ChangeNotifier {
       return null;
     }
   }
+
+  Future<void> deleteWorkout(String workoutId) async {
+  try {
+    // Fetch the clientId associated with this workoutId
+    String? clientId = await getClientId(workoutId);
+
+    if (clientId != null) {
+      // Remove the workoutId from the user's workoutIds list
+      await FirebaseFirestore.instance.collection('users').doc(clientId).update({
+        'workoutIds': FieldValue.arrayRemove([workoutId]),
+      });
+
+      // Recursively delete all sub-collections and documents
+      await _deleteWorkoutSubCollections(workoutId);
+
+      // Delete the workout document
+      await FirebaseFirestore.instance.collection('workouts').doc(workoutId).delete();
+    }
+
+    notifyListeners();
+  } catch (e) {
+    print('Error deleting workouts: $e');
+  }
+}
+
+Future<void> _deleteWorkoutSubCollections(String workoutId) async {
+  try {
+    final weeksSnapshot = await FirebaseFirestore.instance
+        .collection('workouts')
+        .doc(workoutId)
+        .collection('weeks')
+        .get();
+
+    for (var weekDoc in weeksSnapshot.docs) {
+      final daysSnapshot = await weekDoc.reference.collection('days').get();
+
+      for (var dayDoc in daysSnapshot.docs) {
+        final exercisesSnapshot = await dayDoc.reference.collection('exercises').get();
+
+        for (var exerciseDoc in exercisesSnapshot.docs) {
+          final setsSnapshot = await exerciseDoc.reference.collection('sets').get();
+
+          for (var setDoc in setsSnapshot.docs) {
+            await setDoc.reference.delete();  // Delete each set document
+          }
+
+          await exerciseDoc.reference.delete();  // Delete each exercise document
+        }
+
+        await dayDoc.reference.delete();  // Delete each day document
+      }
+
+      await weekDoc.reference.delete();  // Delete each week document
+    }
+  } catch (e) {
+    print('Error deleting workout sub-collections: $e');
+  }
+}
+
+Future<void> deleteDay(String workoutId, String weekId, String dayId) async {
+  try {
+    // Reference to the specific day document
+    final dayRef = FirebaseFirestore.instance
+        .collection('workouts')
+        .doc(workoutId)
+        .collection('weeks')
+        .doc(weekId)
+        .collection('days')
+        .doc(dayId);
+
+    // Delete the document
+    await dayRef.delete();
+
+    // Delete all sub-collections and documents
+    await _deleteDaySubCollections(workoutId, weekId, dayId);
+
+    print('Day $dayId deleted successfully from $weekId in workout $workoutId.');
+  } catch (e) {
+    print('Failed to delete day: $e');
+  }
+}
+
+Future<void> _deleteDaySubCollections(String workoutId, String weekId, String dayId) async {
+  try {
+    final exercisesSnapshot = await FirebaseFirestore.instance
+        .collection('workouts')
+        .doc(workoutId)
+        .collection('weeks')
+        .doc(weekId)
+        .collection('days')
+        .doc(dayId)
+        .collection('exercises')
+        .get();
+
+    for (var exerciseDoc in exercisesSnapshot.docs) {
+      final setsSnapshot = await exerciseDoc.reference.collection('sets').get();
+
+      for (var setDoc in setsSnapshot.docs) {
+        await setDoc.reference.delete();  // Delete each set document
+      }
+
+      await exerciseDoc.reference.delete();  // Delete each exercise document
+    }
+
+
+  } catch (e) {
+    print('Error deleting day sub-collections: $e');
+  }
+}
+Future<void> deleteSetFromExercise(String workoutId, String weekId, String dayId, String exerciseId, String setId) async {
+  try {
+    await FirebaseFirestore.instance
+        .collection('workouts')
+        .doc(workoutId)
+        .collection('weeks')
+        .doc(weekId)
+        .collection('days')
+        .doc(dayId)
+        .collection('exercises')
+        .doc(exerciseId)
+        .collection('sets')
+        .doc(setId)
+        .delete();
+  } catch (e) {
+    print('Error deleting set: $e');
+  }
+}
+
 }

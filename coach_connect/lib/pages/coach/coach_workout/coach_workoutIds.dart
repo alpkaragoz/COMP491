@@ -80,29 +80,44 @@ class _CoachWorkoutIdsPageState extends State<CoachWorkoutIdsPage> {
                             child: Padding(
                               padding:
                                   const EdgeInsets.symmetric(vertical: 16.0),
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  navigateToClientMyWorkoutsDailyPage(
-                                      context, workoutId);
-                                },
-                                style: ButtonStyle(
-                                  backgroundColor:
-                                      MaterialStateProperty.all<Color>(
-                                          Colors.black),
-                                  minimumSize: MaterialStateProperty.all<Size>(
-                                      Size(double.infinity, 48)),
-                                ),
-                                child: snapshot.connectionState !=
-                                        ConnectionState.waiting
-                                    ? Text(
-                                        workoutName,
-                                        style: TextStyle(color: Colors.white),
-                                      )
-                                    : CircularProgressIndicator(
-                                        valueColor:
-                                            AlwaysStoppedAnimation<Color>(
-                                                Colors.white),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: ElevatedButton(
+                                      onPressed: () {
+                                        navigateToClientMyWorkoutsDailyPage(
+                                            context, workoutId);
+                                      },
+                                      style: ButtonStyle(
+                                        backgroundColor:
+                                            MaterialStateProperty.all<Color>(
+                                                Colors.black),
+                                        minimumSize:
+                                            MaterialStateProperty.all<Size>(
+                                                Size(double.infinity, 48)),
                                       ),
+                                      child: snapshot.connectionState !=
+                                              ConnectionState.waiting
+                                          ? Text(
+                                              workoutName,
+                                              style: TextStyle(
+                                                  color: Colors.white),
+                                            )
+                                          : CircularProgressIndicator(
+                                              valueColor:
+                                                  AlwaysStoppedAnimation<Color>(
+                                                      Colors.white),
+                                            ),
+                                    ),
+                                  ),
+                                  IconButton(
+                                    icon: Icon(Icons.delete, color: Colors.red),
+                                    onPressed: () {
+                                      _showDeleteConfirmationDialog(
+                                          context, workoutId);
+                                    },
+                                  ),
+                                ],
                               ),
                             ),
                           );
@@ -160,6 +175,39 @@ class _CoachWorkoutIdsPageState extends State<CoachWorkoutIdsPage> {
       // Handle errors
       print('Error adding workout: $e');
     }
+  }
+
+  Future<void> deleteWorkout(String workoutId) async {
+  try {
+    await widget.viewModel.deleteWorkout(workoutId);  // Wrap workoutId in a list
+    await fetchWorkouts();
+  } catch (e) {
+    // Handle errors
+    print('Error deleting workout: $e');
+  }
+}
+
+  void _showDeleteConfirmationDialog(BuildContext context, String workoutId) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Delete Workout'),
+        content: Text('Are you sure you want to delete this workout?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              deleteWorkout(workoutId);
+              Navigator.of(context).pop();
+            },
+            child: Text('Delete'),
+          ),
+        ],
+      ),
+    );
   }
 
   void navigateToClientMyWorkoutsDailyPage(

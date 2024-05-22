@@ -60,6 +60,31 @@ class _CoachWorkoutPageState extends State<CoachWorkoutPage> {
     });
   }
 
+  void deleteSet(int index) async {
+  final setToDelete = sets[index];
+  if (setToDelete.id != null) {
+    await widget.viewModel.deleteSetFromExercise(
+      widget.workoutId,
+      widget.weekId,
+      widget.dayId,
+      widget.exerciseId,
+      setToDelete.id!,
+    );
+
+    setState(() {
+      sets.removeAt(index);
+    });
+  } else {
+    // Handle the case where setToDelete.id is null
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Failed to delete set: Invalid set ID.'),
+      ),
+    );
+  }
+}
+
+
   void saveSet(int index) async {
     if (rpeController.text.isEmpty ||
         repsController.text.isEmpty ||
@@ -133,8 +158,11 @@ class _CoachWorkoutPageState extends State<CoachWorkoutPage> {
                 final set = sets[index];
                 return ListTile(
                   title: Text('Set ${index + 1}'),
-                  subtitle:
-                      Text('RPE: ${set.rpe}, Reps: ${set.reps}, Kg: ${set.kg}'),
+                  subtitle: Text('RPE: ${set.rpe}, Reps: ${set.reps}, Kg: ${set.kg}'),
+                  trailing: IconButton(
+                    icon: Icon(Icons.delete),
+                    onPressed: () => deleteSet(index),
+                  ),
                   onTap: () {
                     rpeController.text = set.rpe ?? '';
                     repsController.text = set.reps ?? '';
@@ -144,8 +172,7 @@ class _CoachWorkoutPageState extends State<CoachWorkoutPage> {
 
                     showModalBottomSheet<void>(
                       context: context,
-                      isScrollControlled:
-                          true, // Ensure bottom sheet is scrollable
+                      isScrollControlled: true, // Ensure bottom sheet is scrollable
                       builder: (BuildContext context) {
                         return SingleChildScrollView(
                           padding: EdgeInsets.only(
@@ -167,8 +194,7 @@ class _CoachWorkoutPageState extends State<CoachWorkoutPage> {
                                 ),
                                 TextField(
                                   controller: repsController,
-                                  decoration:
-                                      InputDecoration(labelText: 'Reps'),
+                                  decoration: InputDecoration(labelText: 'Reps'),
                                   keyboardType: TextInputType.number,
                                   inputFormatters: [
                                     FilteringTextInputFormatter.allow(
@@ -200,16 +226,14 @@ class _CoachWorkoutPageState extends State<CoachWorkoutPage> {
             ),
           ),
           Padding(
-            padding:
-                const EdgeInsets.all(8.0), // Add padding for better spacing
+            padding: const EdgeInsets.all(8.0), // Add padding for better spacing
             child: ElevatedButton(
               onPressed: addSet,
               child: Text('Add Set'),
             ),
           ),
           Padding(
-            padding:
-                const EdgeInsets.all(8.0), // Add padding for better spacing
+            padding: const EdgeInsets.all(8.0), // Add padding for better spacing
             child: ElevatedButton(
               onPressed: saveExercise,
               child: Text('Save Exercise'),

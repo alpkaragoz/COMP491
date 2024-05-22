@@ -4,6 +4,7 @@ import 'package:coach_connect/models/set.dart';
 import 'package:coach_connect/pages/coach/coach_workout/coach_workout_page.dart';
 import 'package:flutter/material.dart';
 import 'package:coach_connect/view_models/coach/coach_home_viewmodel.dart';
+import 'package:uuid/uuid.dart';
 
 class SelectedWeeksPage extends StatefulWidget {
   final List<int> selectedWeeks;
@@ -28,6 +29,7 @@ class _SelectedWeeksPageState extends State<SelectedWeeksPage> {
   List<List<ExerciseModel>> enteredExercisesByDay = List.generate(1, (index) => []);
   List<String> dayNames = [];
   Map<String, List<SetModel>> setsByExercise = {};
+  List<String> dayIds = []; // List to store day IDs
 
   @override
   void initState() {
@@ -41,10 +43,12 @@ class _SelectedWeeksPageState extends State<SelectedWeeksPage> {
 
     List<List<ExerciseModel>> exercises = [];
     Map<String, List<SetModel>> fetchedSetsByExercise = {};
+    List<String> fetchedDayIds = []; // Temporary list to store fetched day IDs
 
     for (var day in days) {
       final dayExercises = await widget.viewModel.getExercises(widget.workoutId, weekId, day.id!);
       exercises.add(dayExercises);
+      fetchedDayIds.add(day.id!); // Store the fetched day ID
 
       for (var exercise in dayExercises) {
         final sets = await widget.viewModel.getSets(widget.workoutId, weekId, day.id!, exercise.id!);
@@ -55,6 +59,7 @@ class _SelectedWeeksPageState extends State<SelectedWeeksPage> {
     setState(() {
       enteredExercisesByDay = exercises;
       setsByExercise = fetchedSetsByExercise;
+      dayIds = fetchedDayIds; // Update the state with the fetched day IDs
       fetchDayNames(weekId);
     });
   }
@@ -67,20 +72,23 @@ class _SelectedWeeksPageState extends State<SelectedWeeksPage> {
   }
 
   void addDay() async {
+    final uuid = Uuid();
+    final newDayId = uuid.v4(); // Generate a unique ID for the new day
     final dayModel = DayModel(
       name: 'Day ${enteredExercisesByDay.length + 1}',
-      id: 'day${enteredExercisesByDay.length + 1}',
+      id: newDayId,
     );
     await widget.viewModel.addDayToWeek(widget.workoutId, 'Week$selectedWeek', dayModel);
 
     setState(() {
       enteredExercisesByDay.add([]);
       dayNames.add(dayModel.name);
+      dayIds.add(newDayId); // Add the new day ID to the list
     });
   }
 
   void updateDayName(int index, String newName) async {
-    final dayId = 'day${index + 1}';
+    final dayId = dayIds[index]; // Use the day ID from the list
     final weekId = 'Week$selectedWeek';
 
     final dayModel = DayModel(
@@ -92,6 +100,19 @@ class _SelectedWeeksPageState extends State<SelectedWeeksPage> {
 
     setState(() {
       dayNames[index] = newName;
+    });
+  }
+
+  Future<void> deleteDay(int index) async {
+    final dayId = dayIds[index]; // Use the day ID from the list
+    final weekId = 'Week$selectedWeek';
+
+    await widget.viewModel.deleteDay(widget.workoutId, weekId, dayId);
+
+    setState(() {
+      enteredExercisesByDay.removeAt(index);
+      dayNames.removeAt(index);
+      dayIds.removeAt(index); // Remove the day ID from the list
     });
   }
 
@@ -187,6 +208,35 @@ class _SelectedWeeksPageState extends State<SelectedWeeksPage> {
                                     );
                                   },
                                 ),
+                                IconButton(
+                                  icon: Icon(Icons.delete),
+                                  onPressed: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title: Text('Delete Day'),
+                                          content: Text('Are you sure you want to delete this day?'),
+                                          actions: <Widget>[
+                                            TextButton(
+                                              child: Text('Cancel'),
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                            ),
+                                            TextButton(
+                                              child: Text('Delete'),
+                                              onPressed: () {
+                                                deleteDay(index);
+                                                Navigator.of(context).pop();
+                                              },
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  },
+                                ),
                               ],
                             ),
                             SizedBox(height: 8.0),
@@ -247,7 +297,7 @@ class _SelectedWeeksPageState extends State<SelectedWeeksPage> {
                                                 onPressed: () async {
                                                   final exerciseName = exerciseController.text;
                                                   if (exerciseName.isNotEmpty) {
-                                                    final dayId = 'day${index + 1}';
+                                                    final dayId = dayIds[index]; // Use the day ID from the list
                                                     final weekId = 'Week$selectedWeek';
                                                     final existingExercises = await widget.viewModel.getExercises(widget.workoutId, weekId, dayId);
 
