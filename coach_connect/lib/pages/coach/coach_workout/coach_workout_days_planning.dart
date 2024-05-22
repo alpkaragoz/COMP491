@@ -1,5 +1,6 @@
 import 'package:coach_connect/models/day.dart';
 import 'package:coach_connect/models/exercise.dart';
+import 'package:coach_connect/models/set.dart';
 import 'package:coach_connect/pages/coach/coach_workout/coach_workout_page.dart';
 import 'package:flutter/material.dart';
 import 'package:coach_connect/view_models/coach/coach_home_viewmodel.dart';
@@ -24,9 +25,9 @@ class _SelectedWeeksPageState extends State<SelectedWeeksPage> {
   int selectedWeek = 1;
   TextEditingController exerciseController = TextEditingController();
   TextEditingController dayNameController = TextEditingController();
-  List<List<ExerciseModel>> enteredExercisesByDay =
-      List.generate(1, (index) => []);
+  List<List<ExerciseModel>> enteredExercisesByDay = List.generate(1, (index) => []);
   List<String> dayNames = [];
+  Map<String, List<SetModel>> setsByExercise = {};
 
   @override
   void initState() {
@@ -39,14 +40,21 @@ class _SelectedWeeksPageState extends State<SelectedWeeksPage> {
     final days = await widget.viewModel.getDays(widget.workoutId, weekId);
 
     List<List<ExerciseModel>> exercises = [];
+    Map<String, List<SetModel>> fetchedSetsByExercise = {};
+
     for (var day in days) {
-      final dayExercises = await widget.viewModel
-          .getExercises(widget.workoutId, weekId, day.id!);
+      final dayExercises = await widget.viewModel.getExercises(widget.workoutId, weekId, day.id!);
       exercises.add(dayExercises);
+
+      for (var exercise in dayExercises) {
+        final sets = await widget.viewModel.getSets(widget.workoutId, weekId, day.id!, exercise.id!);
+        fetchedSetsByExercise[exercise.id!] = sets;
+      }
     }
 
     setState(() {
       enteredExercisesByDay = exercises;
+      setsByExercise = fetchedSetsByExercise;
       fetchDayNames(weekId);
     });
   }
@@ -63,8 +71,7 @@ class _SelectedWeeksPageState extends State<SelectedWeeksPage> {
       name: 'Day ${enteredExercisesByDay.length + 1}',
       id: 'day${enteredExercisesByDay.length + 1}',
     );
-    await widget.viewModel
-        .addDayToWeek(widget.workoutId, 'Week$selectedWeek', dayModel);
+    await widget.viewModel.addDayToWeek(widget.workoutId, 'Week$selectedWeek', dayModel);
 
     setState(() {
       enteredExercisesByDay.add([]);
@@ -170,8 +177,7 @@ class _SelectedWeeksPageState extends State<SelectedWeeksPage> {
                                             TextButton(
                                               child: Text('Save'),
                                               onPressed: () {
-                                                updateDayName(index,
-                                                    dayNameController.text);
+                                                updateDayName(index, dayNameController.text);
                                                 Navigator.of(context).pop();
                                               },
                                             ),
@@ -189,14 +195,23 @@ class _SelectedWeeksPageState extends State<SelectedWeeksPage> {
                               children: List.generate(
                                 enteredExercisesByDay[index].length,
                                 (exerciseIndex) {
-                                  final exercise = enteredExercisesByDay[index]
-                                      [exerciseIndex];
+                                  final exercise = enteredExercisesByDay[index][exerciseIndex];
                                   final exerciseNumber = exerciseIndex + 1;
+                                  final sets = setsByExercise[exercise.id] ?? [];
                                   return Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 4.0),
-                                    child: Text(
-                                      '$exerciseNumber. ${exercise.name}',
+                                    padding: const EdgeInsets.symmetric(vertical: 4.0),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          '$exerciseNumber. ${exercise.name}',
+                                        ),
+                                        ...sets.map((set) {
+                                          return Text(
+                                            '   Set ${sets.indexOf(set) + 1}: RPE: ${set.rpe ?? 'N/A'}, Reps: ${set.reps ?? 'N/A'}, Kg: ${set.kg ?? 'N/A'}',
+                                          );
+                                        }).toList(),
+                                      ],
                                     ),
                                   );
                                 },
@@ -212,13 +227,10 @@ class _SelectedWeeksPageState extends State<SelectedWeeksPage> {
                                       padding: const EdgeInsets.all(8.0),
                                       child: SingleChildScrollView(
                                         padding: EdgeInsets.only(
-                                          bottom: MediaQuery.of(context)
-                                              .viewInsets
-                                              .bottom,
+                                          bottom: MediaQuery.of(context).viewInsets.bottom,
                                         ),
                                         child: Container(
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 16),
+                                          padding: EdgeInsets.symmetric(horizontal: 16),
                                           child: Column(
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
@@ -233,61 +245,36 @@ class _SelectedWeeksPageState extends State<SelectedWeeksPage> {
                                               SizedBox(height: 10),
                                               ElevatedButton(
                                                 onPressed: () async {
-                                                  final exerciseName =
-                                                      exerciseController.text;
+                                                  final exerciseName = exerciseController.text;
                                                   if (exerciseName.isNotEmpty) {
-                                                    final dayId =
-                                                        'day${index + 1}';
-                                                    final weekId =
-                                                        'Week$selectedWeek';
-                                                    final existingExercises =
-                                                        await widget.viewModel
-                                                            .getExercises(
-                                                                widget
-                                                                    .workoutId,
-                                                                weekId,
-                                                                dayId);
+                                                    final dayId = 'day${index + 1}';
+                                                    final weekId = 'Week$selectedWeek';
+                                                    final existingExercises = await widget.viewModel.getExercises(widget.workoutId, weekId, dayId);
 
-                                                    final nextExerciseId =
-                                                        'exercise${existingExercises.length + 1}';
+                                                    final nextExerciseId = 'exercise${existingExercises.length + 1}';
 
-                                                    final exerciseModel =
-                                                        ExerciseModel(
+                                                    final exerciseModel = ExerciseModel(
                                                       id: nextExerciseId,
                                                       name: exerciseName,
                                                     );
 
-                                                    await widget.viewModel
-                                                        .addExerciseToDay(
-                                                            widget.workoutId,
-                                                            weekId,
-                                                            dayId,
-                                                            exerciseModel);
+                                                    await widget.viewModel.addExerciseToDay(widget.workoutId, weekId, dayId, exerciseModel);
 
                                                     setState(() {
-                                                      enteredExercisesByDay[
-                                                              index]
-                                                          .add(exerciseModel);
-                                                      exerciseController
-                                                          .clear();
+                                                      enteredExercisesByDay[index].add(exerciseModel);
+                                                      exerciseController.clear();
                                                     });
 
                                                     Navigator.push(
                                                       context,
                                                       MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            CoachWorkoutPage(
-                                                          viewModel:
-                                                              widget.viewModel,
-                                                          workoutId:
-                                                              widget.workoutId,
+                                                        builder: (context) => CoachWorkoutPage(
+                                                          viewModel: widget.viewModel,
+                                                          workoutId: widget.workoutId,
                                                           weekId: weekId,
                                                           dayId: dayId,
-                                                          exerciseId:
-                                                              exerciseModel.id
-                                                                  .toString(),
-                                                          exerciseName:
-                                                              exerciseName, // Pass exerciseName
+                                                          exerciseId: exerciseModel.id.toString(),
+                                                          exerciseName: exerciseName, // Pass exerciseName
                                                         ),
                                                       ),
                                                     );
