@@ -90,9 +90,10 @@ class _WeekSelectorState extends State<WeekSelector> {
           child: Padding(
             padding: const EdgeInsets.only(bottom: 20.0),
             child: ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 // Navigate to the next page with selectedWeeks
-                Navigator.push(
+                await widget.viewModel.setWeeks(widget.workoutId, selectedWeeks);
+                Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
                     builder: (context) => SelectedWeeksPage(

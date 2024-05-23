@@ -1,32 +1,118 @@
+import 'package:coach_connect/models/day.dart';
+import 'package:coach_connect/models/exercise.dart';
+import 'package:coach_connect/models/set.dart';
 import 'package:coach_connect/pages/coach/coach_workout/coach_workout_page.dart';
 import 'package:flutter/material.dart';
 import 'package:coach_connect/view_models/coach/coach_home_viewmodel.dart';
+import 'package:uuid/uuid.dart';
 
 class SelectedWeeksPage extends StatefulWidget {
   final List<int> selectedWeeks;
   final CoachHomeViewModel viewModel;
   final String workoutId;
 
-  const SelectedWeeksPage({Key? key,required this.viewModel, required this.selectedWeeks, required this.workoutId})
-      : super(key: key);
+  const SelectedWeeksPage({
+    Key? key,
+    required this.viewModel,
+    required this.selectedWeeks,
+    required this.workoutId,
+  }) : super(key: key);
 
   @override
   _SelectedWeeksPageState createState() => _SelectedWeeksPageState();
 }
 
 class _SelectedWeeksPageState extends State<SelectedWeeksPage> {
-  int selectedWeek = 1; // Initialize selectedWeek to 1
-  int selectedDay = 1; // Initialize selectedWeek to 1
-  TextEditingController exerciseController =
-      TextEditingController(); // Controller for the exercise TextField
-  List<List<String>> enteredExercisesByDay = [
-    []
-  ]; // Track the entered exercises by day
+  int selectedWeek = 1;
+  TextEditingController exerciseController = TextEditingController();
+  TextEditingController dayNameController = TextEditingController();
+  List<List<ExerciseModel>> enteredExercisesByDay = List.generate(1, (index) => []);
+  List<String> dayNames = [];
+  Map<String, List<SetModel>> setsByExercise = {};
+  List<String> dayIds = []; // List to store day IDs
 
-  void addDay() {
+  @override
+  void initState() {
+    super.initState();
+    fetchDaysForWeek(selectedWeek);
+  }
+
+  Future<void> fetchDaysForWeek(int week) async {
+    final weekId = 'Week$week';
+    final days = await widget.viewModel.getDays(widget.workoutId, weekId);
+
+    List<List<ExerciseModel>> exercises = [];
+    Map<String, List<SetModel>> fetchedSetsByExercise = {};
+    List<String> fetchedDayIds = []; // Temporary list to store fetched day IDs
+
+    for (var day in days) {
+      final dayExercises = await widget.viewModel.getExercises(widget.workoutId, weekId, day.id!);
+      exercises.add(dayExercises);
+      fetchedDayIds.add(day.id!); // Store the fetched day ID
+
+      for (var exercise in dayExercises) {
+        final sets = await widget.viewModel.getSets(widget.workoutId, weekId, day.id!, exercise.id!);
+        fetchedSetsByExercise[exercise.id!] = sets;
+      }
+    }
+
     setState(() {
-      enteredExercisesByDay
-          .add([]); // Add a new day with an empty list of exercises
+      enteredExercisesByDay = exercises;
+      setsByExercise = fetchedSetsByExercise;
+      dayIds = fetchedDayIds; // Update the state with the fetched day IDs
+      fetchDayNames(weekId);
+    });
+  }
+
+  Future<void> fetchDayNames(String weekId) async {
+    final names = await widget.viewModel.getDayNames(widget.workoutId, weekId);
+    setState(() {
+      dayNames = names;
+    });
+  }
+
+  void addDay() async {
+    final uuid = Uuid();
+    final newDayId = uuid.v4(); // Generate a unique ID for the new day
+    final dayModel = DayModel(
+      name: 'Day ${enteredExercisesByDay.length + 1}',
+      id: newDayId,
+    );
+    await widget.viewModel.addDayToWeek(widget.workoutId, 'Week$selectedWeek', dayModel);
+
+    setState(() {
+      enteredExercisesByDay.add([]);
+      dayNames.add(dayModel.name);
+      dayIds.add(newDayId); // Add the new day ID to the list
+    });
+  }
+
+  void updateDayName(int index, String newName) async {
+    final dayId = dayIds[index]; // Use the day ID from the list
+    final weekId = 'Week$selectedWeek';
+
+    final dayModel = DayModel(
+      name: newName,
+      id: dayId,
+    );
+
+    await widget.viewModel.updateDay(widget.workoutId, weekId, dayModel);
+
+    setState(() {
+      dayNames[index] = newName;
+    });
+  }
+
+  Future<void> deleteDay(int index) async {
+    final dayId = dayIds[index]; // Use the day ID from the list
+    final weekId = 'Week$selectedWeek';
+
+    await widget.viewModel.deleteDay(widget.workoutId, weekId, dayId);
+
+    setState(() {
+      enteredExercisesByDay.removeAt(index);
+      dayNames.removeAt(index);
+      dayIds.removeAt(index); // Remove the day ID from the list
     });
   }
 
@@ -51,6 +137,7 @@ class _SelectedWeeksPageState extends State<SelectedWeeksPage> {
                       setState(() {
                         selectedWeek = week;
                       });
+                      fetchDaysForWeek(week);
                     },
                     child: Text('Week $week'),
                   ),
@@ -69,27 +156,116 @@ class _SelectedWeeksPageState extends State<SelectedWeeksPage> {
                         margin: EdgeInsets.all(8.0),
                         padding: EdgeInsets.all(8.0),
                         decoration: BoxDecoration(
-                          color: Colors.grey[200], // Light grey color
+                          color: Colors.grey[200],
                           borderRadius: BorderRadius.circular(20.0),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Day ${index + 1}'),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    dayNames.isNotEmpty ? dayNames[index] : 'Day ${index + 1}',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16.0,
+                                    ),
+                                  ),
+                                ),
+                                IconButton(
+                                  icon: Icon(Icons.edit),
+                                  onPressed: () {
+                                    dayNameController.text = dayNames.isNotEmpty ? dayNames[index] : 'Day ${index + 1}';
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title: Text('Edit Day Name'),
+                                          content: TextField(
+                                            controller: dayNameController,
+                                            decoration: InputDecoration(
+                                              hintText: 'Enter new day name',
+                                            ),
+                                          ),
+                                          actions: <Widget>[
+                                            TextButton(
+                                              child: Text('Cancel'),
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                            ),
+                                            TextButton(
+                                              child: Text('Save'),
+                                              onPressed: () {
+                                                updateDayName(index, dayNameController.text);
+                                                Navigator.of(context).pop();
+                                              },
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  },
+                                ),
+                                IconButton(
+                                  icon: Icon(Icons.delete),
+                                  onPressed: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title: Text('Delete Day'),
+                                          content: Text('Are you sure you want to delete this day?'),
+                                          actions: <Widget>[
+                                            TextButton(
+                                              child: Text('Cancel'),
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                            ),
+                                            TextButton(
+                                              child: Text('Delete'),
+                                              onPressed: () {
+                                                deleteDay(index);
+                                                Navigator.of(context).pop();
+                                              },
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 8.0),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: List.generate(
-                                  enteredExercisesByDay[index].length,
-                                  (exerciseIndex) {
-                                final exerciseNumber = exerciseIndex + 1;
-                                return Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 4.0,
-                                  ),
-                                  child: Text(
-                                      '$exerciseNumber. ${enteredExercisesByDay[index][exerciseIndex]}'),
-                                );
-                              }),
+                                enteredExercisesByDay[index].length,
+                                (exerciseIndex) {
+                                  final exercise = enteredExercisesByDay[index][exerciseIndex];
+                                  final exerciseNumber = exerciseIndex + 1;
+                                  final sets = setsByExercise[exercise.id] ?? [];
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 4.0),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          '$exerciseNumber. ${exercise.name}',
+                                        ),
+                                        ...sets.map((set) {
+                                          return Text(
+                                            '   Set ${sets.indexOf(set) + 1}: RPE: ${set.rpe ?? 'N/A'}, Reps: ${set.reps ?? 'N/A'}, Kg: ${set.kg ?? 'N/A'}',
+                                          );
+                                        }).toList(),
+                                      ],
+                                    ),
+                                  );
+                                },
+                              ),
                             ),
                             ElevatedButton(
                               onPressed: () {
@@ -97,37 +273,68 @@ class _SelectedWeeksPageState extends State<SelectedWeeksPage> {
                                   context: context,
                                   isScrollControlled: true,
                                   builder: (BuildContext context) {
-                                    return Container(
-                                      padding: EdgeInsets.only(
-                                        bottom: MediaQuery.of(context)
-                                            .viewInsets
-                                            .bottom,
-                                      ),
-                                      height: 200,
-                                      child: Column(
-                                        children: [
-                                          TextField(
-                                            controller:
-                                                exerciseController, // Use the controller
-                                            decoration: InputDecoration(
-                                              hintText: 'Enter exercise',
-                                              border: OutlineInputBorder(),
-                                            ),
+                                    return Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: SingleChildScrollView(
+                                        padding: EdgeInsets.only(
+                                          bottom: MediaQuery.of(context).viewInsets.bottom,
+                                        ),
+                                        child: Container(
+                                          padding: EdgeInsets.symmetric(horizontal: 16),
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              SizedBox(height: 16),
+                                              TextField(
+                                                controller: exerciseController,
+                                                decoration: InputDecoration(
+                                                  hintText: 'Enter exercise',
+                                                  border: OutlineInputBorder(),
+                                                ),
+                                              ),
+                                              SizedBox(height: 10),
+                                              ElevatedButton(
+                                                onPressed: () async {
+                                                  final exerciseName = exerciseController.text;
+                                                  if (exerciseName.isNotEmpty) {
+                                                    final dayId = dayIds[index]; // Use the day ID from the list
+                                                    final weekId = 'Week$selectedWeek';
+                                                    final existingExercises = await widget.viewModel.getExercises(widget.workoutId, weekId, dayId);
+
+                                                    final nextExerciseId = 'exercise${existingExercises.length + 1}';
+
+                                                    final exerciseModel = ExerciseModel(
+                                                      id: nextExerciseId,
+                                                      name: exerciseName,
+                                                    );
+
+                                                    await widget.viewModel.addExerciseToDay(widget.workoutId, weekId, dayId, exerciseModel);
+
+                                                    setState(() {
+                                                      enteredExercisesByDay[index].add(exerciseModel);
+                                                      exerciseController.clear();
+                                                    });
+
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) => CoachWorkoutPage(
+                                                          viewModel: widget.viewModel,
+                                                          workoutId: widget.workoutId,
+                                                          weekId: weekId,
+                                                          dayId: dayId,
+                                                          exerciseId: exerciseModel.id.toString(),
+                                                          exerciseName: exerciseName, // Pass exerciseName
+                                                        ),
+                                                      ),
+                                                    );
+                                                  }
+                                                },
+                                                child: Text('Add'),
+                                              ),
+                                            ],
                                           ),
-                                          SizedBox(height: 10),
-                                          ElevatedButton(
-                                onPressed: () {
-                                  Navigator.pop(context); // Close the bottom sheet
-                                  Navigator.push( // Navigate to CoachWorkoutPage
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => CoachWorkoutPage(viewModel: widget.viewModel)
-                                    ),
-                                  );
-                                },
-                                child: Text('Add'),
-                              ),
-                                        ],
+                                        ),
                                       ),
                                     );
                                   },
