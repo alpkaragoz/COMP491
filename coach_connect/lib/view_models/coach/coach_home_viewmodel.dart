@@ -51,35 +51,35 @@ class CoachHomeViewModel extends ChangeNotifier {
     return message;
   }
 
-Future<String> denyRequest(Request request) async {
-  final _db = FirebaseFirestore.instance;
-  try {
-    await _db.runTransaction((transaction) async {
-      // Get the request document from the 'requests' collection
-      DocumentReference requestRef = _db.collection('requests').doc(request.id);
-      DocumentSnapshot requestSnapshot = await transaction.get(requestRef);
+  Future<String> denyRequest(Request request) async {
+    final _db = FirebaseFirestore.instance;
+    try {
+      await _db.runTransaction((transaction) async {
+        // Get the request document from the 'requests' collection
+        DocumentReference requestRef =
+            _db.collection('requests').doc(request.id);
+        DocumentSnapshot requestSnapshot = await transaction.get(requestRef);
 
-      if (!requestSnapshot.exists) {
-        throw Exception("Request does not exist!");
-      }
+        if (!requestSnapshot.exists) {
+          throw Exception("Request does not exist!");
+        }
 
-      // Delete the request document
-      transaction.delete(requestRef);
-    });
+        // Delete the request document
+        transaction.delete(requestRef);
+      });
 
-    // Refresh the coach's client objects and pending requests
-    await getClientObjectsForCoach();
-    await getPendingRequestsForCoach();
-    notifyListeners();
+      // Refresh the coach's client objects and pending requests
+      await getClientObjectsForCoach();
+      await getPendingRequestsForCoach();
+      notifyListeners();
 
-    // Return a success message if the transaction completes successfully
-    return "Request denied successfully.";
-  } catch (e) {
-    // If an exception is caught, return an error message
-    return "Error occurred while denying the request: ${e.toString()}";
+      // Return a success message if the transaction completes successfully
+      return "Request denied successfully.";
+    } catch (e) {
+      // If an exception is caught, return an error message
+      return "Error occurred while denying the request: ${e.toString()}";
+    }
   }
-}
-
 
   Future<UserAccount?> getUser(String id) async {
     try {
@@ -387,130 +387,157 @@ Future<String> denyRequest(Request request) async {
   }
 
   Future<void> deleteWorkout(String workoutId) async {
-  try {
-    // Fetch the clientId associated with this workoutId
-    String? clientId = await getClientId(workoutId);
+    try {
+      // Fetch the clientId associated with this workoutId
+      String? clientId = await getClientId(workoutId);
 
-    if (clientId != null) {
-      // Remove the workoutId from the user's workoutIds list
-      await FirebaseFirestore.instance.collection('users').doc(clientId).update({
-        'workoutIds': FieldValue.arrayRemove([workoutId]),
-      });
+      if (clientId != null) {
+        // Remove the workoutId from the user's workoutIds list
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(clientId)
+            .update({
+          'workoutIds': FieldValue.arrayRemove([workoutId]),
+        });
 
-      // Recursively delete all sub-collections and documents
-      await _deleteWorkoutSubCollections(workoutId);
+        // Recursively delete all sub-collections and documents
+        await _deleteWorkoutSubCollections(workoutId);
 
-      // Delete the workout document
-      await FirebaseFirestore.instance.collection('workouts').doc(workoutId).delete();
+        // Delete the workout document
+        await FirebaseFirestore.instance
+            .collection('workouts')
+            .doc(workoutId)
+            .delete();
+      }
+
+      notifyListeners();
+    } catch (e) {
+      print('Error deleting workouts: $e');
     }
-
-    notifyListeners();
-  } catch (e) {
-    print('Error deleting workouts: $e');
   }
-}
 
-Future<void> _deleteWorkoutSubCollections(String workoutId) async {
-  try {
-    final weeksSnapshot = await FirebaseFirestore.instance
-        .collection('workouts')
-        .doc(workoutId)
-        .collection('weeks')
-        .get();
+  Future<void> _deleteWorkoutSubCollections(String workoutId) async {
+    try {
+      final weeksSnapshot = await FirebaseFirestore.instance
+          .collection('workouts')
+          .doc(workoutId)
+          .collection('weeks')
+          .get();
 
-    for (var weekDoc in weeksSnapshot.docs) {
-      final daysSnapshot = await weekDoc.reference.collection('days').get();
+      for (var weekDoc in weeksSnapshot.docs) {
+        final daysSnapshot = await weekDoc.reference.collection('days').get();
 
-      for (var dayDoc in daysSnapshot.docs) {
-        final exercisesSnapshot = await dayDoc.reference.collection('exercises').get();
+        for (var dayDoc in daysSnapshot.docs) {
+          final exercisesSnapshot =
+              await dayDoc.reference.collection('exercises').get();
 
-        for (var exerciseDoc in exercisesSnapshot.docs) {
-          final setsSnapshot = await exerciseDoc.reference.collection('sets').get();
+          for (var exerciseDoc in exercisesSnapshot.docs) {
+            final setsSnapshot =
+                await exerciseDoc.reference.collection('sets').get();
 
-          for (var setDoc in setsSnapshot.docs) {
-            await setDoc.reference.delete();  // Delete each set document
+            for (var setDoc in setsSnapshot.docs) {
+              await setDoc.reference.delete(); // Delete each set document
+            }
+
+            await exerciseDoc.reference
+                .delete(); // Delete each exercise document
           }
 
-          await exerciseDoc.reference.delete();  // Delete each exercise document
+          await dayDoc.reference.delete(); // Delete each day document
         }
 
-        await dayDoc.reference.delete();  // Delete each day document
+        await weekDoc.reference.delete(); // Delete each week document
       }
-
-      await weekDoc.reference.delete();  // Delete each week document
+    } catch (e) {
+      print('Error deleting workout sub-collections: $e');
     }
-  } catch (e) {
-    print('Error deleting workout sub-collections: $e');
   }
-}
 
-Future<void> deleteDay(String workoutId, String weekId, String dayId) async {
-  try {
-    // Reference to the specific day document
-    final dayRef = FirebaseFirestore.instance
-        .collection('workouts')
-        .doc(workoutId)
-        .collection('weeks')
-        .doc(weekId)
-        .collection('days')
-        .doc(dayId);
+  Future<void> deleteDay(String workoutId, String weekId, String dayId) async {
+    try {
+      // Reference to the specific day document
+      final dayRef = FirebaseFirestore.instance
+          .collection('workouts')
+          .doc(workoutId)
+          .collection('weeks')
+          .doc(weekId)
+          .collection('days')
+          .doc(dayId);
 
-    // Delete the document
-    await dayRef.delete();
+      // Delete the document
+      await dayRef.delete();
 
-    // Delete all sub-collections and documents
-    await _deleteDaySubCollections(workoutId, weekId, dayId);
+      // Delete all sub-collections and documents
+      await _deleteDaySubCollections(workoutId, weekId, dayId);
 
-    print('Day $dayId deleted successfully from $weekId in workout $workoutId.');
-  } catch (e) {
-    print('Failed to delete day: $e');
+      print(
+          'Day $dayId deleted successfully from $weekId in workout $workoutId.');
+    } catch (e) {
+      print('Failed to delete day: $e');
+    }
   }
-}
 
-Future<void> _deleteDaySubCollections(String workoutId, String weekId, String dayId) async {
-  try {
-    final exercisesSnapshot = await FirebaseFirestore.instance
-        .collection('workouts')
-        .doc(workoutId)
-        .collection('weeks')
-        .doc(weekId)
-        .collection('days')
-        .doc(dayId)
-        .collection('exercises')
-        .get();
+  Future<void> _deleteDaySubCollections(
+      String workoutId, String weekId, String dayId) async {
+    try {
+      final exercisesSnapshot = await FirebaseFirestore.instance
+          .collection('workouts')
+          .doc(workoutId)
+          .collection('weeks')
+          .doc(weekId)
+          .collection('days')
+          .doc(dayId)
+          .collection('exercises')
+          .get();
 
-    for (var exerciseDoc in exercisesSnapshot.docs) {
-      final setsSnapshot = await exerciseDoc.reference.collection('sets').get();
+      for (var exerciseDoc in exercisesSnapshot.docs) {
+        final setsSnapshot =
+            await exerciseDoc.reference.collection('sets').get();
 
-      for (var setDoc in setsSnapshot.docs) {
-        await setDoc.reference.delete();  // Delete each set document
+        for (var setDoc in setsSnapshot.docs) {
+          await setDoc.reference.delete(); // Delete each set document
+        }
+
+        await exerciseDoc.reference.delete(); // Delete each exercise document
       }
-
-      await exerciseDoc.reference.delete();  // Delete each exercise document
+    } catch (e) {
+      print('Error deleting day sub-collections: $e');
     }
-
-
-  } catch (e) {
-    print('Error deleting day sub-collections: $e');
   }
-}
-Future<void> deleteSetFromExercise(String workoutId, String weekId, String dayId, String exerciseId, String setId) async {
-  try {
-    await FirebaseFirestore.instance
-        .collection('workouts')
-        .doc(workoutId)
-        .collection('weeks')
-        .doc(weekId)
-        .collection('days')
-        .doc(dayId)
-        .collection('exercises')
-        .doc(exerciseId)
-        .collection('sets')
-        .doc(setId)
-        .delete();
-  } catch (e) {
-    print('Error deleting set: $e');
-  }
-}
 
+  Future<void> deleteSetFromExercise(String workoutId, String weekId,
+      String dayId, String exerciseId, String setId) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('workouts')
+          .doc(workoutId)
+          .collection('weeks')
+          .doc(weekId)
+          .collection('days')
+          .doc(dayId)
+          .collection('exercises')
+          .doc(exerciseId)
+          .collection('sets')
+          .doc(setId)
+          .delete();
+    } catch (e) {
+      print('Error deleting set: $e');
+    }
+  }
+
+  Future<void> setDayCompletition(
+      String workoutId, String weekId, DayModel dayModel) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('workouts')
+          .doc(workoutId)
+          .collection('weeks')
+          .doc(weekId)
+          .collection('days')
+          .doc(dayModel.id)
+          .update({'completed': true} );
+    } catch (e) {
+      print('Error updating day: $e');
+    }
+  }
 }

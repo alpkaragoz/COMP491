@@ -41,14 +41,17 @@ class _SelectedWeeksPageState extends State<SelectedWeeksPage> {
     final weekId = 'Week$week';
     final days = await widget.viewModel.getDays(widget.workoutId, weekId);
 
+    // Sort days by ID to maintain the order they were added
+    days.sort((a, b) => a.id!.compareTo(b.id!));
+
     List<List<ExerciseModel>> exercises = [];
     Map<String, List<SetModel>> fetchedSetsByExercise = {};
-    List<String> fetchedDayIds = []; // Temporary list to store fetched day IDs
+    List<String> fetchedDayIds = [];
 
     for (var day in days) {
       final dayExercises = await widget.viewModel.getExercises(widget.workoutId, weekId, day.id!);
       exercises.add(dayExercises);
-      fetchedDayIds.add(day.id!); // Store the fetched day ID
+      fetchedDayIds.add(day.id!);
 
       for (var exercise in dayExercises) {
         final sets = await widget.viewModel.getSets(widget.workoutId, weekId, day.id!, exercise.id!);
@@ -59,10 +62,10 @@ class _SelectedWeeksPageState extends State<SelectedWeeksPage> {
     setState(() {
       enteredExercisesByDay = exercises;
       setsByExercise = fetchedSetsByExercise;
-      dayIds = fetchedDayIds; // Update the state with the fetched day IDs
+      dayIds = fetchedDayIds;
       fetchDayNames(weekId);
     });
-  }
+}
 
   Future<void> fetchDayNames(String weekId) async {
     final names = await widget.viewModel.getDayNames(widget.workoutId, weekId);
@@ -178,7 +181,8 @@ class _SelectedWeeksPageState extends State<SelectedWeeksPage> {
                               children: [
                                 Expanded(
                                   child: Text(
-                                    dayNames.isNotEmpty ? dayNames[index] : 'Day ${index + 1}',
+                                    dayNames.length > index ? dayNames[index] : 'Day ${index + 1}',
+
                                     style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16.0,
@@ -271,130 +275,85 @@ class _SelectedWeeksPageState extends State<SelectedWeeksPage> {
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 8.0),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: List.generate(
-                                enteredExercisesByDay[index].length,
-                                (exerciseIndex) {
-                                  final exercise = enteredExercisesByDay[index][exerciseIndex];
-                                  final exerciseNumber = exerciseIndex + 1;
-                                  final sets = setsByExercise[exercise.id] ?? [];
-                                  return Padding(
-                                    padding: const EdgeInsets.symmetric(vertical: 4.0),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          '$exerciseNumber. ${exercise.name}',
-                                          style: const TextStyle(color: Colors.white),
-                                        ),
-                                        ...sets.map((set) {
-                                          return Text(
-                                            '   Set ${sets.indexOf(set) + 1}: RPE: ${set.rpe ?? 'N/A'}, Reps: ${set.reps ?? 'N/A'}, Kg: ${set.kg ?? 'N/A'}',
-                                            style: const TextStyle(color: Colors.white),
-                                          );
-                                        }).toList(),
-                                      ],
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                            ElevatedButton(
-                              onPressed: () {
-                                showModalBottomSheet<void>(
-                                  context: context,
-                                  isScrollControlled: true,
-                                  backgroundColor: const Color.fromARGB(255, 56, 80, 88),
-                                  builder: (BuildContext context) {
-                                    return Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: SingleChildScrollView(
-                                        padding: EdgeInsets.only(
-                                          bottom: MediaQuery.of(context).viewInsets.bottom,
-                                        ),
-                                        child: Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                                          child: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              const SizedBox(height: 16),
-                                              TextField(
-                                                controller: exerciseController,
-                                                style: const TextStyle(color: Colors.white),
-                                                decoration: const InputDecoration(
-                                                  hintText: 'Enter exercise',
-                                                  hintStyle: TextStyle(color: Colors.white54),
-                                                  border: OutlineInputBorder(
-                                                    borderSide: BorderSide(color: Colors.white),
-                                                  ),
-                                                  enabledBorder: OutlineInputBorder(
-                                                    borderSide: BorderSide(color: Colors.white),
-                                                  ),
-                                                  focusedBorder: OutlineInputBorder(
-                                                    borderSide: BorderSide(color: Colors.white),
-                                                  ),
-                                                ),
-                                              ),
-                                              const SizedBox(height: 10),
-                                              ElevatedButton(
-                                                onPressed: () async {
-                                                  final exerciseName = exerciseController.text;
-                                                  if (exerciseName.isNotEmpty) {
-                                                    final dayId = dayIds[index]; // Use the day ID from the list
-                                                    final weekId = 'Week$selectedWeek';
-                                                    final existingExercises = await widget.viewModel.getExercises(widget.workoutId, weekId, dayId);
+                            ListView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: enteredExercisesByDay[index].length,
+                              itemBuilder: (context, exerciseIndex) {
+                                final exercise = enteredExercisesByDay[index][exerciseIndex];
+                                final sets = setsByExercise[exercise.id!] ?? [];
 
-                                                    final nextExerciseId = 'exercise${existingExercises.length + 1}';
+                                return GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+  context,
+  MaterialPageRoute(
+    builder: (context) => CoachWorkoutPage(
+      viewModel: widget.viewModel,
+      workoutId: widget.workoutId,
+      weekId: 'Week$selectedWeek',
+      dayId: dayIds[index],
+      exerciseId: exercise.id!,
+      exerciseName: exercise.name ?? 'Unnamed Exercise',
+    ),
+  ),
+);
 
-                                                    final exerciseModel = ExerciseModel(
-                                                      id: nextExerciseId,
-                                                      name: exerciseName,
-                                                    );
-
-                                                    await widget.viewModel.addExerciseToDay(widget.workoutId, weekId, dayId, exerciseModel);
-
-                                                    setState(() {
-                                                      enteredExercisesByDay[index].add(exerciseModel);
-                                                      exerciseController.clear();
-                                                    });
-
-                                                    Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                        builder: (context) => CoachWorkoutPage(
-                                                          viewModel: widget.viewModel,
-                                                          workoutId: widget.workoutId,
-                                                          weekId: weekId,
-                                                          dayId: dayId,
-                                                          exerciseId: exerciseModel.id.toString(),
-                                                          exerciseName: exerciseName, // Pass exerciseName
-                                                        ),
-                                                      ),
-                                                    );
-                                                  }
-                                                },
-                                                style: ElevatedButton.styleFrom(
-                                                  foregroundColor: const Color.fromARGB(255, 226, 182, 167),
-                                                  backgroundColor: const Color.fromARGB(255, 56, 80, 88),
-                                                ),
-                                                child: const Text('Add'),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    );
                                   },
+                                  child: Container(
+                                    margin: const EdgeInsets.symmetric(vertical: 4.0),
+                                    padding: const EdgeInsets.all(8.0),
+                                    decoration: BoxDecoration(
+                                      color: const Color.fromARGB(255, 28, 40, 44),
+                                      borderRadius: BorderRadius.circular(10.0),
+                                    ),
+                                    child: Text(
+                                      exercise.name ?? 'Unnamed Exercise', // Ensure non-nullable String
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
                                 );
                               },
-                              style: ElevatedButton.styleFrom(
-                                foregroundColor: const Color.fromARGB(255, 226, 182, 167),
-                                backgroundColor: const Color.fromARGB(255, 56, 80, 88),
-                              ),
-                              child: const Text('Add Exercise'),
                             ),
+                            const SizedBox(height: 8.0),
+                            TextField(
+  controller: exerciseController,
+  style: const TextStyle(color: Colors.white),
+  decoration: InputDecoration(
+    hintText: 'Enter exercise name',
+    hintStyle: const TextStyle(color: Colors.white54),
+    suffixIcon: IconButton(
+      icon: const Icon(Icons.add, color: Colors.white),
+      onPressed: () async {
+        if (exerciseController.text.isNotEmpty) {
+          final uuid = Uuid();
+          final newExercise = ExerciseModel(
+            id: uuid.v4(),
+            name: exerciseController.text,
+          );
+          final weekId = 'Week$selectedWeek';
+          final dayId = dayIds[index]; // Use the day ID from the list
+
+          await widget.viewModel.addExerciseToDay(widget.workoutId, weekId, dayId, newExercise);
+
+          setState(() {
+            enteredExercisesByDay[index].add(newExercise);
+            exerciseController.clear();
+          });
+        }
+      },
+    ),
+    enabledBorder: const UnderlineInputBorder(
+      borderSide: BorderSide(color: Colors.white),
+    ),
+    focusedBorder: const UnderlineInputBorder(
+      borderSide: BorderSide(color: Colors.white),
+    ),
+  ),
+),
+
                           ],
                         ),
                       );
