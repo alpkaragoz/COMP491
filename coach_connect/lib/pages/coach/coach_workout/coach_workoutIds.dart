@@ -9,9 +9,11 @@ class CoachWorkoutIdsPage extends StatefulWidget {
   final CoachHomeViewModel viewModel;
   final String clientId;
 
-  const CoachWorkoutIdsPage(
-      {Key? key, required this.viewModel, required this.clientId})
-      : super(key: key);
+  const CoachWorkoutIdsPage({
+    Key? key,
+    required this.viewModel,
+    required this.clientId,
+  }) : super(key: key);
 
   @override
   _CoachWorkoutIdsPageState createState() => _CoachWorkoutIdsPageState();
@@ -29,8 +31,7 @@ class _CoachWorkoutIdsPageState extends State<CoachWorkoutIdsPage> {
 
   Future<void> fetchWorkouts() async {
     try {
-      final fetchedWorkouts =
-          await widget.viewModel.getWorkouts(widget.clientId);
+      final fetchedWorkouts = await widget.viewModel.getWorkouts(widget.clientId);
       setState(() {
         workouts = fetchedWorkouts;
         hasWorkouts = workouts.isNotEmpty;
@@ -52,8 +53,11 @@ class _CoachWorkoutIdsPageState extends State<CoachWorkoutIdsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Workouts'),
+        title: const Text('Workouts', style: TextStyle(color: Color.fromARGB(255, 226, 182, 167))),
+        backgroundColor: const Color.fromARGB(255, 28, 40, 44),
+        iconTheme: const IconThemeData(color: Color.fromARGB(255, 226, 182, 167)),
       ),
+      backgroundColor: const Color.fromARGB(255, 28, 40, 44),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -66,55 +70,41 @@ class _CoachWorkoutIdsPageState extends State<CoachWorkoutIdsPage> {
                       final workoutId = workouts[index];
                       return FutureBuilder(
                         future: widget.viewModel.getWorkout(workoutId),
-                        builder: (context,
-                            AsyncSnapshot<Map<String, dynamic>?> snapshot) {
-                          final workoutName =
-                              snapshot.data?['name'] ?? 'Unnamed Workout';
+                        builder: (context, AsyncSnapshot<Map<String, dynamic>?> snapshot) {
+                          final workoutName = snapshot.data?['name'] ?? 'Unnamed Workout';
                           return Container(
-                            decoration: BoxDecoration(
+                            decoration: const BoxDecoration(
                               border: Border(
-                                top:
-                                    BorderSide(color: Colors.black, width: 1.0),
+                                top: BorderSide(color: Color.fromARGB(255, 56, 80, 88), width: 1.0),
                               ),
                             ),
                             child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 16.0),
+                              padding: const EdgeInsets.symmetric(vertical: 16.0),
                               child: Row(
                                 children: [
                                   Expanded(
                                     child: ElevatedButton(
                                       onPressed: () {
-                                        navigateToClientMyWorkoutsDailyPage(
-                                            context, workoutId);
+                                        navigateToClientMyWorkoutsDailyPage(context, workoutId);
                                       },
-                                      style: ButtonStyle(
-                                        backgroundColor:
-                                            MaterialStateProperty.all<Color>(
-                                                Colors.black),
-                                        minimumSize:
-                                            MaterialStateProperty.all<Size>(
-                                                Size(double.infinity, 48)),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: const Color.fromARGB(255, 56, 80, 88),
+                                        minimumSize: const Size(double.infinity, 48),
                                       ),
-                                      child: snapshot.connectionState !=
-                                              ConnectionState.waiting
+                                      child: snapshot.connectionState != ConnectionState.waiting
                                           ? Text(
                                               workoutName,
-                                              style: TextStyle(
-                                                  color: Colors.white),
+                                              style: const TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
                                             )
-                                          : CircularProgressIndicator(
-                                              valueColor:
-                                                  AlwaysStoppedAnimation<Color>(
-                                                      Colors.white),
+                                          : const CircularProgressIndicator(
+                                              valueColor: AlwaysStoppedAnimation<Color>(Color.fromARGB(255, 226, 182, 167)),
                                             ),
                                     ),
                                   ),
                                   IconButton(
-                                    icon: Icon(Icons.delete, color: Colors.red),
+                                    icon: const Icon(Icons.delete, color: Colors.red),
                                     onPressed: () {
-                                      _showDeleteConfirmationDialog(
-                                          context, workoutId);
+                                      _showDeleteConfirmationDialog(context, workoutId);
                                     },
                                   ),
                                 ],
@@ -125,14 +115,14 @@ class _CoachWorkoutIdsPageState extends State<CoachWorkoutIdsPage> {
                       );
                     },
                   )
-                : Center(
-                    child: Text('No workouts currently'),
+                : const Center(
+                    child: Text('No workouts currently', style: TextStyle(color: Colors.white)),
                   ),
           ),
           Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               border: Border(
-                top: BorderSide(color: Colors.black, width: 1.0),
+                top: BorderSide(color: Color.fromARGB(255, 56, 80, 88), width: 1.0),
               ),
             ),
             child: Padding(
@@ -143,15 +133,13 @@ class _CoachWorkoutIdsPageState extends State<CoachWorkoutIdsPage> {
                   onPressed: () async {
                     await addWorkout();
                   },
-                  style: ButtonStyle(
-                    backgroundColor:
-                        MaterialStateProperty.all<Color>(Colors.black),
-                    minimumSize: MaterialStateProperty.all<Size>(
-                        Size(double.infinity, 48)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromARGB(255, 56, 80, 88),
+                    minimumSize: const Size(double.infinity, 48),
                   ),
-                  child: Text(
+                  child: const Text(
                     'Add Workout',
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
                   ),
                 ),
               ),
@@ -178,40 +166,40 @@ class _CoachWorkoutIdsPageState extends State<CoachWorkoutIdsPage> {
   }
 
   Future<void> deleteWorkout(String workoutId) async {
-  try {
-    await widget.viewModel.deleteWorkout(workoutId);  // Wrap workoutId in a list
-    await fetchWorkouts();
-  } catch (e) {
-    // Handle errors
-    print('Error deleting workout: $e');
+    try {
+      await widget.viewModel.deleteWorkout(workoutId);
+      await fetchWorkouts();
+    } catch (e) {
+      // Handle errors
+      print('Error deleting workout: $e');
+    }
   }
-}
 
   void _showDeleteConfirmationDialog(BuildContext context, String workoutId) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Delete Workout'),
-        content: Text('Are you sure you want to delete this workout?'),
+        title: const Text('Delete Workout', style: TextStyle(color: Colors.white)),
+        content: const Text('Are you sure you want to delete this workout?', style: TextStyle(color: Colors.white)),
+        backgroundColor: const Color.fromARGB(255, 56, 80, 88),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: Text('Cancel'),
+            child: const Text('Cancel', style: TextStyle(color: Color.fromARGB(255, 226, 182, 167))),
           ),
           TextButton(
             onPressed: () {
               deleteWorkout(workoutId);
               Navigator.of(context).pop();
             },
-            child: Text('Delete'),
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
     );
   }
 
-  void navigateToClientMyWorkoutsDailyPage(
-      BuildContext context, workoutId) async {
+  void navigateToClientMyWorkoutsDailyPage(BuildContext context, workoutId) async {
     final weekCount = await widget.viewModel.getWeekCount(workoutId);
     if (weekCount == 0) {
       Navigator.push(
@@ -224,15 +212,17 @@ class _CoachWorkoutIdsPageState extends State<CoachWorkoutIdsPage> {
         ),
       );
     } else {
-      final weekSelection =
-          await widget.viewModel.generateWeekIndices(workoutId);
+      final weekSelection = await widget.viewModel.generateWeekIndices(workoutId);
       Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => SelectedWeeksPage(
-                  viewModel: widget.viewModel,
-                  selectedWeeks: weekSelection,
-                  workoutId: workoutId)));
+        context,
+        MaterialPageRoute(
+          builder: (context) => SelectedWeeksPage(
+            viewModel: widget.viewModel,
+            selectedWeeks: weekSelection,
+            workoutId: workoutId,
+          ),
+        ),
+      );
     }
   }
 }

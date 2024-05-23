@@ -13,18 +13,24 @@ class CoachWorkoutWeekSelectionPage extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _CoachWorkoutWeekSelectionPageState createState() =>
-      _CoachWorkoutWeekSelectionPageState();
+  _CoachWorkoutWeekSelectionPageState createState() => _CoachWorkoutWeekSelectionPageState();
 }
 
-class _CoachWorkoutWeekSelectionPageState
-    extends State<CoachWorkoutWeekSelectionPage> {
+class _CoachWorkoutWeekSelectionPageState extends State<CoachWorkoutWeekSelectionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Week Selection'),
+        title: const Text(
+          'Week Selection',
+          style: TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
+        ),
+        backgroundColor: const Color.fromARGB(255, 28, 40, 44),
+        iconTheme: const IconThemeData(
+          color: Color.fromARGB(255, 226, 182, 167),
+        ),
       ),
+      backgroundColor: const Color.fromARGB(255, 28, 40, 44),
       body: WeekSelector(
         viewModel: widget.viewModel,
         workoutId: widget.workoutId,
@@ -55,13 +61,14 @@ class _WeekSelectorState extends State<WeekSelector> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.only(top: 20.0, left: 8.0),
+        const Padding(
+          padding: EdgeInsets.only(top: 20.0, left: 8.0),
           child: Text(
             'How many weeks?',
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 18,
+              color: Colors.white,
             ),
           ),
         ),
@@ -69,6 +76,8 @@ class _WeekSelectorState extends State<WeekSelector> {
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child: DropdownButton<int>(
             value: selectedWeeks.isNotEmpty ? selectedWeeks[0] : 1,
+            dropdownColor: const Color.fromARGB(255, 56, 80, 88),
+            style: const TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
             onChanged: (int? value) {
               setState(() {
                 selectedWeeks.clear();
@@ -79,12 +88,12 @@ class _WeekSelectorState extends State<WeekSelector> {
               10,
               (index) => DropdownMenuItem<int>(
                 value: index + 1,
-                child: Text('${index + 1}'),
+                child: Text('${index + 1}', style: const TextStyle(color: Colors.white)),
               ),
             ),
           ),
         ),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         Align(
           alignment: Alignment.bottomCenter,
           child: Padding(
@@ -104,7 +113,11 @@ class _WeekSelectorState extends State<WeekSelector> {
                   ),
                 );
               },
-              child: Text('Next'),
+              style: ElevatedButton.styleFrom(
+                foregroundColor: const Color.fromARGB(255, 226, 182, 167),
+                backgroundColor: const Color.fromARGB(255, 56, 80, 88),
+              ),
+              child: const Text('Next'),
             ),
           ),
         ),

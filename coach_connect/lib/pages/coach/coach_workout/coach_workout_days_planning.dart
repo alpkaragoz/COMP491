@@ -120,8 +120,16 @@ class _SelectedWeeksPageState extends State<SelectedWeeksPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Make a Program'),
+        title: const Text(
+          'Make a Program',
+          style: TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
+        ),
+        backgroundColor: const Color.fromARGB(255, 28, 40, 44),
+        iconTheme: const IconThemeData(
+          color: Color.fromARGB(255, 226, 182, 167),
+        ),
       ),
+      backgroundColor: const Color.fromARGB(255, 28, 40, 44),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -139,6 +147,10 @@ class _SelectedWeeksPageState extends State<SelectedWeeksPage> {
                       });
                       fetchDaysForWeek(week);
                     },
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: const Color.fromARGB(255, 226, 182, 167),
+                      backgroundColor: const Color.fromARGB(255, 56, 80, 88),
+                    ),
                     child: Text('Week $week'),
                   ),
                 );
@@ -153,10 +165,10 @@ class _SelectedWeeksPageState extends State<SelectedWeeksPage> {
                     itemCount: enteredExercisesByDay.length,
                     itemBuilder: (context, index) {
                       return Container(
-                        margin: EdgeInsets.all(8.0),
-                        padding: EdgeInsets.all(8.0),
+                        margin: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(8.0),
                         decoration: BoxDecoration(
-                          color: Colors.grey[200],
+                          color: const Color.fromARGB(255, 56, 80, 88),
                           borderRadius: BorderRadius.circular(20.0),
                         ),
                         child: Column(
@@ -167,36 +179,49 @@ class _SelectedWeeksPageState extends State<SelectedWeeksPage> {
                                 Expanded(
                                   child: Text(
                                     dayNames.isNotEmpty ? dayNames[index] : 'Day ${index + 1}',
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16.0,
+                                      color: Color.fromARGB(255, 226, 182, 167),
                                     ),
                                   ),
                                 ),
                                 IconButton(
-                                  icon: Icon(Icons.edit),
+                                  icon: const Icon(Icons.edit, color: Color.fromARGB(255, 226, 182, 167)),
                                   onPressed: () {
                                     dayNameController.text = dayNames.isNotEmpty ? dayNames[index] : 'Day ${index + 1}';
                                     showDialog(
                                       context: context,
                                       builder: (BuildContext context) {
                                         return AlertDialog(
-                                          title: Text('Edit Day Name'),
+                                          title: const Text(
+                                            'Edit Day Name',
+                                            style: TextStyle(color: Colors.white),
+                                          ),
+                                          backgroundColor: const Color.fromARGB(255, 56, 80, 88),
                                           content: TextField(
                                             controller: dayNameController,
-                                            decoration: InputDecoration(
+                                            style: const TextStyle(color: Colors.white),
+                                            decoration: const InputDecoration(
                                               hintText: 'Enter new day name',
+                                              hintStyle: TextStyle(color: Colors.white54),
+                                              enabledBorder: UnderlineInputBorder(
+                                                borderSide: BorderSide(color: Colors.white),
+                                              ),
+                                              focusedBorder: UnderlineInputBorder(
+                                                borderSide: BorderSide(color: Colors.white),
+                                              ),
                                             ),
                                           ),
                                           actions: <Widget>[
                                             TextButton(
-                                              child: Text('Cancel'),
+                                              child: const Text('Cancel', style: TextStyle(color: Colors.white)),
                                               onPressed: () {
                                                 Navigator.of(context).pop();
                                               },
                                             ),
                                             TextButton(
-                                              child: Text('Save'),
+                                              child: const Text('Save', style: TextStyle(color: Colors.white)),
                                               onPressed: () {
                                                 updateDayName(index, dayNameController.text);
                                                 Navigator.of(context).pop();
@@ -209,23 +234,30 @@ class _SelectedWeeksPageState extends State<SelectedWeeksPage> {
                                   },
                                 ),
                                 IconButton(
-                                  icon: Icon(Icons.delete),
+                                  icon: const Icon(Icons.delete, color: Colors.red),
                                   onPressed: () {
                                     showDialog(
                                       context: context,
                                       builder: (BuildContext context) {
                                         return AlertDialog(
-                                          title: Text('Delete Day'),
-                                          content: Text('Are you sure you want to delete this day?'),
+                                          title: const Text(
+                                            'Delete Day',
+                                            style: TextStyle(color: Colors.white),
+                                          ),
+                                          backgroundColor: const Color.fromARGB(255, 56, 80, 88),
+                                          content: const Text(
+                                            'Are you sure you want to delete this day?',
+                                            style: TextStyle(color: Colors.white),
+                                          ),
                                           actions: <Widget>[
                                             TextButton(
-                                              child: Text('Cancel'),
+                                              child: const Text('Cancel', style: TextStyle(color: Colors.white)),
                                               onPressed: () {
                                                 Navigator.of(context).pop();
                                               },
                                             ),
                                             TextButton(
-                                              child: Text('Delete'),
+                                              child: const Text('Delete', style: TextStyle(color: Colors.red)),
                                               onPressed: () {
                                                 deleteDay(index);
                                                 Navigator.of(context).pop();
@@ -239,7 +271,7 @@ class _SelectedWeeksPageState extends State<SelectedWeeksPage> {
                                 ),
                               ],
                             ),
-                            SizedBox(height: 8.0),
+                            const SizedBox(height: 8.0),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: List.generate(
@@ -255,10 +287,12 @@ class _SelectedWeeksPageState extends State<SelectedWeeksPage> {
                                       children: [
                                         Text(
                                           '$exerciseNumber. ${exercise.name}',
+                                          style: const TextStyle(color: Colors.white),
                                         ),
                                         ...sets.map((set) {
                                           return Text(
                                             '   Set ${sets.indexOf(set) + 1}: RPE: ${set.rpe ?? 'N/A'}, Reps: ${set.reps ?? 'N/A'}, Kg: ${set.kg ?? 'N/A'}',
+                                            style: const TextStyle(color: Colors.white),
                                           );
                                         }).toList(),
                                       ],
@@ -272,6 +306,7 @@ class _SelectedWeeksPageState extends State<SelectedWeeksPage> {
                                 showModalBottomSheet<void>(
                                   context: context,
                                   isScrollControlled: true,
+                                  backgroundColor: const Color.fromARGB(255, 56, 80, 88),
                                   builder: (BuildContext context) {
                                     return Padding(
                                       padding: const EdgeInsets.all(8.0),
@@ -280,19 +315,29 @@ class _SelectedWeeksPageState extends State<SelectedWeeksPage> {
                                           bottom: MediaQuery.of(context).viewInsets.bottom,
                                         ),
                                         child: Container(
-                                          padding: EdgeInsets.symmetric(horizontal: 16),
+                                          padding: const EdgeInsets.symmetric(horizontal: 16),
                                           child: Column(
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
-                                              SizedBox(height: 16),
+                                              const SizedBox(height: 16),
                                               TextField(
                                                 controller: exerciseController,
-                                                decoration: InputDecoration(
+                                                style: const TextStyle(color: Colors.white),
+                                                decoration: const InputDecoration(
                                                   hintText: 'Enter exercise',
-                                                  border: OutlineInputBorder(),
+                                                  hintStyle: TextStyle(color: Colors.white54),
+                                                  border: OutlineInputBorder(
+                                                    borderSide: BorderSide(color: Colors.white),
+                                                  ),
+                                                  enabledBorder: OutlineInputBorder(
+                                                    borderSide: BorderSide(color: Colors.white),
+                                                  ),
+                                                  focusedBorder: OutlineInputBorder(
+                                                    borderSide: BorderSide(color: Colors.white),
+                                                  ),
                                                 ),
                                               ),
-                                              SizedBox(height: 10),
+                                              const SizedBox(height: 10),
                                               ElevatedButton(
                                                 onPressed: () async {
                                                   final exerciseName = exerciseController.text;
@@ -330,7 +375,11 @@ class _SelectedWeeksPageState extends State<SelectedWeeksPage> {
                                                     );
                                                   }
                                                 },
-                                                child: Text('Add'),
+                                                style: ElevatedButton.styleFrom(
+                                                  foregroundColor: const Color.fromARGB(255, 226, 182, 167),
+                                                  backgroundColor: const Color.fromARGB(255, 56, 80, 88),
+                                                ),
+                                                child: const Text('Add'),
                                               ),
                                             ],
                                           ),
@@ -340,7 +389,11 @@ class _SelectedWeeksPageState extends State<SelectedWeeksPage> {
                                   },
                                 );
                               },
-                              child: Text('Add Exercise'),
+                              style: ElevatedButton.styleFrom(
+                                foregroundColor: const Color.fromARGB(255, 226, 182, 167),
+                                backgroundColor: const Color.fromARGB(255, 56, 80, 88),
+                              ),
+                              child: const Text('Add Exercise'),
                             ),
                           ],
                         ),
@@ -352,7 +405,11 @@ class _SelectedWeeksPageState extends State<SelectedWeeksPage> {
                   padding: const EdgeInsets.all(8.0),
                   child: ElevatedButton(
                     onPressed: addDay,
-                    child: Text('Add Day'),
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: const Color.fromARGB(255, 226, 182, 167),
+                      backgroundColor: const Color.fromARGB(255, 56, 80, 88),
+                    ),
+                    child: const Text('Add Day'),
                   ),
                 ),
               ],

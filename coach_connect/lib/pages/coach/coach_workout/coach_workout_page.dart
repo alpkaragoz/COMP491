@@ -9,7 +9,7 @@ class CoachWorkoutPage extends StatefulWidget {
   final String weekId;
   final String dayId;
   final String exerciseId;
-  final String exerciseName; // Add exerciseName parameter
+  final String exerciseName;
 
   const CoachWorkoutPage({
     Key? key,
@@ -18,7 +18,7 @@ class CoachWorkoutPage extends StatefulWidget {
     required this.weekId,
     required this.dayId,
     required this.exerciseId,
-    required this.exerciseName, // Add exerciseName parameter
+    required this.exerciseName,
   }) : super(key: key);
 
   @override
@@ -61,36 +61,34 @@ class _CoachWorkoutPageState extends State<CoachWorkoutPage> {
   }
 
   void deleteSet(int index) async {
-  final setToDelete = sets[index];
-  if (setToDelete.id != null) {
-    await widget.viewModel.deleteSetFromExercise(
-      widget.workoutId,
-      widget.weekId,
-      widget.dayId,
-      widget.exerciseId,
-      setToDelete.id!,
-    );
+    final setToDelete = sets[index];
+    if (setToDelete.id != null) {
+      await widget.viewModel.deleteSetFromExercise(
+        widget.workoutId,
+        widget.weekId,
+        widget.dayId,
+        widget.exerciseId,
+        setToDelete.id!,
+      );
 
-    setState(() {
-      sets.removeAt(index);
-    });
-  } else {
-    // Handle the case where setToDelete.id is null
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Failed to delete set: Invalid set ID.'),
-      ),
-    );
+      setState(() {
+        sets.removeAt(index);
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to delete set: Invalid set ID.'),
+        ),
+      );
+    }
   }
-}
-
 
   void saveSet(int index) async {
     if (rpeController.text.isEmpty ||
         repsController.text.isEmpty ||
         kgController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('Please enter values for RPE, Reps, and Kg.'),
         ),
       );
@@ -115,7 +113,7 @@ class _CoachWorkoutPageState extends State<CoachWorkoutPage> {
       sets[index] = updatedSet;
     });
 
-    Navigator.pop(context); // Close the bottom sheet only
+    Navigator.pop(context);
   }
 
   void saveExercise() {
@@ -132,14 +130,13 @@ class _CoachWorkoutPageState extends State<CoachWorkoutPage> {
 
     if (!allSetsValid) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('Please ensure all sets have values for RPE, Reps, and Kg.'),
         ),
       );
       return;
     }
 
-    // Implement save exercise logic here
     Navigator.pop(context);
   }
 
@@ -147,8 +144,13 @@ class _CoachWorkoutPageState extends State<CoachWorkoutPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.exerciseName), // Use exerciseName as the title
+        title: Text(widget.exerciseName, style: const TextStyle(color: Color.fromARGB(255, 226, 182, 167))),
+        backgroundColor: const Color.fromARGB(255, 28, 40, 44),
+        iconTheme: const IconThemeData(
+          color: Color.fromARGB(255, 226, 182, 167),
+        ),
       ),
+      backgroundColor: const Color.fromARGB(255, 28, 40, 44),
       body: Column(
         children: [
           Expanded(
@@ -157,10 +159,13 @@ class _CoachWorkoutPageState extends State<CoachWorkoutPage> {
               itemBuilder: (context, index) {
                 final set = sets[index];
                 return ListTile(
-                  title: Text('Set ${index + 1}'),
-                  subtitle: Text('RPE: ${set.rpe}, Reps: ${set.reps}, Kg: ${set.kg}'),
+                  title: Text('Set ${index + 1}', style: const TextStyle(color: Color.fromARGB(255, 226, 182, 167))),
+                  subtitle: Text(
+                    'RPE: ${set.rpe}, Reps: ${set.reps}, Kg: ${set.kg}',
+                    style: const TextStyle(color: Colors.white),
+                  ),
                   trailing: IconButton(
-                    icon: Icon(Icons.delete),
+                    icon: const Icon(Icons.delete, color: Colors.red),
                     onPressed: () => deleteSet(index),
                   ),
                   onTap: () {
@@ -172,7 +177,8 @@ class _CoachWorkoutPageState extends State<CoachWorkoutPage> {
 
                     showModalBottomSheet<void>(
                       context: context,
-                      isScrollControlled: true, // Ensure bottom sheet is scrollable
+                      isScrollControlled: true,
+                      backgroundColor: const Color.fromARGB(255, 56, 80, 88),
                       builder: (BuildContext context) {
                         return SingleChildScrollView(
                           padding: EdgeInsets.only(
@@ -185,34 +191,71 @@ class _CoachWorkoutPageState extends State<CoachWorkoutPage> {
                               children: [
                                 TextField(
                                   controller: rpeController,
-                                  decoration: InputDecoration(labelText: 'RPE'),
+                                  decoration: const InputDecoration(
+                                    labelText: 'RPE',
+                                    labelStyle: TextStyle(color: Colors.white),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(color: Colors.white),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(color: Colors.white),
+                                    ),
+                                  ),
                                   keyboardType: TextInputType.number,
                                   inputFormatters: [
                                     FilteringTextInputFormatter.allow(
-                                        RegExp(r'[0-9]'))
-                                  ], // Allow only numbers
+                                        RegExp(r'[0-9]')),
+                                  ],
+                                  style: const TextStyle(color: Colors.white),
                                 ),
+                                const SizedBox(height: 10),
                                 TextField(
                                   controller: repsController,
-                                  decoration: InputDecoration(labelText: 'Reps'),
+                                  decoration: const InputDecoration(
+                                    labelText: 'Reps',
+                                    labelStyle: TextStyle(color: Colors.white),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(color: Colors.white),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(color: Colors.white),
+                                    ),
+                                  ),
                                   keyboardType: TextInputType.number,
                                   inputFormatters: [
                                     FilteringTextInputFormatter.allow(
-                                        RegExp(r'[0-9]'))
-                                  ], // Allow only numbers
+                                        RegExp(r'[0-9]')),
+                                  ],
+                                  style: const TextStyle(color: Colors.white),
                                 ),
+                                const SizedBox(height: 10),
                                 TextField(
                                   controller: kgController,
-                                  decoration: InputDecoration(labelText: 'Kg'),
+                                  decoration: const InputDecoration(
+                                    labelText: 'Kg',
+                                    labelStyle: TextStyle(color: Colors.white),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(color: Colors.white),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(color: Colors.white),
+                                    ),
+                                  ),
                                   keyboardType: TextInputType.number,
                                   inputFormatters: [
                                     FilteringTextInputFormatter.allow(
-                                        RegExp(r'[0-9]'))
-                                  ], // Allow only numbers
+                                        RegExp(r'[0-9]')),
+                                  ],
+                                  style: const TextStyle(color: Colors.white),
                                 ),
+                                const SizedBox(height: 10),
                                 ElevatedButton(
                                   onPressed: () => saveSet(index),
-                                  child: Text('Save Set'),
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: const Color.fromARGB(255, 226, 182, 167),
+                                    backgroundColor: const Color.fromARGB(255, 56, 80, 88),
+                                  ),
+                                  child: const Text('Save Set'),
                                 ),
                               ],
                             ),
@@ -226,17 +269,25 @@ class _CoachWorkoutPageState extends State<CoachWorkoutPage> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(8.0), // Add padding for better spacing
+            padding: const EdgeInsets.all(8.0),
             child: ElevatedButton(
               onPressed: addSet,
-              child: Text('Add Set'),
+              style: ElevatedButton.styleFrom(
+                foregroundColor: const Color.fromARGB(255, 226, 182, 167),
+                backgroundColor: const Color.fromARGB(255, 56, 80, 88),
+              ),
+              child: const Text('Add Set'),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(8.0), // Add padding for better spacing
+            padding: const EdgeInsets.all(8.0),
             child: ElevatedButton(
               onPressed: saveExercise,
-              child: Text('Save Exercise'),
+              style: ElevatedButton.styleFrom(
+                foregroundColor: const Color.fromARGB(255, 226, 182, 167),
+                backgroundColor: const Color.fromARGB(255, 56, 80, 88),
+              ),
+              child: const Text('Save Exercise'),
             ),
           ),
         ],

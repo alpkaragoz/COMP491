@@ -2,15 +2,11 @@ import 'package:coach_connect/models/user_account.dart';
 import 'package:coach_connect/pages/coach/coach_workout/coach_workoutIds.dart';
 import 'package:coach_connect/view_models/coach/coach_home_viewmodel.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class CoachWorkoutClientsPage extends StatelessWidget {
   final CoachHomeViewModel viewModel;
 
-  const CoachWorkoutClientsPage({Key? key, required this.viewModel})
-      : super(key: key);
-
-      
+  const CoachWorkoutClientsPage({Key? key, required this.viewModel}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -18,17 +14,25 @@ class CoachWorkoutClientsPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Clients'),
+        title: const Text(
+          'My Clients',
+          style: TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
+        ),
+        backgroundColor: const Color.fromARGB(255, 28, 40, 44),
+        iconTheme: const IconThemeData(
+          color: Color.fromARGB(255, 226, 182, 167),
+        ),
       ),
+      backgroundColor: const Color.fromARGB(255, 28, 40, 44),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Expanded(
             child: Container(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 border: Border(
-                  top: BorderSide(color: Colors.black, width: 1.0),
+                  top: BorderSide(color: Color.fromARGB(255, 226, 182, 167), width: 1.0),
                 ),
               ),
               child: Padding(
@@ -43,9 +47,9 @@ class CoachWorkoutClientsPage extends StatelessWidget {
                         final clientName = snapshot.data?.name ?? 'Loading...';
                         final clientId = snapshot.data?.id;
                         return Container(
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                             border: Border(
-                              top: BorderSide(color: Colors.black, width: 1.0),
+                              top: BorderSide(color: Color.fromARGB(255, 226, 182, 167), width: 1.0),
                             ),
                           ),
                           child: Padding(
@@ -56,17 +60,17 @@ class CoachWorkoutClientsPage extends StatelessWidget {
                                   navigateToWorkoutsIdPage(context, clientId.toString());
                                 }
                               },
-                              style: ButtonStyle(
-                                backgroundColor: MaterialStateProperty.all<Color>(Colors.black),
-                                minimumSize: MaterialStateProperty.all<Size>(Size(double.infinity, 48)),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color.fromARGB(255, 56, 80, 88),
+                                minimumSize: const Size(double.infinity, 48),
                               ),
                               child: snapshot.connectionState != ConnectionState.waiting
                                   ? Text(
                                       clientName,
-                                      style: TextStyle(color: Colors.white),
+                                      style: const TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
                                     )
-                                  : CircularProgressIndicator(
-                                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                  : const CircularProgressIndicator(
+                                      valueColor: AlwaysStoppedAnimation<Color>(Color.fromARGB(255, 226, 182, 167)),
                                     ),
                             ),
                           ),
@@ -78,18 +82,17 @@ class CoachWorkoutClientsPage extends StatelessWidget {
               ),
             ),
           ),
-          // Add other widgets below the button if needed
         ],
       ),
     );
   }
 
-
   void navigateToWorkoutsIdPage(BuildContext context, String id) async {
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => CoachWorkoutIdsPage(viewModel: viewModel, clientId: id,)),
+        builder: (context) => CoachWorkoutIdsPage(viewModel: viewModel, clientId: id),
+      ),
     );
   }
 }
