@@ -15,6 +15,7 @@ class ClientMyWorkoutsWeeksPage extends StatefulWidget {
 
 class _ClientMyWorkoutsWeeksPageState extends State<ClientMyWorkoutsWeeksPage> {
   List<String> weeks = [];
+  List<bool> weeksCompleted = [];
   bool hasWeeks = false;
 
   @override
@@ -26,16 +27,33 @@ class _ClientMyWorkoutsWeeksPageState extends State<ClientMyWorkoutsWeeksPage> {
   Future<void> fetchWeeks() async {
     try {
       final fetchedWeeks = await widget.viewModel.generateWeekIndices(widget.workoutId);
+      final completedStatus = await Future.wait(fetchedWeeks.map((index) => _checkWeekCompletion(index)));
+      
       setState(() {
         weeks = fetchedWeeks.map((index) => 'Week $index').toList();
+        weeksCompleted = completedStatus;
         hasWeeks = weeks.isNotEmpty;
       });
     } catch (e) {
       print('Error fetching weeks: $e');
       setState(() {
         weeks = [];
+        weeksCompleted = [];
         hasWeeks = false;
       });
+    }
+  }
+
+  Future<bool> _checkWeekCompletion(int weekIndex) async {
+    try {
+      final weekId = 'Week${weekIndex}'; // Generate weekId using the provided index
+      final days = await widget.viewModel.getDays(widget.workoutId, weekId);
+      bool allDaysCompleted = days.every((day) => day.completed);
+      print('Week $weekId completion status: $allDaysCompleted'); // Debug statement
+      return allDaysCompleted;
+    } catch (e) {
+      print('Error checking week completion: $e');
+      return false;
     }
   }
 
@@ -64,6 +82,7 @@ class _ClientMyWorkoutsWeeksPageState extends State<ClientMyWorkoutsWeeksPage> {
                     itemBuilder: (context, index) {
                       final weekName = weeks[index];
                       final weekId = 'Week${index + 1}'; // Assuming weekId follows this format
+                      final isCompleted = weeksCompleted[index];
                       return Container(
                         decoration: const BoxDecoration(
                           border: Border(
@@ -80,9 +99,19 @@ class _ClientMyWorkoutsWeeksPageState extends State<ClientMyWorkoutsWeeksPage> {
                               backgroundColor: const Color.fromARGB(255, 56, 80, 88),
                               minimumSize: const Size(double.infinity, 48),
                             ),
-                            child: Text(
-                              weekName,
-                              style: const TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  weekName,
+                                  style: const TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
+                                ),
+                                if (isCompleted)
+                                  Icon(
+                                    Icons.check,
+                                    color: Color.fromARGB(255, 226, 182, 167),
+                                  ),
+                              ],
                             ),
                           ),
                         ),

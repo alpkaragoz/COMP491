@@ -137,15 +137,22 @@ class _ClientWorkoutPageState extends State<ClientWorkoutPage> {
       builder: (context, setState) {
         return Column(
           children: [
-            _buildDayButton(exercise.name ?? 'Unknown Exercise',
-                const Color.fromARGB(255, 56, 80, 88), isExpanded, () {
-              setState(() {
-                isExpanded = !isExpanded;
-              });
-            }),
+            _buildDayButton(
+              exercise.name ?? 'Unknown Exercise',
+              const Color.fromARGB(255, 56, 80, 88),
+              isExpanded,
+              () {
+                setState(() {
+                  isExpanded = !isExpanded;
+                });
+              },
+            ),
             if (isExpanded)
               ...?_exerciseSets[exercise.id]?.map((set) {
-                return _buildExpandableContent(set);
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4.0), // Padding between sets
+                  child: _buildExpandableContent(set),
+                );
               }).toList(),
           ],
         );
@@ -210,6 +217,5 @@ class _ClientWorkoutPageState extends State<ClientWorkoutPage> {
       ),
     );
   }
-
   
 }

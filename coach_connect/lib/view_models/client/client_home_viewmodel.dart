@@ -171,7 +171,6 @@ class ClientHomeViewModel extends ChangeNotifier {
     }
   }
 
-
   Future<List<ExerciseModel>> getExercises(
       String workoutId, String weekId, String dayId) async {
     try {
@@ -193,9 +192,6 @@ class ClientHomeViewModel extends ChangeNotifier {
     }
   }
 
-
-
-
   Future<List<SetModel>> getSets(
       String workoutId, String weekId, String dayId, String exerciseId) async {
     try {
@@ -216,4 +212,21 @@ class ClientHomeViewModel extends ChangeNotifier {
       return [];
     }
   }
+
+  Future<void> setDayCompletition(
+      String workoutId, String weekId, DayModel dayModel) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('workouts')
+          .doc(workoutId)
+          .collection('weeks')
+          .doc(weekId)
+          .collection('days')
+          .doc(dayModel.id)
+          .update({'completed': true});
+    } catch (e) {
+      print('Error updating day: $e');
+    }
+  }
+
 }

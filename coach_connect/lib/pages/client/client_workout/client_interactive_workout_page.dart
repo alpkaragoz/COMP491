@@ -21,10 +21,12 @@ class ClientInteractiveWorkoutPage extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _ClientInteractiveWorkoutPageState createState() => _ClientInteractiveWorkoutPageState();
+  _ClientInteractiveWorkoutPageState createState() =>
+      _ClientInteractiveWorkoutPageState();
 }
 
-class _ClientInteractiveWorkoutPageState extends State<ClientInteractiveWorkoutPage> {
+class _ClientInteractiveWorkoutPageState
+    extends State<ClientInteractiveWorkoutPage> {
   bool _isLoading = true;
   List<ExerciseModel> _exercises = [];
   Map<String, List<SetModel>> _exerciseSets = {};
@@ -48,11 +50,13 @@ class _ClientInteractiveWorkoutPageState extends State<ClientInteractiveWorkoutP
 
   Future<void> fetchExercisesAndSets() async {
     try {
-      final exercises = await widget.viewModel.getExercises(widget.workoutId, widget.weekId, widget.dayId);
+      final exercises = await widget.viewModel
+          .getExercises(widget.workoutId, widget.weekId, widget.dayId);
       final exerciseSets = <String, List<SetModel>>{};
 
       for (var exercise in exercises) {
-        final sets = await widget.viewModel.getSets(widget.workoutId, widget.weekId, widget.dayId, exercise.id!);
+        final sets = await widget.viewModel.getSets(
+            widget.workoutId, widget.weekId, widget.dayId, exercise.id!);
         exerciseSets[exercise.id!] = sets;
       }
 
@@ -92,7 +96,9 @@ class _ClientInteractiveWorkoutPageState extends State<ClientInteractiveWorkoutP
 
   void _nextSetOrExercise() {
     setState(() {
-      if (_currentSetIndex < (_exerciseSets[_exercises[_currentExerciseIndex].id!] ?? []).length - 1) {
+      if (_currentSetIndex <
+          (_exerciseSets[_exercises[_currentExerciseIndex].id!] ?? []).length -
+              1) {
         _currentSetIndex++;
       } else {
         if (_currentExerciseIndex < _exercises.length - 1) {
@@ -115,164 +121,213 @@ class _ClientInteractiveWorkoutPageState extends State<ClientInteractiveWorkoutP
   }
 
   Widget _buildBreakWidget() {
-  String nextUpText;
+    String nextUpText;
 
-  if (_currentSetIndex < (_exerciseSets[_exercises[_currentExerciseIndex].id!] ?? []).length - 1) {
-    nextUpText = 'Next up: ${_exerciseSets[_exercises[_currentExerciseIndex].id!]![_currentSetIndex + 1].reps} Reps x ${_exerciseSets[_exercises[_currentExerciseIndex].id!]![_currentSetIndex + 1].kg}kg';
-  } else if (_currentExerciseIndex < _exercises.length - 1) {
-    nextUpText = 'Next up: ${_exercises[_currentExerciseIndex + 1].name}';
-  } else {
-    nextUpText = 'Workout Complete!';
-  }
+    if (_currentSetIndex <
+        (_exerciseSets[_exercises[_currentExerciseIndex].id!] ?? []).length -
+            1) {
+      nextUpText =
+          'Next up: ${_exerciseSets[_exercises[_currentExerciseIndex].id!]![_currentSetIndex + 1].reps} Reps x ${_exerciseSets[_exercises[_currentExerciseIndex].id!]![_currentSetIndex + 1].kg}kg';
+    } else if (_currentExerciseIndex < _exercises.length - 1) {
+      nextUpText = 'Next up: ${_exercises[_currentExerciseIndex + 1].name}';
+    } else {
+      nextUpText = 'Workout Complete!';
+    }
 
-  return Column(
-    mainAxisAlignment: MainAxisAlignment.center,
-    crossAxisAlignment: CrossAxisAlignment.center,
-    children: [
-      const Text(
-        'Break',
-        style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 226, 182, 167)),
-        textAlign: TextAlign.center, // Center horizontally
-      ),
-      const SizedBox(height: 16),
-      Center( // Center the break time text
-        child: Text(
-          '${(_breakTime ~/ 60).toString().padLeft(2, '0')}:${(_breakTime % 60).toString().padLeft(2, '0')}',
-          style: const TextStyle(fontSize: 60, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 226, 182, 167)),
-        ),
-      ),
-      const SizedBox(height: 60),
-      Opacity(
-        opacity: 0.5,
-        child: Text(
-          nextUpText,
-          style: const TextStyle(fontSize: 16, color: Color.fromARGB(255, 226, 182, 167)),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        const Text(
+          'Break',
+          style: TextStyle(
+              fontSize: 40,
+              fontWeight: FontWeight.bold,
+              color: Color.fromARGB(255, 226, 182, 167)),
           textAlign: TextAlign.center, // Center horizontally
         ),
-      ),
-      const SizedBox(height: 16),
-      ElevatedButton(
-        onPressed: _skipTime,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color.fromARGB(255, 56, 80, 88),
-        ),
-        child: const Text(
-          'Skip Time',
-          style: TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
-        ),
-      ),
-    ],
-  );
-}
-
-
-  Widget _buildSetWidget(SetModel set, ExerciseModel exercise) {
-  String nextUpText;
-
-  if (_currentSetIndex < (_exerciseSets[exercise.id!] ?? []).length - 1) {
-    nextUpText = 'Next up: 2:00 Break';
-  } else if (_currentExerciseIndex < _exercises.length - 1) {
-    nextUpText = 'Next up: 2:00 Break';
-  } else {
-    nextUpText = 'Workout Complete!';
-  }
-
-  return Center(
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.center, // Center vertically
-      crossAxisAlignment: CrossAxisAlignment.center, // Center horizontally
-      children: [
-        Text(
-          'Set ${_currentSetIndex + 1}',
-          style: const TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 226, 182, 167)),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          exercise.name ?? 'Unknown Exercise',
-          style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 226, 182, 167)),
-        ),
         const SizedBox(height: 16),
-        Text(
-          '${set.reps} Reps x ${set.kg} kg',
-          style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 226, 182, 167)),
+        Center(
+          // Center the break time text
+          child: Text(
+            '${(_breakTime ~/ 60).toString().padLeft(2, '0')}:${(_breakTime % 60).toString().padLeft(2, '0')}',
+            style: const TextStyle(
+                fontSize: 60,
+                fontWeight: FontWeight.bold,
+                color: Color.fromARGB(255, 226, 182, 167)),
+          ),
         ),
         const SizedBox(height: 60),
         Opacity(
           opacity: 0.5,
           child: Text(
             nextUpText,
-            style: const TextStyle(fontSize: 16, color: Color.fromARGB(255, 226, 182, 167)),
+            style: const TextStyle(
+                fontSize: 16, color: Color.fromARGB(255, 226, 182, 167)),
+            textAlign: TextAlign.center, // Center horizontally
           ),
         ),
         const SizedBox(height: 16),
         ElevatedButton(
-          onPressed: () {
-            if (nextUpText == 'Workout Complete!') {
-              widget.onWorkoutComplete();
-              Navigator.pop(context);
-            } else {
-              _startBreak();
-            }
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color.fromARGB(255, 56, 80, 88),
-          ),
-          child: Text(
-            nextUpText == 'Workout Complete!' ? 'Finish Workout' : 'Next',
-            style: const TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
-          ),
-        ),
-      ],
-    ),
-  );
-}
-
-
-  Widget _buildNoSetsWidget(ExerciseModel exercise) {
-  return Center(
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.center, // Center vertically
-      children: [
-        Text(
-          exercise.name ?? 'Unknown Exercise',
-          style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 226, 182, 167)),
-          textAlign: TextAlign.center, // Center horizontally
-        ),
-        const SizedBox(height: 16),
-        const Text(
-          'No sets assigned',
-          style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 226, 182, 167)),
-          textAlign: TextAlign.center, // Center horizontally
-        ),
-        const SizedBox(height: 16),
-        ElevatedButton(
-          onPressed: _nextSetOrExercise,
+          onPressed: _skipTime,
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color.fromARGB(255, 56, 80, 88),
           ),
           child: const Text(
-            'Next Exercise',
+            'Skip Time',
             style: TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
           ),
         ),
       ],
-    ),
-  );
-}
+    );
+  }
 
+  Widget _buildSetWidget(SetModel set, ExerciseModel exercise) {
+    String nextUpText;
 
-  @override
-Widget build(BuildContext context) {
-  if (_isLoading) {
-    return const Scaffold(
-      backgroundColor: Color.fromARGB(255, 28, 40, 44),
-      body: Center(
-        child: CircularProgressIndicator(),
+    if (_currentSetIndex < (_exerciseSets[exercise.id!] ?? []).length - 1) {
+      nextUpText = 'Next up: 2:00 Break';
+    } else if (_currentExerciseIndex < _exercises.length - 1) {
+      nextUpText = 'Next up: 2:00 Break';
+    } else {
+      nextUpText = 'Workout Complete!';
+    }
+
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center, // Center vertically
+        crossAxisAlignment: CrossAxisAlignment.center, // Center horizontally
+        children: [
+          Text(
+            'Set ${_currentSetIndex + 1}',
+            style: const TextStyle(
+                fontSize: 40,
+                fontWeight: FontWeight.bold,
+                color: Color.fromARGB(255, 226, 182, 167)),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            exercise.name ?? 'Unknown Exercise',
+            style: const TextStyle(
+                fontSize: 30,
+                fontWeight: FontWeight.bold,
+                color: Color.fromARGB(255, 226, 182, 167)),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            '${set.reps} Reps x ${set.kg} kg',
+            style: const TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: Color.fromARGB(255, 226, 182, 167)),
+          ),
+          const SizedBox(height: 60),
+          Opacity(
+            opacity: 0.5,
+            child: Text(
+              nextUpText,
+              style: const TextStyle(
+                  fontSize: 16, color: Color.fromARGB(255, 226, 182, 167)),
+            ),
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: () {
+              if (nextUpText == 'Workout Complete!') {
+                widget.onWorkoutComplete();
+                Navigator.pop(context);
+              } else {
+                _startBreak();
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color.fromARGB(255, 56, 80, 88),
+            ),
+            child: Text(
+              nextUpText == 'Workout Complete!' ? 'Finish Workout' : 'Next',
+              style: const TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  if (_exercises.isEmpty) {
+  Widget _buildNoSetsWidget(ExerciseModel exercise) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center, // Center vertically
+        children: [
+          Text(
+            exercise.name ?? 'Unknown Exercise',
+            style: const TextStyle(
+                fontSize: 30,
+                fontWeight: FontWeight.bold,
+                color: Color.fromARGB(255, 226, 182, 167)),
+            textAlign: TextAlign.center, // Center horizontally
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            'No sets assigned',
+            style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: Color.fromARGB(255, 226, 182, 167)),
+            textAlign: TextAlign.center, // Center horizontally
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: _nextSetOrExercise,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color.fromARGB(255, 56, 80, 88),
+            ),
+            child: const Text(
+              'Next Exercise',
+              style: TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Scaffold(
+        backgroundColor: Color.fromARGB(255, 28, 40, 44),
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    if (_exercises.isEmpty) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text(
+            'Interactive Workout',
+            style: TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
+          ),
+          backgroundColor: const Color.fromARGB(255, 28, 40, 44),
+          iconTheme: const IconThemeData(
+            color: Color.fromARGB(255, 226, 182, 167),
+          ),
+        ),
+        backgroundColor: const Color.fromARGB(255, 28, 40, 44),
+        body: Center(
+          child: Text(
+            'No exercises assigned',
+            style: TextStyle(
+                fontSize: 24, color: Color.fromARGB(255, 226, 182, 167)),
+          ),
+        ),
+      );
+    }
+
+    final currentExercise = _exercises[_currentExerciseIndex];
+    final sets = _exerciseSets[currentExercise.id!] ?? [];
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -285,35 +340,11 @@ Widget build(BuildContext context) {
         ),
       ),
       backgroundColor: const Color.fromARGB(255, 28, 40, 44),
-      body: Center(
-        child: Text(
-          'No exercises assigned',
-          style: TextStyle(fontSize: 24, color: Color.fromARGB(255, 226, 182, 167)),
-        ),
-      ),
+      body: _isInBreak
+          ? _buildBreakWidget()
+          : sets.isEmpty
+              ? _buildNoSetsWidget(currentExercise)
+              : _buildSetWidget(sets[_currentSetIndex], currentExercise),
     );
   }
-
-  final currentExercise = _exercises[_currentExerciseIndex];
-  final sets = _exerciseSets[currentExercise.id!] ?? [];
-
-  return Scaffold(
-    appBar: AppBar(
-      title: const Text(
-        'Interactive Workout',
-        style: TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
-      ),
-      backgroundColor: const Color.fromARGB(255, 28, 40, 44),
-      iconTheme: const IconThemeData(
-        color: Color.fromARGB(255, 226, 182, 167),
-      ),
-    ),
-    backgroundColor: const Color.fromARGB(255, 28, 40, 44),
-    body: _isInBreak
-      ? _buildBreakWidget()
-      : sets.isEmpty
-        ? _buildNoSetsWidget(currentExercise)
-        : _buildSetWidget(sets[_currentSetIndex], currentExercise),
-  );
-}
 }

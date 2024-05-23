@@ -31,13 +31,15 @@ class _ClientMyWorkoutsDaysPageState extends State<ClientMyWorkoutsDaysPage> {
 
   void _markDayAsCompleted(String dayId) {
     setState(() {
-      _daysFuture = _daysFuture.then((days) {
-        return days.map((day) {
+      _daysFuture = _daysFuture.then((days) async {
+        for (var day in days) {
           if (day.id == dayId) {
-            day = day.copyWith(completed: true);
+            day = day.copyWith(completed: true); // Set completed to true
+            await widget.viewModel.setDayCompletition(
+                widget.workoutId, widget.weekId, day); // Pass the dayModel
           }
-          return day;
-        }).toList();
+        }
+        return days;
       });
     });
   }
@@ -113,7 +115,7 @@ class _ClientMyWorkoutsDaysPageState extends State<ClientMyWorkoutsDaysPage> {
                                   color: Color.fromARGB(255, 226, 182, 167)),
                             ),
                             if (day.completed)
-                              const Icon(
+                              Icon(
                                 Icons.check,
                                 color: Color.fromARGB(255, 226, 182, 167),
                               ),
