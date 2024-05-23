@@ -39,7 +39,7 @@ class ClientHomeViewModel extends ChangeNotifier {
     if (currentCoach == null) {
       return;
     }
-    currentCoachName = currentCoach.username;
+    currentCoachName = currentCoach.name;
   }
 
   Future<void> getUserAccountOfRequest() async {
