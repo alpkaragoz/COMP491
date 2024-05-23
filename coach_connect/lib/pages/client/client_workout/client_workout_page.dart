@@ -1,3 +1,4 @@
+import 'package:coach_connect/pages/client/client_workout/client_interactive_workout_page.dart';
 import 'package:flutter/material.dart';
 import 'package:coach_connect/models/exercise.dart';
 import 'package:coach_connect/models/set.dart';
@@ -8,6 +9,7 @@ class ClientWorkoutPage extends StatefulWidget {
   final String workoutId;
   final String weekId;
   final String dayId;
+  final VoidCallback onWorkoutComplete; // Add this line
 
   const ClientWorkoutPage({
     Key? key,
@@ -15,6 +17,7 @@ class ClientWorkoutPage extends StatefulWidget {
     required this.workoutId,
     required this.weekId,
     required this.dayId,
+    required this.onWorkoutComplete, // Add this line
   }) : super(key: key);
 
   @override
@@ -99,7 +102,18 @@ class _ClientWorkoutPageState extends State<ClientWorkoutPage> {
                     padding: const EdgeInsets.only(bottom: 16.0),
                     child: ElevatedButton(
                       onPressed: () {
-                        // Add your logic for starting the workout here
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ClientInteractiveWorkoutPage(
+                              viewModel: widget.viewModel,
+                              workoutId: widget.workoutId,
+                              weekId: widget.weekId,
+                              dayId: widget.dayId,
+                              onWorkoutComplete: widget.onWorkoutComplete, // Pass the callback
+                            ),
+                          ),
+                        );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color.fromARGB(255, 56, 80, 88),
@@ -123,21 +137,24 @@ class _ClientWorkoutPageState extends State<ClientWorkoutPage> {
       builder: (context, setState) {
         return Column(
           children: [
-            _buildDayButton(exercise.name ?? 'Unknown Exercise', const Color.fromARGB(255, 56, 80, 88), isExpanded, () {
+            _buildDayButton(exercise.name ?? 'Unknown Exercise',
+                const Color.fromARGB(255, 56, 80, 88), isExpanded, () {
               setState(() {
                 isExpanded = !isExpanded;
               });
             }),
-            if (isExpanded) ...?_exerciseSets[exercise.id]?.map((set) {
-              return _buildExpandableContent(set);
-            }).toList(),
+            if (isExpanded)
+              ...?_exerciseSets[exercise.id]?.map((set) {
+                return _buildExpandableContent(set);
+              }).toList(),
           ],
         );
       },
     );
   }
 
-  Widget _buildDayButton(String day, Color buttonColor, bool isExpanded, VoidCallback onPressed) {
+  Widget _buildDayButton(
+      String day, Color buttonColor, bool isExpanded, VoidCallback onPressed) {
     return GestureDetector(
       onTap: onPressed,
       child: Container(
@@ -156,7 +173,8 @@ class _ClientWorkoutPageState extends State<ClientWorkoutPage> {
             children: [
               Text(
                 day,
-                style: const TextStyle(color: Color.fromARGB(255, 226, 182, 167), fontSize: 16.0),
+                style: const TextStyle(
+                    color: Color.fromARGB(255, 226, 182, 167), fontSize: 16.0),
               ),
               Icon(
                 isExpanded ? Icons.arrow_drop_up : Icons.arrow_drop_down,
@@ -192,4 +210,6 @@ class _ClientWorkoutPageState extends State<ClientWorkoutPage> {
       ),
     );
   }
+
+  
 }

@@ -1,19 +1,23 @@
 class DayModel {
   String? id;
-  String name; // Make name non-nullable
+  String name;
+  bool completed; // Add the completed flag
 
   DayModel({
     this.id,
-    required this.name, // Require name in the constructor
+    required this.name,
+    this.completed = false, // Default completed to false
   });
 
   DayModel copyWith({
     String? id,
     String? name,
+    bool? completed,
   }) {
     return DayModel(
       id: id ?? this.id,
       name: name ?? this.name,
+      completed: completed ?? this.completed,
     );
   }
 
@@ -21,21 +25,23 @@ class DayModel {
     return {
       'id': id,
       'name': name,
+      'completed': completed, // Include completed in the JSON
     };
   }
 
   factory DayModel.fromJson(Map<String, dynamic> json) {
     return DayModel(
       id: json['id'] as String?,
-      name: json['name'] as String, // Assume the JSON always has a non-null name
+      name: json['name'] as String,
+      completed: json['completed'] as bool? ?? false, // Assume the JSON has a non-null name and handle completed
     );
   }
 
   @override
-  String toString() => "dayModel(id: $id,name: $name)";
+  String toString() => "DayModel(id: $id, name: $name, completed: $completed)";
 
   @override
-  int get hashCode => Object.hash(id, name);
+  int get hashCode => Object.hash(id, name, completed);
 
   @override
   bool operator ==(Object other) =>
@@ -43,5 +49,6 @@ class DayModel {
       other is DayModel &&
           runtimeType == other.runtimeType &&
           id == other.id &&
-          name == other.name;
+          name == other.name &&
+          completed == other.completed;
 }
