@@ -125,9 +125,9 @@ class _MyClientsPageState extends State<MyClientsPage> {
     _setLoading(false);
   }
 
-  void _denyRequest(Request request) {
+  void _denyRequest(Request request) async {
     _setLoading(true);
-    var message = widget.viewModel.denyRequest(request);
+    var message = await widget.viewModel.denyRequest(request);
     _showSnackBar(message);
     _setLoading(false);
   }

@@ -15,17 +15,25 @@ class ClientMyWorkoutsDaysPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Days'),
+        title: const Text(
+          'Days',
+          style: TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
+        ),
+        backgroundColor: const Color.fromARGB(255, 28, 40, 44),
+        iconTheme: const IconThemeData(
+          color: Color.fromARGB(255, 226, 182, 167),
+        ),
       ),
+      backgroundColor: const Color.fromARGB(255, 28, 40, 44),
       body: FutureBuilder<List<DayModel>>(
         future: viewModel.getDays(workoutId, weekId),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator(color: Color.fromARGB(255, 226, 182, 167)));
           } else if (snapshot.hasError) {
-            return Center(child: Text('Error fetching days'));
+            return const Center(child: Text('Error fetching days', style: TextStyle(color: Colors.white)));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No days available'));
+            return const Center(child: Text('No days available', style: TextStyle(color: Colors.white)));
           } else {
             final days = snapshot.data!;
             return ListView.builder(
@@ -33,9 +41,9 @@ class ClientMyWorkoutsDaysPage extends StatelessWidget {
               itemBuilder: (context, index) {
                 final day = days[index];
                 return Container(
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     border: Border(
-                      top: BorderSide(color: Colors.black, width: 1.0),
+                      top: BorderSide(color: Color.fromARGB(255, 56, 80, 88), width: 1.0),
                     ),
                   ),
                   child: Padding(
@@ -48,19 +56,17 @@ class ClientMyWorkoutsDaysPage extends StatelessWidget {
                             navigateToClientWorkoutPage(context, day.id!);
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Invalid day ID')),
+                              const SnackBar(content: Text('Invalid day ID', style: TextStyle(color: Colors.red))),
                             );
                           }
                         },
-                        style: ButtonStyle(
-                          backgroundColor:
-                              MaterialStateProperty.all<Color>(Colors.black),
-                          minimumSize: MaterialStateProperty.all<Size>(
-                              Size(double.infinity, 48)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color.fromARGB(255, 56, 80, 88),
+                          minimumSize: const Size(double.infinity, 48),
                         ),
                         child: Text(
                           day.name,
-                          style: TextStyle(color: Colors.white),
+                          style: const TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
                         ),
                       ),
                     ),
@@ -78,7 +84,7 @@ class ClientMyWorkoutsDaysPage extends StatelessWidget {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ClientWorkoutPage(viewModel: viewModel, workoutId: workoutId, weekId: weekId, dayId: dayId)
+        builder: (context) => ClientWorkoutPage(viewModel: viewModel, workoutId: workoutId, weekId: weekId, dayId: dayId),
       ),
     );
   }

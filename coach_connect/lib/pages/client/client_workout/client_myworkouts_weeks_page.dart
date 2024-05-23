@@ -43,8 +43,16 @@ class _ClientMyWorkoutsWeeksPageState extends State<ClientMyWorkoutsWeeksPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Weeks'),
+        title: const Text(
+          'Weeks',
+          style: TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
+        ),
+        backgroundColor: const Color.fromARGB(255, 28, 40, 44),
+        iconTheme: const IconThemeData(
+          color: Color.fromARGB(255, 226, 182, 167),
+        ),
       ),
+      backgroundColor: const Color.fromARGB(255, 28, 40, 44),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -57,9 +65,9 @@ class _ClientMyWorkoutsWeeksPageState extends State<ClientMyWorkoutsWeeksPage> {
                       final weekName = weeks[index];
                       final weekId = 'Week${index + 1}'; // Assuming weekId follows this format
                       return Container(
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           border: Border(
-                            top: BorderSide(color: Colors.black, width: 1.0),
+                            top: BorderSide(color: Color.fromARGB(255, 56, 80, 88), width: 1.0),
                           ),
                         ),
                         child: Padding(
@@ -68,13 +76,13 @@ class _ClientMyWorkoutsWeeksPageState extends State<ClientMyWorkoutsWeeksPage> {
                             onPressed: () {
                               navigateToClientMyWorkoutsDaysPage(context, weekId);
                             },
-                            style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all<Color>(Colors.black),
-                              minimumSize: MaterialStateProperty.all<Size>(Size(double.infinity, 48)),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color.fromARGB(255, 56, 80, 88),
+                              minimumSize: const Size(double.infinity, 48),
                             ),
                             child: Text(
                               weekName,
-                              style: TextStyle(color: Colors.white),
+                              style: const TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
                             ),
                           ),
                         ),
@@ -82,8 +90,8 @@ class _ClientMyWorkoutsWeeksPageState extends State<ClientMyWorkoutsWeeksPage> {
                     },
                   ),
                 )
-              : Center(
-                  child: Text('No weeks currently'),
+              : const Center(
+                  child: Text('No weeks currently', style: TextStyle(color: Colors.white)),
                 ),
         ],
       ),
@@ -94,7 +102,7 @@ class _ClientMyWorkoutsWeeksPageState extends State<ClientMyWorkoutsWeeksPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ClientMyWorkoutsDaysPage(viewModel: widget.viewModel, workoutId: widget.workoutId, weekId: weekId)
+        builder: (context) => ClientMyWorkoutsDaysPage(viewModel: widget.viewModel, workoutId: widget.workoutId, weekId: weekId),
       ),
     );
   }

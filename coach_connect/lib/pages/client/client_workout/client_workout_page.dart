@@ -52,7 +52,7 @@ class _ClientWorkoutPageState extends State<ClientWorkoutPage> {
         _isLoading = false;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error fetching exercises and sets')),
+        const SnackBar(content: Text('Error fetching exercises and sets')),
       );
     }
   }
@@ -61,27 +61,35 @@ class _ClientWorkoutPageState extends State<ClientWorkoutPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Exercises'),
+        title: const Text(
+          'Exercises',
+          style: TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
+        ),
+        backgroundColor: const Color.fromARGB(255, 28, 40, 44),
+        iconTheme: const IconThemeData(
+          color: Color.fromARGB(255, 226, 182, 167),
+        ),
       ),
+      backgroundColor: const Color.fromARGB(255, 28, 40, 44),
       body: _isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : Stack(
               children: [
                 SingleChildScrollView(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 8.0),
                         child: Divider(
-                          color: Colors.black,
+                          color: Color.fromARGB(255, 56, 80, 88),
                           thickness: 1.0,
                         ),
                       ),
                       ..._exercises.map((exercise) {
                         return _buildExerciseItem(exercise);
                       }).toList(),
-                      SizedBox(height: 16.0),
+                      const SizedBox(height: 16.0),
                     ],
                   ),
                 ),
@@ -93,7 +101,13 @@ class _ClientWorkoutPageState extends State<ClientWorkoutPage> {
                       onPressed: () {
                         // Add your logic for starting the workout here
                       },
-                      child: Text('Start Workout'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromARGB(255, 56, 80, 88),
+                      ),
+                      child: const Text(
+                        'Start Workout',
+                        style: TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
+                      ),
                     ),
                   ),
                 ),
@@ -109,7 +123,7 @@ class _ClientWorkoutPageState extends State<ClientWorkoutPage> {
       builder: (context, setState) {
         return Column(
           children: [
-            _buildDayButton(exercise.name ?? 'Unknown Exercise', Colors.black, isExpanded, () {
+            _buildDayButton(exercise.name ?? 'Unknown Exercise', const Color.fromARGB(255, 56, 80, 88), isExpanded, () {
               setState(() {
                 isExpanded = !isExpanded;
               });
@@ -130,11 +144,11 @@ class _ClientWorkoutPageState extends State<ClientWorkoutPage> {
         decoration: BoxDecoration(
           color: buttonColor,
           borderRadius: BorderRadius.circular(10.0),
-          border: Border(
-            top: BorderSide(color: Colors.black, width: 1.0),
+          border: const Border(
+            top: BorderSide(color: Color.fromARGB(255, 56, 80, 88), width: 1.0),
           ),
         ),
-        margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+        margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
           child: Row(
@@ -142,11 +156,11 @@ class _ClientWorkoutPageState extends State<ClientWorkoutPage> {
             children: [
               Text(
                 day,
-                style: TextStyle(color: Colors.white, fontSize: 16.0),
+                style: const TextStyle(color: Color.fromARGB(255, 226, 182, 167), fontSize: 16.0),
               ),
               Icon(
                 isExpanded ? Icons.arrow_drop_up : Icons.arrow_drop_down,
-                color: Colors.white,
+                color: const Color.fromARGB(255, 226, 182, 167),
               ),
             ],
           ),
@@ -160,7 +174,7 @@ class _ClientWorkoutPageState extends State<ClientWorkoutPage> {
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.black87,
+          color: const Color.fromARGB(255, 56, 80, 88),
           borderRadius: BorderRadius.circular(10.0),
         ),
         child: Padding(
@@ -170,7 +184,7 @@ class _ClientWorkoutPageState extends State<ClientWorkoutPage> {
             children: [
               Text(
                 '${set.id ?? 'Unknown ID'} RPE: @${set.rpe ?? 'N/A'} Reps: ${set.reps ?? 'N/A'} KG: ${set.kg ?? 'N/A'}',
-                style: TextStyle(color: Colors.white),
+                style: const TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
               ),
             ],
           ),

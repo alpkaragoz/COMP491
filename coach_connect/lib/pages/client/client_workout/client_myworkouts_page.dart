@@ -42,8 +42,16 @@ class _ClientMyWorkoutsPageState extends State<ClientMyWorkoutsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Workouts'),
+        title: const Text(
+          'My Workouts',
+          style: TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
+        ),
+        backgroundColor: const Color.fromARGB(255, 28, 40, 44),
+        iconTheme: const IconThemeData(
+          color: Color.fromARGB(255, 226, 182, 167),
+        ),
       ),
+      backgroundColor: const Color.fromARGB(255, 28, 40, 44),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -59,9 +67,9 @@ class _ClientMyWorkoutsPageState extends State<ClientMyWorkoutsPage> {
                         builder: (context, AsyncSnapshot<Map<String, dynamic>?> snapshot) {
                           final workoutName = snapshot.data?['name'] ?? 'Unnamed Workout';
                           return Container(
-                            decoration: BoxDecoration(
+                            decoration: const BoxDecoration(
                               border: Border(
-                                top: BorderSide(color: Colors.black, width: 1.0),
+                                top: BorderSide(color: Color.fromARGB(255, 56, 80, 88), width: 1.0),
                               ),
                             ),
                             child: Padding(
@@ -70,17 +78,17 @@ class _ClientMyWorkoutsPageState extends State<ClientMyWorkoutsPage> {
                                 onPressed: () {
                                   navigateToClientMyWorkoutsWeeksPage(context, workoutId);
                                 },
-                                style: ButtonStyle(
-                                  backgroundColor: MaterialStateProperty.all<Color>(Colors.black),
-                                  minimumSize: MaterialStateProperty.all<Size>(Size(double.infinity, 48)),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color.fromARGB(255, 56, 80, 88),
+                                  minimumSize: const Size(double.infinity, 48),
                                 ),
                                 child: snapshot.connectionState != ConnectionState.waiting
                                     ? Text(
                                         workoutName,
-                                        style: TextStyle(color: Colors.white),
+                                        style: const TextStyle(color: Color.fromARGB(255, 226, 182, 167)),
                                       )
-                                    : CircularProgressIndicator(
-                                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                    : const CircularProgressIndicator(
+                                        valueColor: AlwaysStoppedAnimation<Color>(Color.fromARGB(255, 226, 182, 167)),
                                       ),
                               ),
                             ),
@@ -90,8 +98,8 @@ class _ClientMyWorkoutsPageState extends State<ClientMyWorkoutsPage> {
                     },
                   ),
                 )
-              : Center(
-                  child: Text('No workouts currently'),
+              : const Center(
+                  child: Text('No workouts currently', style: TextStyle(color: Colors.white)),
                 ),
         ],
       ),
@@ -102,7 +110,7 @@ class _ClientMyWorkoutsPageState extends State<ClientMyWorkoutsPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ClientMyWorkoutsWeeksPage(viewModel: widget.viewModel, workoutId: workoutId)
+        builder: (context) => ClientMyWorkoutsWeeksPage(viewModel: widget.viewModel, workoutId: workoutId),
       ),
     );
   }

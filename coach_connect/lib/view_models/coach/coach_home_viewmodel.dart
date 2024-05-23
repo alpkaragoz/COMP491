@@ -51,9 +51,35 @@ class CoachHomeViewModel extends ChangeNotifier {
     return message;
   }
 
-  String denyRequest(Request request) {
-    return "";
+Future<String> denyRequest(Request request) async {
+  final _db = FirebaseFirestore.instance;
+  try {
+    await _db.runTransaction((transaction) async {
+      // Get the request document from the 'requests' collection
+      DocumentReference requestRef = _db.collection('requests').doc(request.id);
+      DocumentSnapshot requestSnapshot = await transaction.get(requestRef);
+
+      if (!requestSnapshot.exists) {
+        throw Exception("Request does not exist!");
+      }
+
+      // Delete the request document
+      transaction.delete(requestRef);
+    });
+
+    // Refresh the coach's client objects and pending requests
+    await getClientObjectsForCoach();
+    await getPendingRequestsForCoach();
+    notifyListeners();
+
+    // Return a success message if the transaction completes successfully
+    return "Request denied successfully.";
+  } catch (e) {
+    // If an exception is caught, return an error message
+    return "Error occurred while denying the request: ${e.toString()}";
   }
+}
+
 
   Future<UserAccount?> getUser(String id) async {
     try {
